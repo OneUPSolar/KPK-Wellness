@@ -65,7 +65,7 @@ img{max-width:100%;height:auto;display:block}
 .hosts-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:32px}
 .host-card{background:#fff;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);transition:transform .2s}
 .host-card:hover{transform:translateY(-4px)}
-.host-card img{width:100%;aspect-ratio:1;object-fit:cover}
+.host-card img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top}
 .host-card-body{padding:28px}
 .host-card-body h3{font-size:1.4rem;margin-bottom:4px}
 .host-card-body .title{color:var(--clay);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:block}
