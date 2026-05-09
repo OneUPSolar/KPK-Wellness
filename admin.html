@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KPK Wellness — Admin de Recetas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cacao:#3B2F2F;--clay:#A0522D;--blush:#E8B4B8;--sage:#8FBC8F;
+  --warm-white:#FAF7F1;--sand:#F5E6D3;
+  --radius:12px;--shadow:0 4px 24px rgba(59,47,47,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito Sans',sans-serif;background:var(--warm-white);color:var(--cacao);min-height:100vh}
+h1,h2,h3{font-family:'Playfair Display',serif}
+
+/* Auth Screen */
+.auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.auth-card{background:#fff;border-radius:var(--radius);padding:48px;max-width:440px;width:100%;box-shadow:var(--shadow);text-align:center}
+.auth-card h1{font-size:1.8rem;margin-bottom:8px}
+.auth-card p{color:#888;margin-bottom:24px;font-size:.95rem}
+.auth-card input{width:100%;padding:14px 16px;border:2px solid var(--sand);border-radius:8px;font-size:1rem;font-family:inherit;outline:none;transition:border .2s}
+.auth-card input:focus{border-color:var(--clay)}
+.auth-card button{margin-top:16px;width:100%;padding:14px;background:var(--clay);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s}
+.auth-card button:hover{background:var(--cacao)}
+.auth-error{color:#c0392b;font-size:.85rem;margin-top:12px;display:none}
+
+/* Layout */
+.app{display:none}
+.topbar{background:var(--cacao);color:#fff;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar h2{font-size:1.2rem;letter-spacing:.5px}
+.topbar-right{display:flex;gap:12px;align-items:center}
+.topbar button{background:rgba(255,255,255,.15);color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:.85rem;cursor:pointer;transition:background .2s}
+.topbar button:hover{background:rgba(255,255,255,.25)}
+.main{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - 56px)}
+@media(max-width:900px){.main{grid-template-columns:1fr;}}
+
+/* Form Panel */
+.form-panel{padding:32px;overflow-y:auto;max-height:calc(100vh - 56px)}
+.form-panel h3{font-size:1.3rem;margin-bottom:20px;color:var(--cacao)}
+.field{margin-bottom:18px}
+.field label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px;color:var(--clay);text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:2px solid var(--sand);border-radius:8px;font-size:.95rem;font-family:inherit;outline:none;background:#fff;transition:border .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--clay)}
+.field textarea{resize:vertical;min-height:60px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+/* Dynamic Lists */
+.list-group{margin-bottom:18px}
+.list-group label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px;color:var(--clay);text-transform:uppercase;letter-spacing:.5px}
+.list-item{display:flex;gap:8px;margin-bottom:8px}
+.list-item input{flex:1;padding:10px 12px;border:2px solid var(--sand);border-radius:8px;font-size:.9rem;font-family:inherit;outline:none}
+.list-item input:focus{border-color:var(--clay)}
+.list-item button{background:none;border:2px solid #e74c3c;color:#e74c3c;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;align-self:center}
+.list-item button:hover{background:#e74c3c;color:#fff}
+.add-btn{background:none;border:2px dashed var(--sage);color:var(--sage);padding:10px;border-radius:8px;width:100%;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .2s}
+.add-btn:hover{background:rgba(143,188,143,.1);border-color:var(--clay);color:var(--clay)}
+
+/* Image Upload */
+.upload-zone{border:2px dashed var(--sand);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--clay);background:rgba(160,82,45,.04)}
+.upload-zone p{color:#999;font-size:.9rem}
+.upload-zone .preview{max-width:100%;max-height:200px;border-radius:8px;margin-top:12px;display:none}
+.upload-zone input{display:none}
+
+/* Divider */
+.divider{border:none;border-top:2px solid var(--sand);margin:28px 0}
+
+/* Submit */
+.submit-bar{padding:20px 0;display:flex;gap:12px}
+.submit-btn{flex:1;padding:16px;background:var(--clay);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+.submit-btn:hover{background:var(--cacao);transform:translateY(-1px)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.submit-btn.secondary{background:transparent;color:var(--clay);border:2px solid var(--clay)}
+.submit-btn.secondary:hover{background:var(--clay);color:#fff}
+
+/* Preview Panel */
+.preview-panel{background:var(--cacao);color:var(--warm-white);padding:32px;overflow-y:auto;max-height:calc(100vh - 56px);font-size:.9rem;position:relative}
+.preview-panel h3{color:var(--blush);margin-bottom:16px;font-size:1.1rem}
+.preview-panel pre{white-space:pre-wrap;word-wrap:break-word;font-family:'Courier New',monospace;font-size:.85rem;line-height:1.7;background:rgba(0,0,0,.25);padding:20px;border-radius:8px;border:1px solid rgba(255,255,255,.1)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--sage);color:#fff;padding:14px 24px;border-radius:8px;font-weight:600;transform:translateY(100px);opacity:0;transition:all .3s;z-index:1000}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:#c0392b}
+
+/* Status */
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--sage);display:inline-block;margin-right:6px}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <h1>🌿 KPK Recetas</h1>
+    <p>Ingresa tu token de GitHub para acceder al administrador de recetas.</p>
+    <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx">
+    <button onclick="authenticate()">Entrar</button>
+    <p class="auth-error" id="authError">Token inválido. Intenta de nuevo.</p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="app">
+  <div class="topbar">
+    <h2>🌿 KPK Recetas Admin</h2>
+    <div class="topbar-right">
+      <span><span class="status-dot"></span>Conectada</span>
+      <button onclick="logout()">Salir</button>
+    </div>
+  </div>
+  <div class="main">
+    <!-- FORM -->
+    <div class="form-panel" id="formPanel">
+      <h3>Nueva Receta</h3>
+
+      <div class="row">
+        <div class="field">
+          <label>Categoría</label>
+          <select id="fCategoria" onchange="updatePreview()">
+            <option value="desayunos">🍳 Desayunos</option>
+            <option value="ensaladas">🥗 Ensaladas</option>
+            <option value="pastas">🍝 Pastas</option>
+            <option value="postres">🍰 Postres</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Subcategoría</label>
+          <input type="text" id="fSubcategoria" placeholder="ej. rápido, clásica, frio" oninput="updatePreview()">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Nombre de la Receta</label>
+        <input type="text" id="fNombre" placeholder="ej. Avocado toast con huevo" oninput="updatePreview()">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Título Serio</label>
+          <input type="text" id="fTituloSerio" placeholder="ej. Pan tostado con aguacate y huevo cocido" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Título Juguetón</label>
+          <input type="text" id="fTituloJugueton" placeholder="ej. Tostada verde con proteína" oninput="updatePreview()">
+        </div>
+      </div>
+
+      <div class="row-3">
+        <div class="field">
+          <label>Porciones</label>
+          <input type="number" id="fPorciones" placeholder="4" min="1" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Tiempo</label>
+          <input type="text" id="fTiempo" placeholder="ej. 20 min" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Dificultad</label>
+          <select id="fDificultad" onchange="updatePreview()">
+            <option value="facil">Fácil</option>
+            <option value="medio">Medio</option>
+            <option value="dificil">Difícil</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- UTENSILIOS -->
+      <div class="list-group">
+        <label>Utensilios</label>
+        <div id="utensiliosList">
+          <div class="list-item"><input type="text" placeholder="ej. Sartén" oninput="updatePreview()"><button onclick="removeItem(this)">×</button></div>
+        </div>
+        <button class="add-btn" onclick="addItem('utensiliosList','ej. Cuchillo')">+ Agregar Utensilio</button>
+      </div>
+
+      <!-- INGREDIENTES -->
+      <div class="list-group">
+        <label>Ingredientes</label>
+        <div id="ingredientesList">
+          <div class="list-item"><input type="text" placeholder="ej. Aguacate – 1 pieza (150 g)" oninput="updatePreview()"><button onclick="removeItem(this)">×</button></div>
+        </div>
+        <button class="add-btn" onclick="addItem('ingredientesList','ej. Sal – 1 pizca (2 g)')">+ Agregar Ingrediente</button>
+      </div>
+
+      <hr class="divider">
+
+      <!-- PREPARACIÓN -->
+      <div class="list-group">
+        <label>Preparación (pasos)</label>
+        <div id="pasosList">
+          <div class="list-item"><input type="text" placeholder="Paso 1..." oninput="updatePreview()"><button onclick="removeItem(this)">×</button></div>
+        </div>
+        <button class="add-btn" onclick="addItem('pasosList','Siguiente paso...')">+ Agregar Paso</button>
+      </div>
+
+      <hr class="divider">
+
+      <!-- MACROS -->
+      <h3 style="margin-top:8px">Macros por porción</h3>
+      <div class="row" style="margin-top:12px">
+        <div class="field"><label>Calorías (kcal)</label><input type="number" id="fCalorias" placeholder="280" oninput="updatePreview()"></div>
+        <div class="field"><label>Proteína (g)</label><input type="number" id="fProteina" placeholder="12" oninput="updatePreview()"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Grasas (g)</label><input type="number" id="fGrasas" placeholder="18" oninput="updatePreview()"></div>
+        <div class="field"><label>Carbohidratos (g)</label><input type="number" id="fCarbos" placeholder="20" oninput="updatePreview()"></div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- COSTEO -->
+      <h3 style="margin-top:8px">Costeo</h3>
+      <div class="row" style="margin-top:12px">
+        <div class="field"><label>Costo Total (MXN)</label><input type="number" id="fCostoTotal" placeholder="60" oninput="updatePreview()"></div>
+        <div class="field"><label>Costo por Porción (MXN)</label><input type="text" id="fCostoPorcion" placeholder="ej. $30 MXN" oninput="updatePreview()"></div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- IMAGE -->
+      <div class="field">
+        <label>Imagen de la Receta</label>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('imageInput').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event)">
+          <p>📷 Arrastra una imagen aquí o haz clic para seleccionar</p>
+          <img class="preview" id="imagePreview">
+          <input type="file" id="imageInput" accept="image/*" onchange="handleImage(event)">
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="submit-bar">
+        <button class="submit-btn secondary" onclick="resetForm()">Limpiar</button>
+        <button class="submit-btn" id="submitBtn" onclick="submitRecipe()">Publicar Receta 🚀</button>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="preview-panel">
+      <h3>📄 Vista Previa del Markdown</h3>
+      <pre id="markdownPreview">---
+id: 
+categoria: desayunos
+subcategoria: 
+porciones: 
+tiempo: 
+costo: 
+dificultad: facil
+---
+
+# (nombre de la receta)
+...</pre>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
