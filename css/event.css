@@ -72,6 +72,11 @@ img{max-width:100%;height:auto;display:block}
 .host-card-body p{color:var(--olive);font-size:.95rem}
 .hosts-collab{text-align:center;font-style:italic;color:var(--olive);font-size:1rem;max-width:640px;margin:0 auto}
 
+/* ── Instagram Card ──────────────────── */
+.ig-card{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:10px 18px;border-radius:10px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;text-decoration:none;font-weight:700;font-size:.9rem;transition:all .2s}
+.ig-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(225,48,108,.3)}
+.ig-card svg{flex-shrink:0}
+
 /* ── Checklist ───────────────────────── */
 .checklist{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:700px}
 .center .checklist{margin:0 auto}
