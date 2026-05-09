@@ -1,47 +1,71 @@
 /* KPK Wellness — Recipe Admin JS */
-const REPO = 'OneUPSolar/KPK-Wellness';
-const API  = 'https://api.github.com';
-let TOKEN  = '';
+const API_URL = 'https://kpk-recipe-api.hi-7e4.workers.dev';
+let AUTH_TOKEN = '';
 let imageData = null;
 let imageName = '';
 
 /* ── Auth ─────────────────────────────── */
-function authenticate() {
-  const t = document.getElementById('tokenInput').value.trim();
-  if (!t) return;
-  TOKEN = t;
-  fetch(`${API}/repos/${REPO}`, { headers: authHeaders() })
-    .then(r => {
-      if (!r.ok) throw new Error('bad');
-      localStorage.setItem('kpk_token', t);
-      showApp();
-    })
-    .catch(() => {
-      document.getElementById('authError').style.display = 'block';
+async function authenticate() {
+  const email = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value;
+  if (!email || !password) return;
+
+  document.getElementById('authError').style.display = 'none';
+  const loginBtn = document.querySelector('.auth-card button');
+  loginBtn.textContent = 'Entrando...';
+  loginBtn.disabled = true;
+
+  try {
+    const res = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
     });
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.getElementById('authError').textContent = data.error || 'Error de autenticación';
+      document.getElementById('authError').style.display = 'block';
+      return;
+    }
+
+    AUTH_TOKEN = data.token;
+    localStorage.setItem('kpk_auth', JSON.stringify({ token: data.token, email: data.email }));
+    showApp(data.email);
+  } catch (e) {
+    document.getElementById('authError').textContent = 'No se pudo conectar al servidor';
+    document.getElementById('authError').style.display = 'block';
+  } finally {
+    loginBtn.textContent = 'Entrar';
+    loginBtn.disabled = false;
+  }
 }
 
 function logout() {
-  localStorage.removeItem('kpk_token');
-  TOKEN = '';
+  localStorage.removeItem('kpk_auth');
+  AUTH_TOKEN = '';
   document.getElementById('app').style.display = 'none';
   document.getElementById('authScreen').style.display = 'flex';
-  document.getElementById('tokenInput').value = '';
+  document.getElementById('emailInput').value = '';
+  document.getElementById('passwordInput').value = '';
 }
 
-function showApp() {
+function showApp(email) {
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-}
-
-function authHeaders() {
-  return { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github.v3+json' };
+  document.getElementById('userEmail').textContent = email || '';
 }
 
 /* Auto-login */
 (function() {
-  const saved = localStorage.getItem('kpk_token');
-  if (saved) { TOKEN = saved; showApp(); }
+  const saved = localStorage.getItem('kpk_auth');
+  if (saved) {
+    try {
+      const { token, email } = JSON.parse(saved);
+      AUTH_TOKEN = token;
+      showApp(email);
+    } catch(e) { localStorage.removeItem('kpk_auth'); }
+  }
 })();
 
 /* ── Dynamic Lists ────────────────────── */
@@ -80,7 +104,7 @@ function processImage(file) {
   imageName = file.name;
   const reader = new FileReader();
   reader.onload = function(ev) {
-    imageData = ev.target.result.split(',')[1]; // base64 without prefix
+    imageData = ev.target.result.split(',')[1];
     const preview = document.getElementById('imagePreview');
     preview.src = ev.target.result;
     preview.style.display = 'block';
@@ -171,31 +195,20 @@ function updatePreview() {
   document.getElementById('markdownPreview').textContent = md;
 }
 
-/* ── GitHub Commit ────────────────────── */
+/* ── Worker Commit ────────────────────── */
 async function commitFile(path, content, message, isBase64) {
-  const body = {
-    message,
-    content: isBase64 ? content : btoa(unescape(encodeURIComponent(content)))
-  };
-
-  // Check if file exists (for update)
-  try {
-    const existing = await fetch(`${API}/repos/${REPO}/contents/${path}`, { headers: authHeaders() });
-    if (existing.ok) {
-      const data = await existing.json();
-      body.sha = data.sha;
-    }
-  } catch(e) { /* new file */ }
-
-  const res = await fetch(`${API}/repos/${REPO}/contents/${path}`, {
-    method: 'PUT',
-    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+  const res = await fetch(`${API_URL}/commit`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${AUTH_TOKEN}`
+    },
+    body: JSON.stringify({ path, content, message, isBase64 })
   });
 
   if (!res.ok) {
     const err = await res.json();
-    throw new Error(err.message || 'Commit failed');
+    throw new Error(err.error || 'Commit failed');
   }
   return res.json();
 }
@@ -223,7 +236,12 @@ async function submitRecipe() {
     showToast(`✅ Receta "${nombre}" publicada exitosamente`);
     resetForm();
   } catch(e) {
-    showToast(`Error: ${e.message}`, true);
+    if (e.message.includes('No autorizada')) {
+      showToast('Sesión expirada — inicia sesión de nuevo', true);
+      logout();
+    } else {
+      showToast(`Error: ${e.message}`, true);
+    }
   } finally {
     btn.disabled = false;
     btn.textContent = 'Publicar Receta 🚀';

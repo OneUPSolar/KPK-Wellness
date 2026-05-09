@@ -98,10 +98,11 @@ h1,h2,h3{font-family:'Playfair Display',serif}
 <div class="auth-screen" id="authScreen">
   <div class="auth-card">
     <h1>🌿 KPK Recetas</h1>
-    <p>Ingresa tu token de GitHub para acceder al administrador de recetas.</p>
-    <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx">
+    <p>Inicia sesión para administrar las recetas.</p>
+    <input type="email" id="emailInput" placeholder="tu@email.com" style="margin-bottom:12px">
+    <input type="password" id="passwordInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')authenticate()">
     <button onclick="authenticate()">Entrar</button>
-    <p class="auth-error" id="authError">Token inválido. Intenta de nuevo.</p>
+    <p class="auth-error" id="authError">Credenciales inválidas. Intenta de nuevo.</p>
   </div>
 </div>
 
@@ -110,7 +111,7 @@ h1,h2,h3{font-family:'Playfair Display',serif}
   <div class="topbar">
     <h2>🌿 KPK Recetas Admin</h2>
     <div class="topbar-right">
-      <span><span class="status-dot"></span>Conectada</span>
+      <span><span class="status-dot"></span><span id="userEmail">Conectada</span></span>
       <button onclick="logout()">Salir</button>
     </div>
   </div>
