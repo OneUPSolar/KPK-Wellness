@@ -1,5 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // --- LANGUAGE TOGGLE ---
+  // --- LEAD MAGNET FORM ---
+window.handleLeadMagnet = function(e) {
+  e.preventDefault();
+  // Here we would typically save the email to a database (e.g., Mailchimp, JSON file)
+  // For now, we simulate the process and redirect to the ebook upsell page
+  const btn = e.target.querySelector('button');
+  const originalText = btn.textContent;
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+  
+  setTimeout(() => {
+    // Determine the path to ebook.html based on current location
+    const isEventPage = window.location.pathname.includes('/experiences/');
+    const redirectPath = isEventPage ? '../../ebook.html' : 'ebook.html';
+    window.location.href = redirectPath;
+  }, 1000);
+};
+
+// --- LANGUAGE TOGGLE ---
   const langBtn = document.getElementById('langToggle');
   const lblEn = document.getElementById('lbl-en');
   const lblEs = document.getElementById('lbl-es');
