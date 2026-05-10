@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recorded Library | School of Open Yoga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="lang-en">
+
+  <main class="coming-soon">
+    <div class="dust-particles" id="dustContainer"></div>
+    <div class="container" style="max-width: 600px; text-align: center;">
+      <h1 class="display-text" data-i18n="recTitle">The Library is coming soon.</h1>
+      <p style="margin-top: 1rem; color: var(--ink-dim);" data-i18n="recDesc">Join the waitlist to be notified when our recorded sessions are available.</p>
+      
+      <!-- Mailto form as placeholder for v1 -->
+      <form action="mailto:hello@kpk.associates" method="GET" enctype="text/plain" style="margin-top: 2rem; margin-inline: auto;">
+        <input type="text" name="subject" value="Waitlist: Recorded Yoga Library" style="display:none;">
+        <input type="email" name="body" placeholder="Your email address" id="emailInput" required>
+        <button type="submit" class="btn-primary" data-i18n="btnNotify" style="border:none;">Notify Me</button>
+      </form>
+      
+      <div style="margin-top: 4rem;">
+        <a href="/yoga/" class="btn-secondary">&larr; Return to Studio</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="../i18n.js"></script>
+  <script src="../nav.js"></script>
+  <script>
+    // i18n hook for placeholder text
+    window.addEventListener('languageChanged', (e) => {
+      const input = document.getElementById('emailInput');
+      input.placeholder = window.i18n.recEmailPlaceholder[e.detail.lang] || 'Your email address';
+    });
+    // Set initial
+    const currentLang = localStorage.getItem('yoga_lang') || 'en';
+    document.getElementById('emailInput').placeholder = window.i18n.recEmailPlaceholder[currentLang];
+  </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School of Open Yoga | KPK & Associates</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="lang-en">
+
+  <!-- Main Hero -->
+  <main>
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-gradient"></div>
+      
+      <!-- Dust animation -->
+      <div class="dust-particles" id="dustContainer"></div>
+
+      <div class="container hero-content">
+        <span class="eyebrow" data-i18n="landingEyebrow">School of Open Yoga · Tijuana & San Diego</span>
+        <h1 class="display-text" data-i18n="landingTitle">Practice with intention.</h1>
+        <div style="display: flex; gap: 1rem; align-items: center; margin-top: 3rem;">
+          <a href="/yoga/live/" class="btn-primary" data-i18n="btnBeginSession">Begin a Session</a>
+          <a href="/yoga/about/" class="btn-secondary" data-i18n="btnAbout">About Karina</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pathways -->
+    <section class="section-spacing container">
+      <div class="pathways-grid">
+        <!-- Live Sessions -->
+        <div class="pathway-card pathway-live">
+          <div>
+            <h3 data-i18n="cardLiveTitle">Live Sessions</h3>
+            <p data-i18n="cardLiveDesc">Practice with Karina, accompanied by music that listens.</p>
+          </div>
+          <a href="/yoga/live/" class="arrow-link" data-i18n="cardLiveLink">Enter Studio &rarr;</a>
+        </div>
+
+        <!-- Recorded Library -->
+        <div class="pathway-card pathway-recorded">
+          <div>
+            <h3 data-i18n="cardRecTitle">Recorded Library</h3>
+            <p data-i18n="cardRecDesc">Coming soon.</p>
+          </div>
+          <a href="/yoga/recorded/" class="arrow-link" data-i18n="cardLiveLink">Enter Studio &rarr;</a>
+        </div>
+
+        <!-- About -->
+        <div class="pathway-card pathway-about">
+          <div>
+            <h3 data-i18n="cardAboutTitle">About Karina</h3>
+            <p data-i18n="cardAboutDesc">Twenty years of practice, in two languages.</p>
+          </div>
+          <a href="/yoga/about/" class="arrow-link" data-i18n="cardAboutLink">Read Story &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Philosophy -->
+    <section class="section-spacing philosophy-section">
+      <span class="eyebrow" data-i18n="philosophyEyebrow">Philosophy</span>
+      <div class="pull-quote" data-i18n="philosophyQuote">
+        "She won't half-ass anything. If she's going to half-ass it, she just won't do it."
+      </div>
+      <p style="font-family: var(--font-mono); color: var(--ink-dim);" data-i18n="philosophyAuthor">— The standard of practice.</p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="yoga-footer">
+    <div>
+      <h4 style="color: var(--ink); font-family: var(--font-body); font-weight: 400; margin-bottom: 0.5rem;">School of Open Yoga</h4>
+      <p data-i18n="footerTagline">A KPK Wellness Experience</p>
+    </div>
+    <div style="text-align: right;">
+      <p data-i18n="footerAddress">1309 Coffeen Avenue STE 1200 · Sheridan, WY 82801</p>
+      <p style="margin-top: 1rem;"><a href="mailto:hello@kpk.associates">hello@kpk.associates</a></p>
+      <p style="margin-top: 2rem;" data-i18n="footerRights">&copy; 2026 KPK & Associates CBT. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="i18n.js"></script>
+  <script src="nav.js"></script>
+  <script>
+    // Generate dust particles dynamically
+    const container = document.getElementById('dustContainer');
+    if (container) {
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = \`\${Math.random() * 100}vw\`;
+        particle.style.top = \`\${Math.random() * 100}vh\`;
+        particle.style.width = \`\${Math.random() * 4 + 2}px\`;
+        particle.style.height = particle.style.width;
+        particle.style.setProperty('--duration', \`\${Math.random() * 15 + 10}s\`);
+        particle.style.animationDelay = \`-\${Math.random() * 20}s\`;
+        container.appendChild(particle);
+      }
+    }
+  </script>
+</body>
+</html>

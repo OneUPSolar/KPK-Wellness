@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Session | School of Open Yoga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;1,9..144,200&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="lang-en">
+
+  <main class="live-app">
+
+    <!-- Left panel: Rolling transcript stream -->
+    <section class="panel transcript-panel">
+      <div class="panel-header" data-i18n="liveTranscriptHeader">Live Transcript</div>
+      <div id="transcriptStream"></div>
+    </section>
+
+    <!-- Center panel: Mood + visualization + start/stop -->
+    <section class="panel center-panel">
+      <div class="mood-indicator" id="moodIndicator"></div>
+
+      <div class="audio-visualizer" id="visualizer">
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+        <div class="audio-bar"></div>
+      </div>
+
+      <button class="session-btn" id="sessionToggle">
+        <span id="btnText" data-i18n="btnStartSession">Start</span>
+      </button>
+    </section>
+
+    <!-- Right panel: Spotify playlists -->
+    <section class="panel playlist-panel">
+      <div class="panel-header" data-i18n="livePlaylistHeader">Music Suggestions</div>
+
+      <button id="spotifyConnectBtn">
+        <!-- Spotify wordmark icon -->
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.24 1.02h.061zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+        </svg>
+        <span data-i18n="btnConnectSpotify">Connect Spotify</span>
+      </button>
+
+      <div id="playlistContainer">
+        <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--ink-dim);"
+           data-i18n="spotifyWait">Listening for mood…</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- i18n + nav first (non-module, must run synchronously before app.js) -->
+  <script src="../i18n.js"></script>
+  <script src="../nav.js"></script>
+
+  <!-- Live session app — ES module entry point -->
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>
