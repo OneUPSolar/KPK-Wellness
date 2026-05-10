@@ -23,9 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- PARALLAX HERO ---
   const heroImg = document.querySelector('.parallax-img');
   if (heroImg) {
+    let ticking = false;
     window.addEventListener('scroll', () => {
-      if (window.scrollY < window.innerHeight) {
-        heroImg.style.transform = `scale(1.05) translateY(${window.scrollY * 0.25}px)`;
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          if (window.scrollY < window.innerHeight) {
+            heroImg.style.transform = `scale(1.05) translateY(${window.scrollY * 0.2}px)`;
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     });
   }
@@ -33,9 +40,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- SCROLL REVEAL ---
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   reveals.forEach(el => observer.observe(el));
+
+  // --- STAT COUNTER ANIMATION ---
+  const statNums = document.querySelectorAll('.hero-stat-num[data-count]');
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const target = parseInt(el.dataset.count);
+        let current = 0;
+        const duration = 1500;
+        const step = target / (duration / 16);
+        const tick = () => {
+          current += step;
+          if (current >= target) {
+            el.textContent = target + '+';
+          } else {
+            el.textContent = Math.floor(current) + '+';
+            requestAnimationFrame(tick);
+          }
+        };
+        requestAnimationFrame(tick);
+        statObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  statNums.forEach(el => statObserver.observe(el));
 
   // --- OFFERINGS TABS ---
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -54,13 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
   window.handleForm = (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
-    btn.textContent = lang === 'es' ? '¡Listo! Te contactaremos pronto.' : 'Done! We\'ll be in touch soon.';
-    btn.style.background = 'var(--sage)';
+    btn.textContent = lang === 'es' ? '¡Listo! Te contactaremos pronto.' : 'Done! We\'ll be in touch.';
+    btn.style.background = 'var(--eucalyptus)';
     btn.style.color = '#fff';
     e.target.reset();
   };
 
-  // --- SMOOTH SCROLL for nav links ---
+  // --- SMOOTH SCROLL ---
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const target = document.querySelector(a.getAttribute('href'));
