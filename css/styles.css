@@ -123,13 +123,17 @@ p { color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; font-size:
 .nav-mobile-btn { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
 .nav-mobile-btn span { display: block; width: 22px; height: 1.5px; background: var(--charcoal); margin: 5px 0; transition: var(--trans); }
 
-/* ---- HERO ---- */
-.hero { position: relative; min-height: 100vh; display: flex; align-items: center; overflow: hidden; }
-.hero-bg { position: absolute; inset: 0; z-index: 1; }
-.hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center; transform: scale(1.05); }
-.hero-overlay { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(30, 30, 46, 0.78) 0%, rgba(43, 58, 92, 0.35) 55%, transparent 100%); }
-.hero-content { position: relative; z-index: 2; padding-top: 72px; max-width: 680px; }
-.hero-content h1 { color: #fff; margin-bottom: 24px; font-weight: 400; }
+/* ---- HERO SPLIT CAROUSEL ---- */
+.hero--split { 
+  position: relative; min-height: 100vh; display: grid; 
+  grid-template-columns: 1fr 1.3fr; align-items: stretch; 
+  background: var(--navy); overflow: hidden;
+}
+.hero-split-left { 
+  display: flex; flex-direction: column; justify-content: center; 
+  padding: 120px 8%; z-index: 2;
+}
+.hero-content h1 { color: #fff; margin-bottom: 24px; font-weight: 400; font-size: 3.5rem; line-height: 1.1; }
 .hero-content p { color: rgba(255, 255, 255, 0.75); font-size: 1.15rem; max-width: 520px; margin-bottom: 40px; line-height: 1.8; }
 .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
 .hero-stats {
@@ -140,8 +144,33 @@ p { color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; font-size:
 .hero-stat-num { font-family: var(--font-head); font-size: 2.4rem; color: #fff; font-weight: 500; line-height: 1; }
 .hero-stat-label { font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; }
 
-/* Hero floating card — hidden by default, replaced by stats */
-.hero-float { display: none; }
+/* Carousel Right Side */
+.hero-split-right {
+  position: relative; overflow: hidden; 
+  display: flex; align-items: center; justify-content: flex-start;
+  padding-left: 40px; background: var(--charcoal);
+}
+.immersive-carousel {
+  width: 100%; height: 80vh; max-height: 900px;
+  overflow: hidden; display: flex; align-items: center;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 90%, transparent);
+}
+.carousel-track {
+  display: flex; gap: 32px; height: 100%; align-items: center;
+  transition: transform 0.1s linear; will-change: transform;
+}
+.carousel-slide {
+  flex: 0 0 auto; width: 32vw; height: 100%; max-width: 500px; min-width: 300px;
+  border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: var(--shadow-lg); transition: transform 0.5s ease;
+}
+.carousel-slide img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.8s ease;
+}
+.carousel-slide:hover { transform: scale(0.98); }
+.carousel-slide:hover img { transform: scale(1.05); }
 
 /* ---- EXPERIENCE CARDS ---- */
 .exp-grid {
@@ -365,6 +394,13 @@ footer { background: var(--charcoal); padding: 80px 0 40px; }
 }
 
 @media (max-width: 900px) {
+  .hero--split { grid-template-columns: 1fr; align-items: start; }
+  .hero-split-left { padding: 120px 24px 40px; }
+  .hero-content h1 { font-size: 2.8rem; }
+  .hero-stats { margin-top: 48px; gap: 32px; flex-wrap: wrap; }
+  .hero-split-right { height: 400px; padding-left: 24px; padding-bottom: 40px; }
+  .immersive-carousel { height: 100%; mask-image: linear-gradient(to right, transparent, black 2%, black 95%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 2%, black 95%, transparent); }
+  .carousel-slide { width: 60vw; min-width: 260px; }
   .exp-grid { grid-template-columns: 1fr; }
   .exp-card--wide { grid-column: auto; }
   .exp-card--wide img { height: 300px; }

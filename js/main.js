@@ -20,21 +20,38 @@ document.addEventListener('DOMContentLoaded', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 40);
   });
 
-  // --- PARALLAX HERO ---
-  const heroImg = document.querySelector('.parallax-img');
-  if (heroImg) {
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          if (window.scrollY < window.innerHeight) {
-            heroImg.style.transform = `scale(1.05) translateY(${window.scrollY * 0.2}px)`;
+  // --- IMMERSIVE CAROUSEL ---
+  const carouselTrack = document.querySelector('.carousel-track');
+  if (carouselTrack) {
+    let position = 0;
+    const speed = 0.8; // pixels per frame
+    let isHovered = false;
+
+    carouselTrack.addEventListener('mouseenter', () => isHovered = true);
+    carouselTrack.addEventListener('mouseleave', () => isHovered = false);
+    // Touch support for pausing
+    carouselTrack.addEventListener('touchstart', () => isHovered = true, {passive: true});
+    carouselTrack.addEventListener('touchend', () => isHovered = false);
+
+    const tick = () => {
+      if (!isHovered) {
+        position -= speed;
+        carouselTrack.style.transform = `translate3d(${position}px, 0, 0)`;
+        
+        const firstSlide = carouselTrack.firstElementChild;
+        if (firstSlide) {
+          // 32px is the gap defined in CSS
+          const slideWidth = firstSlide.offsetWidth + 32; 
+          if (Math.abs(position) >= slideWidth) {
+            position += slideWidth;
+            carouselTrack.appendChild(firstSlide); // Move to end
+            carouselTrack.style.transform = `translate3d(${position}px, 0, 0)`;
           }
-          ticking = false;
-        });
-        ticking = true;
+        }
       }
-    });
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   }
 
   // --- SCROLL REVEAL ---
