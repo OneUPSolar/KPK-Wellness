@@ -111,4 +111,21 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
   });
+
+  // --- WHATSAPP CHATBOT WIDGET ---
+  const chatbotBubble = document.getElementById('chatbotBubble');
+  const chatbotClose = document.getElementById('chatbotClose');
+  
+  if (chatbotBubble && chatbotClose) {
+    // Show the bubble after 5 seconds to grab attention
+    setTimeout(() => {
+      chatbotBubble.classList.add('show');
+    }, 5000);
+
+    // Hide bubble when close button is clicked
+    chatbotClose.addEventListener('click', (e) => {
+      e.preventDefault();
+      chatbotBubble.classList.remove('show');
+    });
+  }
 });
