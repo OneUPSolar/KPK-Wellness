@@ -212,6 +212,16 @@ p { color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; font-size:
 .exp-card--wide { grid-column: 1 / -1; }
 .exp-card--wide img { height: 400px; }
 
+/* ---- PROFILE SOCIALS ---- */
+.profile-socials { display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap; }
+.profile-social-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.85rem; font-weight: 500; color: var(--navy);
+  text-decoration: none; transition: var(--trans);
+}
+.profile-social-link:hover { color: var(--eucalyptus); }
+.profile-social-link .icon { width: 16px; height: 16px; }
+
 /* ---- PHILOSOPHY / THEORY ---- */
 .philosophy-section { background: var(--charcoal); overflow: hidden; }
 .philosophy-grid {
