@@ -20,38 +20,27 @@ document.addEventListener('DOMContentLoaded', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 40);
   });
 
-  // --- IMMERSIVE CAROUSEL ---
-  const carouselTrack = document.querySelector('.carousel-track');
-  if (carouselTrack) {
-    let position = 0;
-    const speed = 0.8; // pixels per frame
+  // --- 3D IMMERSIVE CAROUSEL ---
+  const carousel3d = document.getElementById('heroCarousel3d');
+  if (carousel3d) {
+    let angle = 0;
+    const speed = 0.2; // degrees per frame
     let isHovered = false;
 
-    carouselTrack.addEventListener('mouseenter', () => isHovered = true);
-    carouselTrack.addEventListener('mouseleave', () => isHovered = false);
+    carousel3d.addEventListener('mouseenter', () => isHovered = true);
+    carousel3d.addEventListener('mouseleave', () => isHovered = false);
     // Touch support for pausing
-    carouselTrack.addEventListener('touchstart', () => isHovered = true, {passive: true});
-    carouselTrack.addEventListener('touchend', () => isHovered = false);
+    carousel3d.addEventListener('touchstart', () => isHovered = true, {passive: true});
+    carousel3d.addEventListener('touchend', () => isHovered = false);
 
-    const tick = () => {
+    const tick3d = () => {
       if (!isHovered) {
-        position -= speed;
-        carouselTrack.style.transform = `translate3d(${position}px, 0, 0)`;
-        
-        const firstSlide = carouselTrack.firstElementChild;
-        if (firstSlide) {
-          // 32px is the gap defined in CSS
-          const slideWidth = firstSlide.offsetWidth + 32; 
-          if (Math.abs(position) >= slideWidth) {
-            position += slideWidth;
-            carouselTrack.appendChild(firstSlide); // Move to end
-            carouselTrack.style.transform = `translate3d(${position}px, 0, 0)`;
-          }
-        }
+        angle -= speed;
+        carousel3d.style.transform = `rotateY(${angle}deg)`;
       }
-      requestAnimationFrame(tick);
+      requestAnimationFrame(tick3d);
     };
-    requestAnimationFrame(tick);
+    requestAnimationFrame(tick3d);
   }
 
   // --- SCROLL REVEAL ---

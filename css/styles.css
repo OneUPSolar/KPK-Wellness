@@ -144,33 +144,51 @@ p { color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; font-size:
 .hero-stat-num { font-family: var(--font-head); font-size: 2.4rem; color: #fff; font-weight: 500; line-height: 1; }
 .hero-stat-label { font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; }
 
-/* Carousel Right Side */
+/* Carousel Right Side 3D */
 .hero-split-right {
   position: relative; overflow: hidden; 
-  display: flex; align-items: center; justify-content: flex-start;
-  padding-left: 40px; background: var(--charcoal);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--charcoal);
+  perspective: 1200px;
 }
-.immersive-carousel {
-  width: 100%; height: 80vh; max-height: 900px;
-  overflow: hidden; display: flex; align-items: center;
-  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 90%, transparent);
+.scene {
+  width: 320px;
+  height: 480px;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-5deg); /* Slight downward tilt for better 3D effect */
+  margin-right: 15%; /* Push it slightly left */
 }
-.carousel-track {
-  display: flex; gap: 32px; height: 100%; align-items: center;
-  transition: transform 0.1s linear; will-change: transform;
+.carousel-3d {
+  width: 100%; height: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
 }
-.carousel-slide {
-  flex: 0 0 auto; width: 32vw; height: 100%; max-width: 500px; min-width: 300px;
-  border-radius: var(--radius-lg); overflow: hidden;
-  box-shadow: var(--shadow-lg); transition: transform 0.5s ease;
+.carousel-3d-slide {
+  position: absolute;
+  width: 300px;
+  height: 460px;
+  left: 10px;
+  top: 10px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  /* The radius is ~400px to avoid overlapping edges on an octagon */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
-.carousel-slide img {
+.carousel-3d-slide:nth-child(1) { transform: rotateY(0deg) translateZ(400px); }
+.carousel-3d-slide:nth-child(2) { transform: rotateY(45deg) translateZ(400px); }
+.carousel-3d-slide:nth-child(3) { transform: rotateY(90deg) translateZ(400px); }
+.carousel-3d-slide:nth-child(4) { transform: rotateY(135deg) translateZ(400px); }
+.carousel-3d-slide:nth-child(5) { transform: rotateY(180deg) translateZ(400px); }
+.carousel-3d-slide:nth-child(6) { transform: rotateY(225deg) translateZ(400px); }
+.carousel-3d-slide:nth-child(7) { transform: rotateY(270deg) translateZ(400px); }
+.carousel-3d-slide:nth-child(8) { transform: rotateY(315deg) translateZ(400px); }
+
+.carousel-3d-slide img {
   width: 100%; height: 100%; object-fit: cover;
-  transition: transform 0.8s ease;
 }
-.carousel-slide:hover { transform: scale(0.98); }
-.carousel-slide:hover img { transform: scale(1.05); }
 
 /* ---- EXPERIENCE CARDS ---- */
 .exp-grid {
@@ -398,9 +416,17 @@ footer { background: var(--charcoal); padding: 80px 0 40px; }
   .hero-split-left { padding: 120px 24px 40px; }
   .hero-content h1 { font-size: 2.8rem; }
   .hero-stats { margin-top: 48px; gap: 32px; flex-wrap: wrap; }
-  .hero-split-right { height: 400px; padding-left: 24px; padding-bottom: 40px; }
-  .immersive-carousel { height: 100%; mask-image: linear-gradient(to right, transparent, black 2%, black 95%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 2%, black 95%, transparent); }
-  .carousel-slide { width: 60vw; min-width: 260px; }
+  .hero-split-right { height: 500px; padding: 0; }
+  .scene { width: 240px; height: 360px; margin: 0 auto; transform: rotateX(-5deg) scale(0.85); }
+  .carousel-3d-slide { width: 220px; height: 340px; left: 10px; top: 10px; }
+  .carousel-3d-slide:nth-child(1) { transform: rotateY(0deg) translateZ(300px); }
+  .carousel-3d-slide:nth-child(2) { transform: rotateY(45deg) translateZ(300px); }
+  .carousel-3d-slide:nth-child(3) { transform: rotateY(90deg) translateZ(300px); }
+  .carousel-3d-slide:nth-child(4) { transform: rotateY(135deg) translateZ(300px); }
+  .carousel-3d-slide:nth-child(5) { transform: rotateY(180deg) translateZ(300px); }
+  .carousel-3d-slide:nth-child(6) { transform: rotateY(225deg) translateZ(300px); }
+  .carousel-3d-slide:nth-child(7) { transform: rotateY(270deg) translateZ(300px); }
+  .carousel-3d-slide:nth-child(8) { transform: rotateY(315deg) translateZ(300px); }
   .exp-grid { grid-template-columns: 1fr; }
   .exp-card--wide { grid-column: auto; }
   .exp-card--wide img { height: 300px; }
