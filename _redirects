@@ -1,0 +1,9 @@
+# Cloudflare Pages _redirects
+# Explicit pass-throughs for the /yoga/ section so Cloudflare
+# serves the correct index.html for each subdirectory.
+# Trailing /* ensures assets (CSS, JS, images) resolve correctly too.
+
+/yoga              /yoga/index.html  200
+/yoga/live         /yoga/live/index.html  200
+/yoga/about        /yoga/about/index.html  200
+/yoga/recorded     /yoga/recorded/index.html  200
