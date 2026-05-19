@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Recetas | KPK Wellness Associates — High-Protein Recipes by Chef Karina</title>
+<meta name="description" content="Premium high-protein recipes by Chef Karina Paz Kennedy. Breakfasts, salads, pastas, and desserts with full macros, ingredients, and step-by-step instructions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/recipes.css">
+</head>
+<body class="lang-en">
+
+<!-- UNLOCKED BANNER -->
+<div class="unlocked-banner" id="unlockedBanner">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+  <span lang="en">All recipes unlocked — enjoy your full access!</span>
+  <span lang="es">Todas las recetas desbloqueadas — ¡disfruta tu acceso completo!</span>
+</div>
+
+<!-- NAVBAR -->
+<header class="navbar" id="navbar">
+<div class="container nav-inner">
+  <a href="index.html" class="nav-logo"><span class="nav-logo-main">KPK Wellness</span><span class="nav-logo-sub">Associates</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#experiences" lang="en">Experiences</a><a href="index.html#experiences" lang="es">Experiencias</a></li>
+    <li><a href="recipes.html" lang="en" style="color:var(--navy)">Recipes</a><a href="recipes.html" lang="es" style="color:var(--navy)">Recetas</a></li>
+    <li><a href="index.html#about" lang="en">About</a><a href="index.html#about" lang="es">Acerca</a></li>
+    <li><a href="index.html#contact" lang="en">Contact</a><a href="index.html#contact" lang="es">Contacto</a></li>
+  </ul>
+  <div class="nav-right">
+    <button id="langToggle" class="lang-btn"><span id="lbl-en" class="active">EN</span> | <span id="lbl-es">ES</span></button>
+    <a href="#recipeCta" class="btn btn-primary btn-sm" lang="en">Get All Recipes</a>
+    <a href="#recipeCta" class="btn btn-primary btn-sm" lang="es">Obtener Recetas</a>
+  </div>
+  <button class="nav-mobile-btn" id="mobileMenuBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+</div>
+</header>
+
+<div class="recipe-page">
+
+<!-- HERO -->
+<section class="recipe-hero">
+  <div class="container">
+    <span class="section-label" lang="en">KPK Recipe Collection</span>
+    <span class="section-label" lang="es">Colección de Recetas KPK</span>
+    <h1 lang="en">Premium High-Protein Recipes</h1>
+    <h1 lang="es">Recetas Premium Altas en Proteína</h1>
+    <p lang="en">Chef-crafted recipes with full macros, step-by-step instructions, and costing — designed for real wellness.</p>
+    <p lang="es">Recetas creadas por chefs con macros completos, instrucciones paso a paso y costeo — diseñadas para bienestar real.</p>
+
+    <div class="recipe-stats-strip">
+      <div class="recipe-stat-item">
+        <div class="recipe-stat-num" id="statTotal">—</div>
+        <div class="recipe-stat-label" lang="en">Recipes</div>
+        <div class="recipe-stat-label" lang="es">Recetas</div>
+      </div>
+      <div class="recipe-stat-item">
+        <div class="recipe-stat-num" id="statCategories">4</div>
+        <div class="recipe-stat-label" lang="en">Categories</div>
+        <div class="recipe-stat-label" lang="es">Categorías</div>
+      </div>
+      <div class="recipe-stat-item">
+        <div class="recipe-stat-num" id="statFree">—</div>
+        <div class="recipe-stat-label" lang="en">Free Recipes</div>
+        <div class="recipe-stat-label" lang="es">Recetas Gratis</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORY FILTERS -->
+<div class="recipe-filters">
+  <div class="container">
+    <div class="filter-pills">
+      <button class="filter-pill active" data-category="all">
+        <span lang="en">All Recipes</span><span lang="es">Todas</span>
+      </button>
+      <button class="filter-pill" data-category="desayunos">
+        <span class="pill-emoji">🍳</span>
+        <span lang="en">Breakfasts</span><span lang="es">Desayunos</span>
+      </button>
+      <button class="filter-pill" data-category="ensaladas">
+        <span class="pill-emoji">🥗</span>
+        <span lang="en">Salads</span><span lang="es">Ensaladas</span>
+      </button>
+      <button class="filter-pill" data-category="pastas">
+        <span class="pill-emoji">🍝</span>
+        <span lang="en">Pastas</span><span lang="es">Pastas</span>
+      </button>
+      <button class="filter-pill" data-category="postres">
+        <span class="pill-emoji">🍰</span>
+        <span lang="en">Desserts</span><span lang="es">Postres</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- RECIPE GRID -->
+<section class="recipe-grid-section">
+  <div class="container">
+    <!-- Loading State -->
+    <div class="recipe-loading" id="recipeLoading">
+      <div class="recipe-spinner"></div>
+      <p lang="en">Loading recipes...</p>
+      <p lang="es">Cargando recetas...</p>
+    </div>
+
+    <!-- Recipe Grid -->
+    <div class="recipe-grid" id="recipeGrid" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="recipe-cta-banner" id="recipeCta">
+  <div class="container">
+    <span class="section-label" lang="en">Full Access</span>
+    <span class="section-label" lang="es">Acceso Completo</span>
+    <h2 lang="en">Unlock all recipes instantly.</h2>
+    <h2 lang="es">Desbloquea todas las recetas al instante.</h2>
+    <p lang="en">Get lifetime access to our entire recipe collection — new recipes added every month.</p>
+    <p lang="es">Obtén acceso de por vida a toda nuestra colección de recetas — nuevas recetas cada mes.</p>
+
+    <div>
+      <a href="https://wa.me/526643640788?text=Hola!%20Quiero%20comprar%20el%20acceso%20a%20las%20recetas%20de%20KPK%20Wellness." target="_blank" class="btn btn-primary" style="background: var(--eucalyptus); padding: 20px 48px; font-size: 1rem;" lang="en">
+        Buy Access via WhatsApp
+      </a>
+      <a href="https://wa.me/526643640788?text=Hola!%20Quiero%20comprar%20el%20acceso%20a%20las%20recetas%20de%20KPK%20Wellness." target="_blank" class="btn btn-primary" style="background: var(--eucalyptus); padding: 20px 48px; font-size: 1rem;" lang="es">
+        Comprar Acceso por WhatsApp
+      </a>
+    </div>
+
+    <p style="margin-top: 16px; font-size: 0.8rem; color: rgba(255,255,255,0.4);" lang="en">Already have an access code? <a href="#" onclick="openPasswordModal(); return false;" style="color: var(--eucalyptus); text-decoration: underline;">Enter it here</a></p>
+    <p style="margin-top: 16px; font-size: 0.8rem; color: rgba(255,255,255,0.4);" lang="es">¿Ya tienes un código de acceso? <a href="#" onclick="openPasswordModal(); return false;" style="color: var(--eucalyptus); text-decoration: underline;">Ingrésalo aquí</a></p>
+
+    <div class="cta-features">
+      <div class="cta-feature">
+        <div class="cta-feature-icon">🥑</div>
+        <h4 lang="en">Full Ingredients</h4><h4 lang="es">Ingredientes</h4>
+        <p lang="en">Exact quantities and measurements</p><p lang="es">Cantidades y medidas exactas</p>
+      </div>
+      <div class="cta-feature">
+        <div class="cta-feature-icon">📊</div>
+        <h4 lang="en">Complete Macros</h4><h4 lang="es">Macros Completos</h4>
+        <p lang="en">Calories, protein, fats, carbs</p><p lang="es">Calorías, proteína, grasas, carbos</p>
+      </div>
+      <div class="cta-feature">
+        <div class="cta-feature-icon">👩‍🍳</div>
+        <h4 lang="en">Step by Step</h4><h4 lang="es">Paso a Paso</h4>
+        <p lang="en">Easy-to-follow instructions</p><p lang="es">Instrucciones fáciles de seguir</p>
+      </div>
+      <div class="cta-feature">
+        <div class="cta-feature-icon">💰</div>
+        <h4 lang="en">Cost Breakdown</h4><h4 lang="es">Costeo</h4>
+        <p lang="en">Know exactly what you'll spend</p><p lang="es">Sabe exactamente cuánto gastarás</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>KPK Wellness</h3>
+        <p lang="en">Premium wellness hospitality rooted in Baja California, connected to San Diego.</p>
+        <p lang="es">Hospitalidad de bienestar premium arraigada en Baja California, conectada con San Diego.</p>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/karinapazk/" class="social-link" aria-label="Instagram" target="_blank">📷</a>
+          <a href="https://wa.me/526643640788" class="social-link" aria-label="WhatsApp" target="_blank">💬</a>
+          <a href="mailto:info@kpkwellness.com" class="social-link" aria-label="Email">✉</a>
+        </div>
+        <div class="footer-tagline">
+          <span lang="en">Eat well. Move with intention. Live beautifully.</span>
+          <span lang="es">Come mejor. Muévete con intención. Vive bonito.</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4 lang="en">Recipes</h4><h4 lang="es">Recetas</h4>
+        <ul>
+          <li><a href="recipes.html" lang="en">All Recipes</a><a href="recipes.html" lang="es">Todas las Recetas</a></li>
+          <li><a href="ebook.html" lang="en">E-Book</a><a href="ebook.html" lang="es">E-Book</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 lang="en">About</h4><h4 lang="es">Acerca</h4>
+        <ul>
+          <li><a href="index.html#about" lang="en">Our Team</a><a href="index.html#about" lang="es">Equipo</a></li>
+          <li><a href="index.html#philosophy" lang="en">Philosophy</a><a href="index.html#philosophy" lang="es">Filosofía</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 lang="en">Contact</h4><h4 lang="es">Contacto</h4>
+        <ul>
+          <li><a href="mailto:info@kpkwellness.com">info@kpkwellness.com</a></li>
+          <li><a href="https://wa.me/526643640788" target="_blank">WhatsApp</a></li>
+          <li><a href="https://www.instagram.com/karinapazk/" target="_blank">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 KPK Wellness Associates · Tijuana + San Diego</p>
+      <div class="footer-legal">
+        <a href="#" lang="en">Privacy</a><a href="#" lang="es">Privacidad</a>
+        <a href="#" lang="en">Terms</a><a href="#" lang="es">Términos</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div>
+
+<!-- PASSWORD MODAL -->
+<div class="modal-overlay" id="passwordModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closePasswordModal()">×</button>
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+    </div>
+    <h2 lang="en">Enter Access Code</h2>
+    <h2 lang="es">Ingresa tu Código de Acceso</h2>
+    <p lang="en">Enter the access code you received after purchase to unlock all recipes.</p>
+    <p lang="es">Ingresa el código de acceso que recibiste después de tu compra para desbloquear todas las recetas.</p>
+
+    <div class="modal-input-group">
+      <input type="text" class="modal-input" id="accessCodeInput" placeholder="XXXX-XXXX" autocomplete="off" autofocus>
+    </div>
+    <p class="modal-error" id="modalError"></p>
+    <button class="modal-submit" id="modalSubmitBtn" onclick="verifyAccessCode()">
+      <span lang="en">Unlock Recipes</span>
+      <span lang="es">Desbloquear Recetas</span>
+    </button>
+
+    <div class="modal-footer">
+      <p lang="en">Don't have a code? <a href="https://wa.me/526643640788?text=Hola!%20Quiero%20comprar%20el%20acceso%20a%20las%20recetas." target="_blank">Purchase via WhatsApp</a></p>
+      <p lang="es">¿No tienes código? <a href="https://wa.me/526643640788?text=Hola!%20Quiero%20comprar%20el%20acceso%20a%20las%20recetas." target="_blank">Comprar por WhatsApp</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- RECIPE DETAIL MODAL -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-card"></div>
+</div>
+
+<!-- TOAST -->
+<div class="recipe-toast" id="recipeToast"></div>
+
+<script src="js/main.js"></script>
+<script src="js/recipes.js"></script>
+</body>
+</html>

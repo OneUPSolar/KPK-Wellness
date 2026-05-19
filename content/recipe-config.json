@@ -1,0 +1,14 @@
+{
+  "accessCodeHash": "",
+  "freeRecipes": [
+    "avocado-toast-huevo",
+    "molletes-carne-seca",
+    "ensalada-aguacate-tomate-cebolla"
+  ],
+  "categories": {
+    "desayunos": { "emoji": "🍳", "en": "Breakfasts", "es": "Desayunos" },
+    "ensaladas": { "emoji": "🥗", "en": "Salads", "es": "Ensaladas" },
+    "pastas": { "emoji": "🍝", "en": "Pastas", "es": "Pastas" },
+    "postres": { "emoji": "🍰", "en": "Desserts", "es": "Postres" }
+  }
+}

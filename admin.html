@@ -90,6 +90,42 @@ h1,h2,h3{font-family:'Playfair Display',serif}
 
 /* Status */
 .status-dot{width:8px;height:8px;border-radius:50%;background:var(--sage);display:inline-block;margin-right:6px}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-left:24px}
+.tab-link{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:none;padding:8px 20px;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.tab-link.active,.tab-link:hover{background:rgba(255,255,255,.2);color:#fff}
+
+/* Manager Panel */
+.manager-panel{padding:32px;overflow-y:auto;max-height:calc(100vh - 56px)}
+.manager-panel h3{font-size:1.3rem;margin-bottom:20px;color:var(--cacao)}
+.manager-section{margin-bottom:32px;background:#fff;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+.manager-section h4{font-size:.85rem;font-weight:700;color:var(--clay);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.recipe-toggle-list{list-style:none}
+.recipe-toggle-item{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--sand)}
+.recipe-toggle-item:last-child{border-bottom:none}
+.recipe-toggle-name{font-weight:600;font-size:.9rem;color:var(--cacao)}
+.recipe-toggle-cat{font-size:.75rem;color:#999;text-transform:uppercase;letter-spacing:.5px}
+
+/* Toggle Switch */
+.toggle-switch{position:relative;width:48px;height:26px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:#ddd;border-radius:26px;transition:.3s}
+.toggle-slider:before{content:'';position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+.toggle-switch input:checked + .toggle-slider{background:var(--sage)}
+.toggle-switch input:checked + .toggle-slider:before{transform:translateX(22px)}
+
+/* Access Code */
+.access-code-group{display:flex;gap:12px;align-items:flex-end}
+.access-code-group input{flex:1}
+.access-code-group button{white-space:nowrap}
+
+/* Bulk actions */
+.bulk-actions{display:flex;gap:8px;margin-bottom:16px}
+.bulk-btn{background:var(--sand);border:none;padding:8px 16px;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;color:var(--cacao)}
+.bulk-btn:hover{background:var(--clay);color:#fff}
+.manager-info{background:rgba(143,188,143,.1);border:1px solid var(--sage);border-radius:8px;padding:16px;font-size:.85rem;color:var(--cacao);margin-bottom:20px}
+.manager-info strong{color:var(--clay)}
 </style>
 </head>
 <body>
@@ -109,7 +145,13 @@ h1,h2,h3{font-family:'Playfair Display',serif}
 <!-- MAIN APP -->
 <div class="app" id="app">
   <div class="topbar">
-    <h2>🌿 KPK Recetas Admin</h2>
+    <div style="display:flex;align-items:center">
+      <h2>🌿 KPK Recetas Admin</h2>
+      <div class="tabs">
+        <button class="tab-link active" onclick="switchTab('create')">📝 Crear</button>
+        <button class="tab-link" onclick="switchTab('manage')">🔐 Gestionar</button>
+      </div>
+    </div>
     <div class="topbar-right">
       <span><span class="status-dot"></span><span id="userEmail">Conectada</span></span>
       <button onclick="logout()">Salir</button>
@@ -258,6 +300,58 @@ dificultad: facil
 
 # (nombre de la receta)
 ...</pre>
+    </div>
+  </div>
+
+  <!-- RECIPE MANAGER TAB -->
+  <div class="main" id="manageTab" style="display:none">
+    <div class="manager-panel">
+      <h3>🔐 Gestionar Acceso a Recetas</h3>
+
+      <div class="manager-info">
+        <strong>¿Cómo funciona?</strong> Las recetas marcadas como "Gratis" son visibles para todos. Las demás requieren un código de acceso que das a los clientes después del pago.
+      </div>
+
+      <div class="manager-section">
+        <h4>Código de Acceso de Clientes</h4>
+        <p style="font-size:.85rem;color:#888;margin-bottom:12px">Este es el código que le das a los clientes después de que paguen. Se verifica contra la variable RECIPE_ACCESS_CODE en el Worker.</p>
+        <div class="field">
+          <label>Código actual (solo lectura — se cambia en Cloudflare Worker)</label>
+          <input type="text" id="currentAccessCode" placeholder="Configurado en Cloudflare Worker env vars" disabled style="background:#f5f5f5">
+        </div>
+      </div>
+
+      <div class="manager-section">
+        <h4>Recetas Gratis vs Bloqueadas</h4>
+        <div class="bulk-actions">
+          <button class="bulk-btn" onclick="bulkToggle(true)">✅ Desbloquear Todas</button>
+          <button class="bulk-btn" onclick="bulkToggle(false)">🔒 Bloquear Todas</button>
+          <button class="bulk-btn" onclick="saveRecipeConfig()" style="background:var(--clay);color:#fff">💾 Guardar Cambios</button>
+        </div>
+        <ul class="recipe-toggle-list" id="recipeToggleList">
+          <li style="padding:20px;text-align:center;color:#999">Cargando recetas...</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Preview/Status Panel -->
+    <div class="preview-panel">
+      <h3>📊 Estado Actual</h3>
+      <div id="managerStatus" style="margin-top:16px">
+        <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:20px;margin-bottom:16px">
+          <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);margin-bottom:8px">Total Recetas</div>
+          <div id="mgrTotalCount" style="font-size:2rem;font-weight:700">—</div>
+        </div>
+        <div style="background:rgba(143,188,143,.15);border-radius:8px;padding:20px;margin-bottom:16px">
+          <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);margin-bottom:8px">Recetas Gratis</div>
+          <div id="mgrFreeCount" style="font-size:2rem;font-weight:700;color:#8FBC8F">—</div>
+        </div>
+        <div style="background:rgba(160,82,45,.15);border-radius:8px;padding:20px;margin-bottom:16px">
+          <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);margin-bottom:8px">Recetas Bloqueadas</div>
+          <div id="mgrLockedCount" style="font-size:2rem;font-weight:700;color:var(--clay)">—</div>
+        </div>
+      </div>
+      <pre id="configPreview" style="margin-top:24px;white-space:pre-wrap;word-wrap:break-word;font-family:'Courier New',monospace;font-size:.8rem;line-height:1.6;background:rgba(0,0,0,.25);padding:16px;border-radius:8px;border:1px solid rgba(255,255,255,.1)"></pre>
     </div>
   </div>
 </div>

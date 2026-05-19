@@ -276,3 +276,209 @@ function showToast(msg, isError) {
   t.className = 'toast show' + (isError ? ' error' : '');
   setTimeout(() => t.className = 'toast', 3500);
 }
+
+/* ══════════════════════════════════════════
+   RECIPE MANAGER TAB
+   ══════════════════════════════════════════ */
+
+const GITHUB_API_URL = 'https://api.github.com';
+const GITHUB_REPO = 'OneUPSolar/KPK-Wellness';
+let allRecipeIds = [];
+let recipeConfigData = null;
+
+/* ── Tab Switching ────────────────────── */
+function switchTab(tab) {
+  const createTab = document.querySelector('.main:not(#manageTab)');
+  const manageTab = document.getElementById('manageTab');
+  const tabLinks = document.querySelectorAll('.tab-link');
+
+  tabLinks.forEach(t => t.classList.remove('active'));
+
+  if (tab === 'manage') {
+    createTab.style.display = 'none';
+    manageTab.style.display = 'grid';
+    tabLinks[1].classList.add('active');
+    loadRecipeManager();
+  } else {
+    createTab.style.display = 'grid';
+    manageTab.style.display = 'none';
+    tabLinks[0].classList.add('active');
+  }
+}
+
+/* ── Load Recipe Manager Data ─────────── */
+async function loadRecipeManager() {
+  const list = document.getElementById('recipeToggleList');
+  list.innerHTML = '<li style="padding:20px;text-align:center;color:#999">Cargando recetas...</li>';
+
+  try {
+    // Load recipe config from API
+    const configRes = await fetch(`${API_URL}/recipe-config`, {
+      headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
+    });
+    if (configRes.ok) {
+      recipeConfigData = await configRes.json();
+    } else {
+      // Fallback: load from GitHub directly
+      const ghRes = await fetch(
+        `https://raw.githubusercontent.com/${GITHUB_REPO}/main/content/recipe-config.json?t=${Date.now()}`
+      );
+      recipeConfigData = ghRes.ok ? await ghRes.json() : { freeRecipes: [], categories: {} };
+    }
+
+    // Load all recipe file IDs
+    allRecipeIds = [];
+    const categories = ['desayunos', 'ensaladas', 'pastas', 'postres'];
+
+    for (const cat of categories) {
+      try {
+        const res = await fetch(
+          `${GITHUB_API_URL}/repos/${GITHUB_REPO}/contents/content/recetas/${cat}`
+        );
+        if (!res.ok) continue;
+        const files = await res.json();
+        const mdFiles = files.filter(f => f.name.endsWith('.md'));
+
+        for (const file of mdFiles) {
+          const id = file.name.replace('.md', '');
+          // Read the file to get the recipe name
+          let name = id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          try {
+            const mdRes = await fetch(file.download_url);
+            if (mdRes.ok) {
+              const md = await mdRes.text();
+              const titleMatch = md.match(/^# (.+)/m);
+              if (titleMatch) name = titleMatch[1].trim();
+            }
+          } catch(e) {}
+
+          allRecipeIds.push({ id, name, category: cat });
+        }
+      } catch(e) {}
+    }
+
+    renderRecipeToggles();
+    updateManagerStats();
+  } catch(e) {
+    list.innerHTML = '<li style="padding:20px;text-align:center;color:#c0392b">Error cargando recetas</li>';
+  }
+}
+
+/* ── Render Toggle List ───────────────── */
+function renderRecipeToggles() {
+  const list = document.getElementById('recipeToggleList');
+  const freeSet = new Set(recipeConfigData?.freeRecipes || []);
+
+  if (allRecipeIds.length === 0) {
+    list.innerHTML = '<li style="padding:20px;text-align:center;color:#999">No se encontraron recetas</li>';
+    return;
+  }
+
+  const catEmojis = { desayunos: '🍳', ensaladas: '🥗', pastas: '🍝', postres: '🍰' };
+
+  list.innerHTML = allRecipeIds.map(r => `
+    <li class="recipe-toggle-item">
+      <div>
+        <div class="recipe-toggle-name">${r.name}</div>
+        <div class="recipe-toggle-cat">${catEmojis[r.category] || ''} ${r.category}</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" data-recipe-id="${r.id}" ${freeSet.has(r.id) ? 'checked' : ''} onchange="onToggleChange()">
+        <span class="toggle-slider"></span>
+      </label>
+    </li>
+  `).join('');
+}
+
+/* ── Toggle Change Handler ────────────── */
+function onToggleChange() {
+  updateManagerStats();
+  updateConfigPreview();
+}
+
+/* ── Update Stats ─────────────────────── */
+function updateManagerStats() {
+  const toggles = document.querySelectorAll('#recipeToggleList input[type="checkbox"]');
+  const total = toggles.length;
+  const free = Array.from(toggles).filter(t => t.checked).length;
+  const locked = total - free;
+
+  document.getElementById('mgrTotalCount').textContent = total;
+  document.getElementById('mgrFreeCount').textContent = free;
+  document.getElementById('mgrLockedCount').textContent = locked;
+
+  updateConfigPreview();
+}
+
+/* ── Update Config Preview ────────────── */
+function updateConfigPreview() {
+  const toggles = document.querySelectorAll('#recipeToggleList input[type="checkbox"]');
+  const freeRecipes = Array.from(toggles)
+    .filter(t => t.checked)
+    .map(t => t.dataset.recipeId);
+
+  const preview = {
+    freeRecipes,
+    categories: recipeConfigData?.categories || {
+      desayunos: { emoji: '🍳', en: 'Breakfasts', es: 'Desayunos' },
+      ensaladas: { emoji: '🥗', en: 'Salads', es: 'Ensaladas' },
+      pastas: { emoji: '🍝', en: 'Pastas', es: 'Pastas' },
+      postres: { emoji: '🍰', en: 'Desserts', es: 'Postres' }
+    }
+  };
+
+  const el = document.getElementById('configPreview');
+  if (el) el.textContent = JSON.stringify(preview, null, 2);
+}
+
+/* ── Bulk Toggle ──────────────────────── */
+function bulkToggle(checked) {
+  document.querySelectorAll('#recipeToggleList input[type="checkbox"]').forEach(t => {
+    t.checked = checked;
+  });
+  updateManagerStats();
+}
+
+/* ── Save Recipe Config ───────────────── */
+async function saveRecipeConfig() {
+  const toggles = document.querySelectorAll('#recipeToggleList input[type="checkbox"]');
+  const freeRecipes = Array.from(toggles)
+    .filter(t => t.checked)
+    .map(t => t.dataset.recipeId);
+
+  const config = {
+    freeRecipes,
+    categories: recipeConfigData?.categories || {
+      desayunos: { emoji: '🍳', en: 'Breakfasts', es: 'Desayunos' },
+      ensaladas: { emoji: '🥗', en: 'Salads', es: 'Ensaladas' },
+      pastas: { emoji: '🍝', en: 'Pastas', es: 'Pastas' },
+      postres: { emoji: '🍰', en: 'Desserts', es: 'Postres' }
+    }
+  };
+
+  try {
+    const res = await fetch(`${API_URL}/recipe-config`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${AUTH_TOKEN}`
+      },
+      body: JSON.stringify(config)
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to save');
+    }
+
+    recipeConfigData = config;
+    showToast('✅ Configuración guardada exitosamente');
+  } catch(e) {
+    if (e.message.includes('No autorizada')) {
+      showToast('Sesión expirada — inicia sesión de nuevo', true);
+      logout();
+    } else {
+      showToast(`Error: ${e.message}`, true);
+    }
+  }
+}
