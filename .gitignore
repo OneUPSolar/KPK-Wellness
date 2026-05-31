@@ -1,3 +1,5 @@
-
 # Local Claude Code preview/dev config
 .claude/
+
+# Raw event photos
+assets/events/18-junio/raw_photos/
