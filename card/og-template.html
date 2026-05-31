@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1200px;height:630px;overflow:hidden}
+  body{position:relative;font-family:'Inter',sans-serif;background:#1E2A45}
+  .half{position:absolute;top:0;height:100%;width:50%;background-size:cover}
+  .chef{left:0;background-image:url('../assets/karina-kitchen-navy.png');background-position:center 14%}
+  .yoga{right:0;background-image:url('../assets/team-karina.png');background-position:center 14%}
+  /* darken edges so the center panel pops */
+  .scrim{position:absolute;inset:0;background:
+     radial-gradient(60% 90% at 50% 50%, rgba(20,28,48,.92) 0%, rgba(20,28,48,.70) 38%, rgba(20,28,48,.18) 70%, rgba(20,28,48,0) 100%),
+     linear-gradient(90deg, rgba(20,28,48,.55) 0%, rgba(20,28,48,0) 22%, rgba(20,28,48,0) 78%, rgba(20,28,48,.55) 100%)}
+  .panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff}
+  .leaf{width:54px;height:54px;margin-bottom:14px;opacity:.95}
+  .word{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:92px;line-height:.98;letter-spacing:.01em;text-shadow:0 4px 30px rgba(0,0,0,.5)}
+  .rule{width:70px;height:2px;background:#C9B6A0;margin:22px 0 18px}
+  .name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:38px;color:rgba(255,255,255,.96)}
+  .sub{margin-top:14px;font-size:21px;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.82);font-weight:500}
+  .url{position:absolute;bottom:34px;left:0;right:0;text-align:center;font-size:19px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:600}
+</style>
+</head>
+<body>
+  <div class="half chef"></div>
+  <div class="half yoga"></div>
+  <div class="scrim"></div>
+  <div class="panel">
+    <svg class="leaf" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21c-4 0-8-3-8-9 6 0 9 1 9 9z"/><path d="M13 21c4 0 8-3 8-9-6 0-9 1-9 9z"/><path d="M12 21V9"/></svg>
+    <div class="word">KPK&nbsp;Wellness</div>
+    <div class="rule"></div>
+    <div class="name">Karina Paz Kennedy</div>
+    <div class="sub">Chef · Yoga · Wellness</div>
+  </div>
+  <div class="url">kpk.associates</div>
+</body>
+</html>
