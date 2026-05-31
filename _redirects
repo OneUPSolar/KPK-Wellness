@@ -11,5 +11,6 @@
 # Digital business card (installable PWA)
 /card              /card/index.html  200
 # Vanity links for Karina's contact card
+/karina-contact-card  /card/  302
 /karina-paz-contact   /card/  302
 /karina               /card/  302
