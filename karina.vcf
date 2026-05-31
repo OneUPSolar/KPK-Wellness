@@ -1,0 +1,13 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Kennedy;Karina;Paz;;
+FN:Karina Paz Kennedy
+ORG:KPK Wellness Associates
+TITLE:Chef & Wellness Host
+TEL;TYPE=CELL,VOICE:+526643640788
+TEL;TYPE=WHATSAPP:+526643640788
+EMAIL;TYPE=PREF,INTERNET:info@kpkwellness.com
+URL:https://kpk.associates
+URL:https://instagram.com/karinapazk
+PHOTO;TYPE=PNG:https://kpk.associates/assets/team-karina.png
+END:VCARD

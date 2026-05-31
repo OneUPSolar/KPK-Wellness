@@ -71,13 +71,14 @@ async function loadRecipes() {
         const files = await apiRes.json();
         const mdFiles = files.filter(f => f.name.endsWith('.md'));
         const imgFiles = files.filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f.name));
+        const audioFiles = files.filter(f => /\.(mp3|wav|ogg)$/i.test(f.name));
 
         for (const file of mdFiles) {
           try {
             const mdRes = await fetch(file.download_url);
             if (!mdRes.ok) continue;
             const mdContent = await mdRes.text();
-            const recipe = parseRecipeMarkdown(mdContent, cat, imgFiles);
+            const recipe = parseRecipeMarkdown(mdContent, cat, imgFiles, audioFiles);
             if (recipe) allRecipes.push(recipe);
           } catch (e) { /* skip individual recipe errors */ }
         }
@@ -95,7 +96,7 @@ async function loadRecipes() {
 }
 
 /* ── Parse Recipe Markdown ────────────── */
-function parseRecipeMarkdown(md, category, availableImages) {
+function parseRecipeMarkdown(md, category, availableImages, availableAudios) {
   // Parse frontmatter
   const fmMatch = md.match(/^---\n([\s\S]*?)\n---/);
   if (!fmMatch) return null;
@@ -149,6 +150,18 @@ function parseRecipeMarkdown(md, category, availableImages) {
     }
   }
 
+  // Find matching audio
+  let audioUrl = null;
+  if (availableAudios) {
+    const matchingAudio = availableAudios.find(f => {
+      const baseName = f.name.replace(/\.(mp3|wav|ogg)$/i, '');
+      return baseName.toLowerCase().includes(id.toLowerCase().split('-')[0]);
+    });
+    if (matchingAudio) {
+      audioUrl = matchingAudio.download_url;
+    }
+  }
+
   // Determine if free
   const isFree = recipeConfig?.freeRecipes?.includes(id) || false;
 
@@ -170,6 +183,7 @@ function parseRecipeMarkdown(md, category, availableImages) {
     costoTotal: costoTotalMatch ? costoTotalMatch[1] : frontmatter.costo || '',
     costoPorcion: costoPorcionMatch ? costoPorcionMatch[1].trim() : '',
     imageUrl,
+    audioUrl,
     isFree
   };
 }
@@ -297,6 +311,8 @@ function buildRecipeCard(recipe) {
             </div>
             <span class="lock-text" lang="en">Unlock to View</span>
             <span class="lock-text" lang="es">Desbloquear</span>
+            <span class="lock-text" style="font-size: 0.7rem; text-decoration: underline; margin-top: 4px; opacity: 0.8;" lang="en">Buy Access</span>
+            <span class="lock-text" style="font-size: 0.7rem; text-decoration: underline; margin-top: 4px; opacity: 0.8;" lang="es">Comprar Acceso</span>
           </div>
         ` : ''}
       </div>
@@ -383,6 +399,14 @@ function showRecipeDetail(recipe) {
         $${recipe.costoTotal || '—'} MXN
       </div>
     </div>
+
+    ${recipe.audioUrl ? `
+      <div class="detail-audio" style="margin: 20px; text-align: center;">
+        <h4 style="margin-bottom: 8px; font-size: 0.9rem; color: var(--navy); opacity: 0.8;" lang="en">Listen to the Recipe</h4>
+        <h4 style="margin-bottom: 8px; font-size: 0.9rem; color: var(--navy); opacity: 0.8;" lang="es">Escucha la Receta</h4>
+        <audio controls src="${recipe.audioUrl}" style="width: 100%; border-radius: 30px;"></audio>
+      </div>
+    ` : ''}
 
     <div class="detail-content">
       ${recipe.utensilios.length ? `

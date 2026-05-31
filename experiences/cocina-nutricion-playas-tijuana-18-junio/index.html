@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Taller de Cocina Saludable y Nutrición en Playas de Tijuana | KPK Wellness</title>
+<meta name="description" content="Experiencia presencial de cocina saludable y nutrición práctica en Playas de Tijuana con Karina Paz Kennedy y Linda Cardona. Cupo limitado para el 18 de junio.">
+<meta name="keywords" content="cocina saludable Tijuana, clase de nutrición Tijuana, taller de cocina Playas de Tijuana, KPK Wellness, Karina Paz Kennedy, Linda Cardona, wellness Tijuana, cursos de cocina saludable, nutrición práctica">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Cocina saludable + nutrición práctica en Playas de Tijuana">
+<meta property="og:description" content="Una experiencia presencial con Karina Paz Kennedy y Linda Cardona. Aprende las bases de la nutrición mientras cocinas platillos reales.">
+<meta property="og:image" content="../../assets/events/18-junio/hero.png">
+<meta property="og:type" content="website">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/event.css">
+
+<style>
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.menu-section {background: var(--warm-white); padding: 80px 0;}
+.menu-item-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-bottom: 64px;}
+.menu-item-grid:last-child {margin-bottom: 0;}
+.menu-item-grid.reverse .dish-img {order: -1;}
+@media(max-width:768px){
+  .menu-item-grid {grid-template-columns: 1fr; gap: 32px; margin-bottom: 48px;}
+  .menu-item-grid.reverse .dish-img {order: 0;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="ev-nav" id="evNav">
+  <div class="container">
+    <a href="../../index.html" class="ev-nav-logo">KPK Wellness<span>Associates</span></a>
+    <a href="#registro" class="ev-nav-cta">Reservar mi lugar</a>
+  </div>
+</nav>
+
+<!-- 1. HERO -->
+<section class="ev-hero">
+  <div class="container">
+    <div class="ev-hero-inner">
+      <div class="reveal">
+        <span class="ev-hero-label">Taller Presencial · 18 de Junio</span>
+        <h1>Cocina saludable + nutrición práctica en Playas de Tijuana</h1>
+        <p>Una experiencia presencial con Karina Paz Kennedy y Linda Cardona para aprender las bases de la nutrición mientras cocinas platillos reales.</p>
+        <div class="ev-hero-meta">
+          <span class="ev-hero-meta-item"><span class="icon">📅</span> 18 de junio</span>
+          <span class="ev-hero-meta-item"><span class="icon">🕐</span> 6:00pm – 9:00pm</span>
+          <span class="ev-hero-meta-item"><span class="icon">📍</span> Playas de Tijuana</span>
+          <span class="ev-hero-meta-item"><span class="icon">🪑</span> Cupo limitado</span>
+        </div>
+        <div class="ev-hero-btns">
+          <a href="#registro" class="btn-primary">Reservar mi lugar</a>
+          <button class="btn-wa" onclick="openWhatsApp()">💬 Enviar WhatsApp</button>
+        </div>
+        <p class="ev-hero-trust">Clase presencial · Cocina + nutrición · Grupo reducido</p>
+      </div>
+      <div class="ev-hero-img reveal">
+        <img src="../../assets/events/18-junio/hero.png" alt="Cocina saludable en Playas de Tijuana">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. EVENT OVERVIEW -->
+<section class="ev-section ev-section--white" id="overview">
+  <div class="container center">
+    <span class="ev-section-label reveal">La Experiencia</span>
+    <h2 class="reveal">Una clase para aprender, cocinar y disfrutar</h2>
+    <p class="lead reveal">Este taller combina teoría y práctica en una experiencia íntima y guiada. Primero aprenderás conceptos clave de nutrición y macronutrientes. Después pasarás a la cocina para preparar platillos saludables, reales y fáciles de integrar a tu vida diaria.</p>
+    <div class="feature-grid">
+      <div class="feature-card reveal">
+        <div class="icon">📚</div>
+        <h3>Aprende las bases</h3>
+        <p>Nutrición práctica, macronutrientes y composición de platillos.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="icon">👩‍🍳</div>
+        <h3>Cocina con guía</h3>
+        <p>Preparación paso a paso con una chef con más de 20 años de experiencia.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="icon">🌿</div>
+        <h3>Llévate herramientas reales</h3>
+        <p>Ideas, estructura y material para aplicar lo aprendido en casa.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. HOSTS -->
+<section class="ev-section" id="hosts">
+  <div class="container">
+    <div class="center">
+      <span class="ev-section-label reveal">Quiénes Somos</span>
+      <h2 class="reveal">Tus anfitrionas</h2>
+    </div>
+    <div class="hosts-grid">
+      <div class="host-card reveal">
+        <img src="../../assets/events/18-junio/karina.jpg" alt="Karina Paz Kennedy" loading="lazy">
+        <div class="host-card-body">
+          <h3>Karina Paz Kennedy</h3>
+          <span class="title">Chef / Host culinaria</span>
+          <p>Karina Paz Kennedy es chef con más de 20 años de experiencia en arte culinaria. Su estilo combina técnica, sabor y una forma cálida de enseñar cocina práctica y saludable.</p>
+          <a href="https://www.instagram.com/karinapazk/" target="_blank" rel="noopener" class="ig-card">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+            <span>@karinapazk</span>
+          </a>
+        </div>
+      </div>
+      <div class="host-card reveal">
+        <img src="../../assets/events/18-junio/linda.png" alt="Linda Cardona" loading="lazy">
+        <div class="host-card-body">
+          <h3>Linda Cardona</h3>
+          <span class="title">Nutrióloga certificada · Nutrición funcional e integrativa</span>
+          <p>Linda Cardona es nutrióloga certificada por el Colegio Mexicano de Nutriólogos con más de 16 años de práctica clínica y más de 10,000 pacientes atendidos. Especialista en enfermedades crónicas y nutrición funcional e integrativa.</p>
+          <a href="https://www.instagram.com/nutriologa_lindacardona/" target="_blank" rel="noopener" class="ig-card">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+            <span>@nutriologa_lindacardona</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <p class="hosts-collab reveal">Karina y Linda han trabajado juntas por años creando experiencias donde la comida, la educación y el bienestar se encuentran de forma natural.</p>
+  </div>
+</section>
+
+<!-- 4. WHAT YOU'LL LEARN -->
+<section class="ev-section ev-section--sand" id="aprender">
+  <div class="container center">
+    <span class="ev-section-label reveal">Contenido del Taller</span>
+    <h2 class="reveal">Qué vas a aprender</h2>
+    <ul class="checklist reveal">
+      <li>Bases reales de nutrición</li>
+      <li>Qué son los macronutrientes y cómo aplicarlos</li>
+      <li>Cómo armar platillos balanceados</li>
+      <li>Ideas para cocinar saludable sin complicarte</li>
+      <li>Técnicas básicas de preparación y emplatado</li>
+      <li>Cómo hacer que la comida saludable sepa bien y se vea bien</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 5. MENU / PRACTICAL -->
+<section class="menu-section" id="plato">
+  <div class="container">
+    <div class="center reveal" style="margin-bottom: 56px;">
+      <span class="ev-section-label">De la Teoría al Plato</span>
+      <h2>El Menú de la Experiencia</h2>
+      <p class="lead">Aprenderás a cocinar y montar un menú completo de restaurante premium, diseñado para nutrir tu cuerpo con el balance ideal de macros.</p>
+    </div>
+
+    <!-- Dish 1: Main Course & Salad -->
+    <div class="menu-item-grid reveal">
+      <div>
+        <span class="ev-section-label">Plato Fuerte & Ensalada</span>
+        <h3 style="font-family:'Playfair Display',serif; font-size:1.8rem; margin: 8px 0 16px;">Salmón Glaseado con Miel y Paprika & Ensalada Wedge</h3>
+        <p style="font-size: 1.05rem; margin-bottom: 16px; color: var(--olive);">
+          Prepararemos un jugoso filete de <strong>salmón horneado</strong> bañado en un glaseado brillante de miel orgánica y paprika, asentado sobre <strong>hinojo rostizado</strong> aromático.
+        </p>
+        <p style="font-size: 1.05rem; margin-bottom: 16px; color: var(--olive);">
+          Lo acompañaremos con un suave <strong>puré mixto bicolor</strong> que fusiona papa blanca y camote dulce para aportar carbohidratos complejos y un gran sabor.
+        </p>
+        <p style="font-size: 1.05rem; margin-bottom: 24px; color: var(--olive);">
+          Al lado, serviremos una fresca <strong>Ensalada Wedge</strong> estilo César, con un aderezo cremoso artesanal y coronada con migas de panko crujientes y sazonadas.
+        </p>
+        <a href="#registro" class="btn-primary">Reservar mi lugar</a>
+      </div>
+      <div class="dish-img">
+        <img src="../../assets/events/18-junio/dish.png" alt="Salmón Glaseado con Miel y Paprika, Puré Mixto y Ensalada Wedge" loading="lazy">
+      </div>
+    </div>
+
+    <!-- Dish 2: Dessert -->
+    <div class="menu-item-grid reverse reveal" style="margin-top: 80px;">
+      <div>
+        <span class="ev-section-label">Postre Saludable</span>
+        <h3 style="font-family:'Playfair Display',serif; font-size:1.8rem; margin: 8px 0 16px;">Delicia Estilo Mochi con Frutas Frescas y Yogur</h3>
+        <p style="font-size: 1.05rem; margin-bottom: 16px; color: var(--olive);">
+          Para cerrar con broche de oro, crearemos un postre ligero y refrescante inspirado en la cocina fusión.
+        </p>
+        <p style="font-size: 1.05rem; margin-bottom: 24px; color: var(--olive);">
+          Utilizaremos una base cremosa y alta en proteína de <strong>yogur griego natural</strong> endulzada con un toque de miel de abeja local. Encima, montaremos cubos de <strong>mango dulce</strong>, láminas de <strong>fresas de temporada</strong> y suaves bocados masticables de <strong>mochi tradicional</strong>, decorando con hojas frescas de menta.
+        </p>
+        <a href="#registro" class="btn-primary">Reservar mi lugar</a>
+      </div>
+      <div class="dish-img">
+        <img src="../../assets/events/18-junio/dessert.png" alt="Postre estilo Mochi con base de yogur griego, frutas y miel" loading="lazy">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 6. WHAT'S INCLUDED -->
+<section class="ev-section ev-section--white" id="incluye">
+  <div class="container center">
+    <span class="ev-section-label reveal">Todo Incluido</span>
+    <h2 class="reveal">Qué incluye</h2>
+    <div class="includes-grid">
+      <div class="include-card reveal"><div class="icon">🏠</div><h3>Clase presencial</h3><p>Experiencia guiada en Playas de Tijuana.</p></div>
+      <div class="include-card reveal"><div class="icon">📖</div><h3>Teoría de nutrición</h3><p>Bases prácticas para entender mejor tus comidas.</p></div>
+      <div class="include-card reveal"><div class="icon">🍳</div><h3>Cocina guiada</h3><p>Demostración y preparación de platillos saludables.</p></div>
+      <div class="include-card reveal"><div class="icon">📋</div><h3>Material del taller</h3><p>Resumen teórico y recursos para llevar.</p></div>
+      <div class="include-card reveal"><div class="icon">🍽️</div><h3>Degustación</h3><p>Disfruta lo preparado durante la experiencia.</p></div>
+    </div>
+    <div class="ev-price reveal">$1,888 MXN<small>por persona · cupo limitado</small></div>
+  </div>
+</section>
+
+<!-- 7. EVENT DETAILS -->
+<section class="ev-section ev-section--sand" id="detalles">
+  <div class="container center">
+    <span class="ev-section-label reveal">Información del Evento</span>
+    <h2 class="reveal">Detalles del evento</h2>
+    <div class="details-card reveal">
+      <div class="details-list">
+        <div class="details-item"><span class="icon">📅</span><div><strong>Fecha</strong><br>18 de junio</div></div>
+        <div class="details-item"><span class="icon">🕐</span><div><strong>Horario</strong><br>6:00pm – 9:00pm</div></div>
+        <div class="details-item"><span class="icon">📍</span><div><strong>Ubicación</strong><br>Playas de Tijuana</div></div>
+        <div class="details-item"><span class="icon">🏠</span><div><strong>Formato</strong><br>Presencial</div></div>
+        <div class="details-item"><span class="icon">🪑</span><div><strong>Cupo</strong><br>Limitado</div></div>
+        <div class="details-item"><span class="icon">🍳</span><div><strong>Tipo</strong><br>Cocina saludable + nutrición</div></div>
+        <div class="details-item" style="grid-column:1/-1;justify-content:center"><span class="icon">👩‍🍳</span><div><strong>Hosts</strong><br>Karina Paz Kennedy + Linda Cardona</div></div>
+      </div>
+      <div style="text-align:center">
+        <a href="#registro" class="btn-primary">Reservar mi lugar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. REGISTRATION FORM -->
+<section class="ev-section" id="registro">
+  <div class="container">
+    <div class="ev-form reveal">
+      <h2>Reserva tu lugar</h2>
+      <p class="form-intro">Déjanos tus datos y te contactaremos para confirmar disponibilidad y detalles del evento.</p>
+      <form onsubmit="handleEventForm(event)">
+        <div class="form-group">
+          <label for="nombre">Nombre completo</label>
+          <input type="text" id="nombre" name="nombre" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="telefono">Teléfono / WhatsApp</label>
+            <input type="tel" id="telefono" name="telefono" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="lugares">Número de lugares</label>
+            <select id="lugares" name="lugares">
+              <option value="1">1 lugar</option>
+              <option value="2">2 lugares</option>
+              <option value="3">3 lugares</option>
+              <option value="4">4 lugares</option>
+              <option value="5+">5 o más</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="restricciones">Restricción alimenticia</label>
+            <input type="text" id="restricciones" name="restricciones" placeholder="Ninguna, vegetariana, sin gluten...">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="mensaje">Mensaje opcional</label>
+          <textarea id="mensaje" name="mensaje" placeholder="¿Algo que quieras contarnos?"></textarea>
+        </div>
+        <button type="submit" class="form-submit">Quiero reservar</button>
+      </form>
+      <div class="form-success" id="formSuccess">
+        ✅ Gracias. Recibimos tu información y te contactaremos por WhatsApp para confirmar tu lugar.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. WHATSAPP CTA -->
+<section class="ev-section">
+  <div class="container">
+    <div class="wa-section reveal">
+      <h2>¿Tienes preguntas?</h2>
+      <p>Escríbenos por WhatsApp y te compartimos disponibilidad, ubicación y detalles para reservar.</p>
+      <button class="btn-wa" onclick="openWhatsApp()" style="font-size:1.1rem;padding:16px 40px">💬 Enviar WhatsApp</button>
+    </div>
+  </div>
+</section>
+
+<!-- 10. GALLERY -->
+<section class="ev-section ev-section--white" id="galeria">
+  <div class="container center">
+    <span class="ev-section-label reveal">Wellness Lifestyle</span>
+    <h2 class="reveal">El estilo KPK Wellness</h2>
+    <div class="gallery-grid" style="margin-top:32px">
+      <img src="../../assets/events/16-mayo/gallery-cooking.png" alt="Cocina saludable" class="reveal" loading="lazy">
+      <img src="../../assets/events/16-mayo/gallery-ingredients.png" alt="Ingredientes frescos" class="reveal" loading="lazy">
+      <img src="../../assets/events/16-mayo/gallery-plating.png" alt="Emplatado" class="reveal" loading="lazy">
+      <img src="../../assets/events/16-mayo/gallery-kitchen.png" alt="Cocina premium" class="reveal" loading="lazy">
+      <img src="../../assets/events/16-mayo/gallery-wellness.png" alt="Wellness lifestyle" class="reveal" loading="lazy">
+      <img src="../../assets/events/16-mayo/gallery-community.png" alt="Comunidad wellness" class="reveal" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- 11. FINAL CTA -->
+<section class="final-cta">
+  <div class="reveal">
+    <h2>Cupo limitado para una experiencia íntima y práctica</h2>
+    <p>Reserva tu lugar y vive una clase diferente donde la nutrición se aprende cocinando.</p>
+    <div class="ev-hero-btns">
+      <a href="#registro" class="btn-primary">Reservar mi lugar</a>
+      <button class="btn-wa" onclick="openWhatsApp()">💬 Enviar WhatsApp</button>
+    </div>
+  </div>
+</section>
+
+<!-- 10. LEAD MAGNET -->
+<section class="lead-magnet" id="leadMagnet" style="margin-top: 80px;">
+  <div class="lead-magnet-content reveal left">
+    <h2>Obtén 5 Recetas Altas en Proteína Gratis</h2>
+    <p>¿Aún no te decides a venir al taller? Empieza tu camino hoy. Ingresa tu correo para descargar al instante una mini-guía creada por la Chef Karina Paz Kennedy.</p>
+    <form class="lead-form" onsubmit="handleLeadMagnet(event)">
+      <input type="text" name="name" placeholder="Tu Nombre" required>
+      <input type="email" name="email" placeholder="Tu Correo Electrónico" required>
+      <button type="submit">Descargar Gratis</button>
+    </form>
+  </div>
+  <div class="lead-magnet-img reveal right">
+    <img src="../../assets/exp-nutrition.jpg" alt="Recetas Gratis" style="object-position: top;">
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="ev-footer">
+  <div class="container">
+    <p>© 2026 KPK Wellness Associates · Tijuana + San Diego · <a href="../../index.html">kpkwellness.com</a></p>
+  </div>
+</footer>
+
+<!-- FLOATING WHATSAPP -->
+<a class="wa-float" href="https://wa.me/526643640788?text=Hola%2C%20quiero%20informaci%C3%B3n%20para%20reservar%20mi%20lugar%20en%20el%20taller%20de%20cocina%20saludable%20y%20nutrici%C3%B3n%20del%2018%20de%20junio%20en%20Playas%20de%20Tijuana." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+
+<!-- MOBILE STICKY CTA -->
+<div class="mobile-sticky">
+  <a href="#registro" class="btn-primary">Reservar</a>
+  <button class="btn-wa" onclick="openWhatsApp()">💬 WhatsApp</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="../../js/event-18-junio.js"></script>
+</body>
+</html>

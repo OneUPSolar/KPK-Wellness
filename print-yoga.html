@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Printable Business Card | KPK Wellness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FAFAFA;
+    --off-white: #F5F4F2;
+    --concrete: #E8E6E3;
+    --charcoal: #1E1E2E;
+    --navy: #2B3A5C;
+    --eucalyptus: #7A9E8E;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background-color: #e0e0e0;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 40px;
+  }
+
+  /* Physical Card Dimensions (3.5" x 2" with 0.125" bleed) */
+  .card {
+    width: 3.75in; /* 3.5 + 0.125 + 0.125 */
+    height: 2.25in; /* 2.0 + 0.125 + 0.125 */
+    position: relative;
+    background: var(--navy);
+    color: var(--white);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+
+  /* Safe Area / Crop Line Helper for Preview */
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0.125in;
+    left: 0.125in;
+    right: 0.125in;
+    bottom: 0.125in;
+    border: 1px dashed rgba(255,255,255,0.3);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .card.light-theme::after {
+    border-color: rgba(0,0,0,0.15);
+  }
+
+  .card-content {
+    position: absolute;
+    top: 0.125in;
+    left: 0.125in;
+    right: 0.125in;
+    bottom: 0.125in;
+    padding: 0.25in;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Front Side */
+  .front-side {
+    background-image: url('assets/yoga_landscape.png');
+    background-size: cover;
+    background-position: center center;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0; /* image bleed */
+  }
+
+  .front-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(43, 58, 92, 0.45); /* Navy tint for text readability */
+    z-index: 1;
+  }
+
+  .front-text-wrapper {
+    position: relative;
+    z-index: 2;
+    padding: 0.25in;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .front-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+    color: var(--white);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  
+  .front-logo span {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 4px;
+    color: var(--white);
+  }
+
+  .front-slogan {
+    margin-top: 14px;
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  }
+
+  .front-sub-slogan {
+    margin-top: 6px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--off-white);
+  }
+
+  /* Back Side */
+  .back-side {
+    background: var(--off-white);
+    color: var(--charcoal);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .back-info {
+    flex: 1;
+  }
+
+  .back-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: var(--charcoal);
+  }
+
+  .back-title {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--navy);
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .contact-list {
+    list-style: none;
+    font-size: 0.75rem; /* Larger contact info */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--charcoal);
+  }
+  
+  .contact-item svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.7;
+    color: var(--navy);
+  }
+
+  .qr-code {
+    width: 1.5in; /* Bigger QR Code */
+    height: 1.5in;
+    background: #fff;
+    padding: 6px;
+    border: 1px solid var(--concrete);
+    border-radius: 6px;
+    margin-left: 15px;
+  }
+
+  .qr-code img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .instructions {
+    max-width: 600px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #444;
+    line-height: 1.5;
+  }
+
+  @media print {
+    body {
+      background: transparent;
+      padding: 0;
+      gap: 0;
+    }
+    
+    .instructions {
+      display: none;
+    }
+
+    .card {
+      box-shadow: none;
+      page-break-after: always;
+    }
+
+    /* Remove preview crop lines on print */
+    .card::after {
+      display: none;
+    }
+  }
+
+  @page {
+    size: 3.75in 2.25in;
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+
+  <div class="instructions">
+    <strong>Print-Ready Physical Business Cards (Yoga Edition)</strong><br>
+    Format: Standard US (3.5" x 2") with 0.125" bleed included.<br>
+    The dashed lines indicate the safe area. The QR code links directly to your digital business card.
+  </div>
+
+  <!-- FRONT SIDE -->
+  <div class="card">
+    <div class="card-content front-side">
+      <div class="front-overlay"></div>
+      <div class="front-text-wrapper">
+        <div class="front-logo">
+          KPK Wellness
+          <span>Associates</span>
+        </div>
+        <div class="front-slogan">Yoga & Culinary Arts</div>
+        <div class="front-sub-slogan">Eat well. Move with intention. Live beautifully.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACK SIDE -->
+  <div class="card light-theme">
+    <div class="card-content back-side">
+      <div class="back-info">
+        <div class="back-name">Karina Paz Kennedy</div>
+        <div class="back-title">Yoga Instructor & Wellness Guide</div>
+
+        <ul class="contact-list">
+          <li class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            +52 664 364 0788
+          </li>
+          <li class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            info@kpkwellness.com
+          </li>
+          <li class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            @karinapazk
+          </li>
+        </ul>
+      </div>
+
+      <div class="qr-code">
+        <!-- Generates a QR code linking to the digital card -->
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=https://kpk.associates/card.html" alt="QR Code">
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
