@@ -35,12 +35,10 @@
   .front .photo{flex:1 1 42%;background-size:cover;background-position:center 18%}
   .front.chef .panel{background:linear-gradient(150deg,#34466e 0%,var(--navy) 48%,var(--navy-deep) 100%)}
   .front.yoga .panel{background:linear-gradient(150deg,#E7C3CB 0%,#C58497 55%,#9C5E72 100%)}
-  /* soft seam between panel and photo */
-  .front .panel::after{content:"";position:absolute;top:0;right:-1px;bottom:0;width:14px;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent);z-index:3}
-  .front .leaf{width:16px;height:16px;opacity:.9;margin-bottom:5px}
-  .front .word{font-family:var(--head);font-weight:600;font-size:25px;line-height:.98;text-shadow:0 2px 14px rgba(0,0,0,.28)}
-  .front .rule{width:24px;height:1px;background:var(--gold);margin:7px 0 0;opacity:.9}
-  .front.yoga .rule{background:#fff;opacity:.7}
+  .front .leaf{width:16px;height:16px;margin-bottom:5px}
+  .front .word{font-family:var(--head);font-weight:600;font-size:25px;line-height:.98}
+  .front .rule{width:24px;height:1px;background:var(--gold);margin:7px 0 0}
+  .front.yoga .rule{background:#F5E9EC}
   .front .sub{font-size:7.6px;letter-spacing:.2em;text-transform:uppercase;margin-top:7px;color:rgba(255,255,255,.92);font-weight:500}
   .front .name{font-family:var(--head);font-style:italic;font-size:11px;margin-top:9px;color:rgba(255,255,255,.95)}
 
