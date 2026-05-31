@@ -10,7 +10,7 @@
 <style>
   :root{
     --bleed:.125in; --w:3.75in; --h:2.25in;
-    --navy:#2B3A5C; --navy-deep:#1E2A45; --ink:#1E1E2E; --paper:#F5F4F2;
+    --navy:#2B3A5C; --navy-deep:#1E2A45; --ink:#1E1E2E; --paper:#F5F4F2; --cream:#F2E9D8;
     --euca:#7A9E8E; --gold:#C9B6A0; --blush:#C58497; --blush-deep:#9C5E72;
     --head:'Cormorant Garamond',Georgia,serif; --body:'Inter',-apple-system,sans-serif;
   }
@@ -45,6 +45,7 @@
   .front .name{font-family:var(--head);font-style:italic;font-size:11px;margin-top:9px;color:rgba(255,255,255,.95)}
 
   /* ---- BACK (shared) ---- */
+  .back{background:var(--cream)}
   .back .inner{position:absolute;inset:var(--bleed);display:flex;align-items:center;gap:.2in;padding:.18in .22in}
   .back .left{flex:1;display:flex;flex-direction:column;justify-content:center}
   .back .euch{display:flex;align-items:center;gap:6px}
@@ -67,7 +68,7 @@
     .bar,.note,.cap{display:none}
     .grid{gap:0;display:block}
     .item{gap:0}
-    .face{box-shadow:none;border-radius:0;page-break-after:always;margin:0 auto}
+    .face{box-shadow:none;border-radius:16px;page-break-after:always;margin:0 auto}
     @page{size:3.75in 2.25in;margin:0}
   }
 </style>
@@ -81,7 +82,7 @@
   <div class="note">
     <b>2 fronts (Chef + Yoga) + 1 shared back.</b> Each face = 3.75 × 2.25 in (3.5 × 2 in trim + 0.125 in bleed).
     QR → live digital card <b>kpk.associates/card/</b> with KPK leaf in the center. Print specs to request:
-    <b>satin / soft-touch lamination</b> and <b>rounded corners (¼″ die-cut)</b> — artwork stays a full-bleed rectangle; the die-cut does the rounding.
+    <b>satin / soft-touch lamination</b> and a <b>¼″ rounded-corner die-cut</b> (corners are already rounded in the artwork — ask the printer to cut to match). Back is satin-cream.
     Print at 100% scale; tell your printer the quantity split (e.g. 25 + 25 = 50).
   </div>
 
