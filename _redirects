@@ -8,6 +8,10 @@
 /yoga/about        /yoga/about/index.html  200
 /yoga/recorded     /yoga/recorded/index.html  200
 
+# New culinary experience event (DRAFT — clone of June 18)
+/nueva-experiencia        /experiences/nueva-experiencia-culinaria/index.html  200
+/proxima-experiencia      /experiences/nueva-experiencia-culinaria/index.html  200
+
 # Digital business card (installable PWA)
 /card              /card/index.html  200
 # Vanity links for Karina's contact card
