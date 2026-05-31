@@ -189,7 +189,11 @@
       <a href="experiences/cocina-nutricion-playas-tijuana-18-junio/" class="btn btn-primary" lang="es">Reserva tu Lugar</a>
     </div>
     <div class="event-img">
-      <img src="assets/events/18-junio/hero.png" alt="Cooking class event">
+      <div class="event-carousel" id="eventCarousel">
+        <img src="assets/events/18-junio/karina-linda.jpg" class="active" alt="Karina Paz Kennedy and Linda Cardona, KPK Wellness hosts" style="object-position:center 28%">
+        <img src="assets/events/18-junio/carousel-group.jpg" alt="Guests with the plated salmon dinner and wine at the workshop" style="object-position:center 32%">
+        <img src="assets/events/18-junio/carousel-class.jpg" alt="Guests prepping dishes during the cooking workshop" style="object-position:center 38%">
+      </div>
     </div>
   </div>
 </section>
@@ -480,5 +484,33 @@
 </div>
 
 <script src="js/main.js"></script>
+<script>
+/* Event image carousel — crossfade + auto-advance + dots */
+(function () {
+  var c = document.getElementById('eventCarousel');
+  if (!c) return;
+  var imgs = Array.prototype.slice.call(c.querySelectorAll('img'));
+  if (imgs.length < 2) return;
+  var dots = document.createElement('span');
+  dots.className = 'event-carousel-dots';
+  imgs.forEach(function (_, i) {
+    var b = document.createElement('button');
+    b.setAttribute('aria-label', 'Ver foto ' + (i + 1));
+    if (i === 0) b.className = 'active';
+    b.addEventListener('click', function () { go(i); });
+    dots.appendChild(b);
+  });
+  c.appendChild(dots);
+  var idx = 0, timer;
+  function go(n) {
+    idx = (n + imgs.length) % imgs.length;
+    imgs.forEach(function (im, i) { im.classList.toggle('active', i === idx); });
+    Array.prototype.forEach.call(dots.children, function (d, i) { d.classList.toggle('active', i === idx); });
+    start();
+  }
+  function start() { clearInterval(timer); timer = setInterval(function () { go(idx + 1); }, 4500); }
+  start();
+})();
+</script>
 </body>
 </html>
