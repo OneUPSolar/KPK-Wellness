@@ -7,3 +7,9 @@
 /yoga/live         /yoga/live/index.html  200
 /yoga/about        /yoga/about/index.html  200
 /yoga/recorded     /yoga/recorded/index.html  200
+
+# Digital business card (installable PWA)
+/card              /card/index.html  200
+# Vanity links for Karina's contact card
+/karina-paz-contact   /card/  302
+/karina               /card/  302

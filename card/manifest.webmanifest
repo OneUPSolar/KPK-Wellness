@@ -1,0 +1,18 @@
+{
+  "id": "/card/",
+  "name": "KPK Wellness",
+  "short_name": "KPK Wellness",
+  "description": "Karina Paz Kennedy — Chef, Yoga Instructor & Wellness Host. Eat well. Move with intention. Live beautifully.",
+  "start_url": "/card/",
+  "scope": "/card/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1E1E2E",
+  "theme_color": "#2B3A5C",
+  "categories": ["lifestyle", "health", "food"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
