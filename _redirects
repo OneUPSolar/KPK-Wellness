@@ -8,9 +8,9 @@
 /yoga/about        /yoga/about/index.html  200
 /yoga/recorded     /yoga/recorded/index.html  200
 
-# New culinary experience event (DRAFT — clone of June 18)
-/nueva-experiencia        /experiences/nueva-experiencia-culinaria/index.html  200
-/proxima-experiencia      /experiences/nueva-experiencia-culinaria/index.html  200
+# Upcoming-event link for the digital card.
+# Points to the current live event page — update only this line for future events.
+/proxima-experiencia      /experiences/cocina-nutricion-playas-tijuana-18-junio/index.html  200
 
 # Digital business card (installable PWA)
 /card              /card/index.html  200
