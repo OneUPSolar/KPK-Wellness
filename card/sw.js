@@ -1,11 +1,12 @@
 /* KPK Wellness digital card — service worker.
    Enables installability + offline launch. Bump CACHE on each release. */
-const CACHE = 'kpk-card-v2';
+const CACHE = 'kpk-card-v3';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './qrcode.js',
+  './contact-photo.jpg',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/maskable-512.png',

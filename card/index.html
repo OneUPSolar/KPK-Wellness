@@ -450,10 +450,21 @@
     });
 
     /* ---------- vCard (Save Contact) ---------- */
-    document.getElementById('vcardBtn').addEventListener('click', (e) => {
+    // iOS/Android Contacts ignore remote PHOTO URIs — the image MUST be embedded
+    // as base64 inside the vCard, or it falls back to initials ("KP").
+    document.getElementById('vcardBtn').addEventListener('click', async (e) => {
       e.preventDefault();
-      const photo = location.origin + location.pathname.replace(/index\.html?$/, '') + 'icons/icon-512.png';
-      const vcf = [
+      let photoLine = null;
+      try {
+        const resp = await fetch('contact-photo.jpg', { cache: 'force-cache' });
+        const bytes = new Uint8Array(await resp.arrayBuffer());
+        let bin = '';
+        for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+        const b64 = btoa(bin);
+        // RFC 2426 folding: wrap at 75 chars, continuation lines begin with a space
+        photoLine = ('PHOTO;ENCODING=b;TYPE=JPEG:' + b64).replace(/(.{75})/g, '$1\r\n ');
+      } catch (err) { photoLine = null; }
+      const lines = [
         'BEGIN:VCARD',
         'VERSION:3.0',
         'N:Paz Kennedy;Karina;;;',
@@ -462,12 +473,12 @@
         'TITLE:Chef, Yoga Instructor & Wellness Host',
         'TEL;TYPE=CELL:+526643640788',
         'EMAIL;TYPE=INTERNET:join@kpk.associates',
-        'URL:https://www.instagram.com/karinapazk/',
-        'PHOTO;VALUE=URI:' + photo,
-        'NOTE:Yoga & Culinary Arts. Eat well. Move with intention. Live beautifully.',
-        'END:VCARD'
-      ].join('\r\n');
-      const blob = new Blob([vcf], { type: 'text/vcard;charset=utf-8' });
+        'URL:https://www.instagram.com/karinapazk/'
+      ];
+      if (photoLine) lines.push(photoLine);
+      lines.push('NOTE:Yoga & Culinary Arts. Eat well. Move with intention. Live beautifully.');
+      lines.push('END:VCARD');
+      const blob = new Blob([lines.join('\r\n')], { type: 'text/vcard;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url; a.download = 'Karina-Paz-Kennedy.vcf';
