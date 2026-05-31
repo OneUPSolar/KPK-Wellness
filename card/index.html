@@ -410,11 +410,11 @@
 
     const MODES = {
       chef: {
-        img: '../assets/karina-kitchen-navy.png', role: 'Chef & Wellness Host', chrome: '#1B2436',
+        img: '../assets/karina-kitchen-navy.png', role: 'Chef & Wellness Host', chrome: '#1B2436', pos: '50% 18%',
         eventHref: '/proxima-experiencia', eventTitle: 'Upcoming Culinary Event', eventSub: 'Cooking & nutrition workshop · book now'
       },
       yoga: {
-        img: '../assets/karina-yoga-pose.png', role: 'Yoga Instructor & Wellness Guide', chrome: '#F3D9D3',
+        img: '../assets/yoga_uploaded.png', role: 'Yoga Instructor & Wellness Guide', chrome: '#F3D9D3', pos: '50% 52%',
         eventHref: '/yoga', eventTitle: 'Upcoming Yoga Classes', eventSub: 'Live & online sessions · join now'
       }
     };
@@ -429,6 +429,7 @@
       // fallback if cached/instant
       setTimeout(() => { avatar.src = m.img; avatar.style.opacity = '1'; }, 220);
       role.textContent = m.role;
+      if (m.pos) avatar.style.objectPosition = m.pos;
       eventLink.href = m.eventHref;
       eventTitle.textContent = m.eventTitle;
       eventSub.textContent = m.eventSub;
