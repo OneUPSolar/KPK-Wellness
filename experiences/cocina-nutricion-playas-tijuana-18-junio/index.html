@@ -31,9 +31,116 @@
   object-fit: cover !important;
   object-position: center !important;
 }
+
+/* WhatsApp SVG style */
+.btn-wa svg, .mobile-sticky .btn-wa svg {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  margin-right: 6px;
+  fill: currentColor;
+}
+.wa-float svg {
+  width: 32px;
+  height: 32px;
+  fill: currentColor;
+}
+
+/* Lead Magnet styles */
+.lead-magnet {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 48px;
+  align-items: center;
+  max-width: 1080px;
+  margin: 80px auto;
+  padding: 80px 24px;
+  background: var(--warm-white);
+  border-top: 1px solid rgba(232, 216, 195, 0.4);
+}
+.lead-magnet-content {
+  padding-right: 24px;
+}
+.lead-magnet-content h2 {
+  font-size: 2.2rem;
+  color: var(--cacao);
+  margin-bottom: 16px;
+  font-family: 'Playfair Display', serif;
+}
+.lead-magnet-content p {
+  font-size: 1.05rem;
+  color: var(--olive);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+.lead-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 480px;
+}
+.lead-form input {
+  padding: 14px 16px;
+  border: 2px solid var(--sand);
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  background: #fff;
+  transition: border .2s;
+  width: 100%;
+}
+.lead-form input:focus {
+  border-color: var(--clay);
+}
+.lead-form button {
+  padding: 16px;
+  background: var(--clay);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: inherit;
+  width: 100%;
+}
+.lead-form button:hover {
+  background: var(--coral);
+  transform: translateY(-1px);
+}
+.lead-magnet-img {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  height: 480px;
+}
+.lead-magnet-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
 @media(max-width:768px){
   .menu-item-grid {grid-template-columns: 1fr; gap: 32px; margin-bottom: 48px;}
   .menu-item-grid.reverse .dish-img {order: 0;}
+  .lead-magnet {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin: 48px auto;
+    padding: 48px 24px;
+  }
+  .lead-magnet-content {
+    padding-right: 0;
+    text-align: center;
+  }
+  .lead-form {
+    margin: 0 auto;
+  }
+  .lead-magnet-img {
+    height: 320px;
+  }
 }
 </style>
 </head>
@@ -63,7 +170,7 @@
         </div>
         <div class="ev-hero-btns">
           <a href="#registro" class="btn-primary">Reservar mi lugar</a>
-          <button class="btn-wa" onclick="openWhatsApp()">💬 Enviar WhatsApp</button>
+          <button class="btn-wa" onclick="openWhatsApp()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.968C16.63 1.97 14.157.946 11.527.946c-5.437 0-9.861 4.37-9.865 9.801 0 1.706.452 3.37 1.309 4.856l-.993 3.626 3.722-.975zm13.114-6.87c-.29-.145-1.717-.847-1.983-.943-.266-.097-.459-.145-.653.145-.193.291-.748.944-.919 1.138-.17.193-.341.217-.631.072-.29-.145-1.228-.453-2.339-1.443-.865-.771-1.449-1.723-1.619-2.014-.17-.291-.018-.448.127-.592.13-.13.29-.34.436-.509.145-.17.193-.291.29-.485.097-.194.049-.364-.025-.509-.072-.145-.653-1.573-.894-2.155-.236-.57-.496-.49-.653-.497-.154-.008-.34-.008-.528-.008-.188 0-.496.07-.756.352-.26.282-1 .977-1 2.383s1.027 2.756 1.171 2.95c.145.194 2.023 3.176 4.901 4.417.685.295 1.219.471 1.636.604.688.219 1.314.188 1.808.114.55-.082 1.717-.701 1.96-1.378.243-.678.243-1.258.17-1.379-.073-.121-.266-.194-.556-.34z"/></svg>Enviar WhatsApp</button>
         </div>
         <p class="ev-hero-trust">Clase presencial · Cocina + nutrición · Grupo reducido</p>
       </div>
@@ -346,7 +453,7 @@
     <div class="wa-section reveal">
       <h2>¿Tienes preguntas?</h2>
       <p>Escríbenos por WhatsApp y te compartimos disponibilidad, ubicación y detalles para reservar.</p>
-      <button class="btn-wa" onclick="openWhatsApp()" style="font-size:1.1rem;padding:16px 40px">💬 Enviar WhatsApp</button>
+      <button class="btn-wa" onclick="openWhatsApp()" style="font-size:1.1rem;padding:16px 40px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.968C16.63 1.97 14.157.946 11.527.946c-5.437 0-9.861 4.37-9.865 9.801 0 1.706.452 3.37 1.309 4.856l-.993 3.626 3.722-.975zm13.114-6.87c-.29-.145-1.717-.847-1.983-.943-.266-.097-.459-.145-.653.145-.193.291-.748.944-.919 1.138-.17.193-.341.217-.631.072-.29-.145-1.228-.453-2.339-1.443-.865-.771-1.449-1.723-1.619-2.014-.17-.291-.018-.448.127-.592.13-.13.29-.34.436-.509.145-.17.193-.291.29-.485.097-.194.049-.364-.025-.509-.072-.145-.653-1.573-.894-2.155-.236-.57-.496-.49-.653-.497-.154-.008-.34-.008-.528-.008-.188 0-.496.07-.756.352-.26.282-1 .977-1 2.383s1.027 2.756 1.171 2.95c.145.194 2.023 3.176 4.901 4.417.685.295 1.219.471 1.636.604.688.219 1.314.188 1.808.114.55-.082 1.717-.701 1.96-1.378.243-.678.243-1.258.17-1.379-.073-.121-.266-.194-.556-.34z"/></svg>Enviar WhatsApp</button>
     </div>
   </div>
 </section>
@@ -374,7 +481,7 @@
     <p>Reserva tu lugar y vive una clase diferente donde la nutrición se aprende cocinando.</p>
     <div class="ev-hero-btns">
       <a href="#registro" class="btn-primary">Reservar mi lugar</a>
-      <button class="btn-wa" onclick="openWhatsApp()">💬 Enviar WhatsApp</button>
+      <button class="btn-wa" onclick="openWhatsApp()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.968C16.63 1.97 14.157.946 11.527.946c-5.437 0-9.861 4.37-9.865 9.801 0 1.706.452 3.37 1.309 4.856l-.993 3.626 3.722-.975zm13.114-6.87c-.29-.145-1.717-.847-1.983-.943-.266-.097-.459-.145-.653.145-.193.291-.748.944-.919 1.138-.17.193-.341.217-.631.072-.29-.145-1.228-.453-2.339-1.443-.865-.771-1.449-1.723-1.619-2.014-.17-.291-.018-.448.127-.592.13-.13.29-.34.436-.509.145-.17.193-.291.29-.485.097-.194.049-.364-.025-.509-.072-.145-.653-1.573-.894-2.155-.236-.57-.496-.49-.653-.497-.154-.008-.34-.008-.528-.008-.188 0-.496.07-.756.352-.26.282-1 .977-1 2.383s1.027 2.756 1.171 2.95c.145.194 2.023 3.176 4.901 4.417.685.295 1.219.471 1.636.604.688.219 1.314.188 1.808.114.55-.082 1.717-.701 1.96-1.378.243-.678.243-1.258.17-1.379-.073-.121-.266-.194-.556-.34z"/></svg>Enviar WhatsApp</button>
     </div>
   </div>
 </section>
@@ -403,12 +510,14 @@
 </footer>
 
 <!-- FLOATING WHATSAPP -->
-<a class="wa-float" href="https://wa.me/526643640788?text=Hola%2C%20quiero%20informaci%C3%B3n%20para%20reservar%20mi%20lugar%20en%20el%20taller%20de%20cocina%20saludable%20y%20nutrici%C3%B3n%20del%2018%20de%20junio%20en%20Playas%20de%20Tijuana." target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+<a class="wa-float" href="https://wa.me/526643640788?text=Hola%2C%20quiero%20informaci%C3%B3n%20para%20reservar%20mi%20lugar%20en%20el%20taller%20de%20cocina%20saludable%20y%20nutrici%C3%B3n%20del%2018%20de%20junio%20en%20Playas%20de%20Tijuana." target="_blank" rel="noopener" aria-label="WhatsApp" style="display: flex; align-items: center; justify-content: center; color: #fff;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.968C16.63 1.97 14.157.946 11.527.946c-5.437 0-9.861 4.37-9.865 9.801 0 1.706.452 3.37 1.309 4.856l-.993 3.626 3.722-.975zm13.114-6.87c-.29-.145-1.717-.847-1.983-.943-.266-.097-.459-.145-.653.145-.193.291-.748.944-.919 1.138-.17.193-.341.217-.631.072-.29-.145-1.228-.453-2.339-1.443-.865-.771-1.449-1.723-1.619-2.014-.17-.291-.018-.448.127-.592.13-.13.29-.34.436-.509.145-.17.193-.291.29-.485.097-.194.049-.364-.025-.509-.072-.145-.653-1.573-.894-2.155-.236-.57-.496-.49-.653-.497-.154-.008-.34-.008-.528-.008-.188 0-.496.07-.756.352-.26.282-1 .977-1 2.383s1.027 2.756 1.171 2.95c.145.194 2.023 3.176 4.901 4.417.685.295 1.219.471 1.636.604.688.219 1.314.188 1.808.114.55-.082 1.717-.701 1.96-1.378.243-.678.243-1.258.17-1.379-.073-.121-.266-.194-.556-.34z"/></svg>
+</a>
 
 <!-- MOBILE STICKY CTA -->
 <div class="mobile-sticky">
   <a href="#registro" class="btn-primary">Reservar</a>
-  <button class="btn-wa" onclick="openWhatsApp()">💬 WhatsApp</button>
+  <button class="btn-wa" onclick="openWhatsApp()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.968C16.63 1.97 14.157.946 11.527.946c-5.437 0-9.861 4.37-9.865 9.801 0 1.706.452 3.37 1.309 4.856l-.993 3.626 3.722-.975zm13.114-6.87c-.29-.145-1.717-.847-1.983-.943-.266-.097-.459-.145-.653.145-.193.291-.748.944-.919 1.138-.17.193-.341.217-.631.072-.29-.145-1.228-.453-2.339-1.443-.865-.771-1.449-1.723-1.619-2.014-.17-.291-.018-.448.127-.592.13-.13.29-.34.436-.509.145-.17.193-.291.29-.485.097-.194.049-.364-.025-.509-.072-.145-.653-1.573-.894-2.155-.236-.57-.496-.49-.653-.497-.154-.008-.34-.008-.528-.008-.188 0-.496.07-.756.352-.26.282-1 .977-1 2.383s1.027 2.756 1.171 2.95c.145.194 2.023 3.176 4.901 4.417.685.295 1.219.471 1.636.604.688.219 1.314.188 1.808.114.55-.082 1.717-.701 1.96-1.378.243-.678.243-1.258.17-1.379-.073-.121-.266-.194-.556-.34z"/></svg>WhatsApp</button>
 </div>
 
 <!-- TOAST -->
