@@ -26,6 +26,11 @@
 .menu-item-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-bottom: 64px;}
 .menu-item-grid:last-child {margin-bottom: 0;}
 .menu-item-grid.reverse .dish-img {order: -1;}
+.ev-hero-img img {
+  aspect-ratio: 1/1 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
 @media(max-width:768px){
   .menu-item-grid {grid-template-columns: 1fr; gap: 32px; margin-bottom: 48px;}
   .menu-item-grid.reverse .dish-img {order: 0;}
