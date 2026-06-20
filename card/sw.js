@@ -1,6 +1,6 @@
 /* KPK Wellness digital card — service worker.
    Enables installability + offline launch. Bump CACHE on each release. */
-const CACHE = 'kpk-card-v4';
+const CACHE = 'kpk-card-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -12,7 +12,7 @@ const ASSETS = [
   './icons/maskable-512.png',
   './icons/icon-180.png',
   '../assets/chef_portrait_new.png',
-  '../assets/yoga_exact_portrait.png'
+  '../assets/karina-yoga-pose.png'
 ];
 
 self.addEventListener('install', (e) => {
