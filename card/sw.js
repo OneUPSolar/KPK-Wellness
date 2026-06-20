@@ -1,6 +1,6 @@
 /* KPK Wellness digital card — service worker.
    Enables installability + offline launch. Bump CACHE on each release. */
-const CACHE = 'kpk-card-v5';
+const CACHE = 'kpk-card-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -35,7 +35,28 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  // Cache-first for our own assets, falling back to network and caching the result.
+
+  // Network-first for page navigations (HTML) so the markup/JS — and the
+  // image URLs it references — are always fresh and never freeze on a stale
+  // cached copy. Falls back to cache only when offline.
+  const isHTML = req.mode === 'navigate' ||
+    (req.headers.get('accept') || '').includes('text/html');
+  if (isHTML) {
+    e.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res && res.ok && res.type === 'basic') {
+            const copy = res.clone();
+            caches.open(CACHE).then((c) => c.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // Cache-first for static assets, falling back to network and caching the result.
   e.respondWith(
     caches.match(req).then((hit) => {
       if (hit) return hit;
