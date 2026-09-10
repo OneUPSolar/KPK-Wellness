@@ -162,8 +162,10 @@ function parseRecipeMarkdown(md, category, availableImages, availableAudios) {
     }
   }
 
-  // Determine if free
-  const isFree = recipeConfig?.freeRecipes?.includes(id) || false;
+  // Determine if free. `allFree` unlocks the whole collection, so newly
+  // published recipes are visible immediately without editing freeRecipes.
+  const isFree = recipeConfig?.allFree === true ||
+    recipeConfig?.freeRecipes?.includes(id) || false;
 
   return {
     id,
