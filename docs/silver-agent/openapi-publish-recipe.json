@@ -1,0 +1,94 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "KPK Wellness recipe publishing",
+    "description": "Publishes a recipe markdown file to the KPK Wellness repository. The recipes page reads from that repository at page load, so a successful call puts the recipe live immediately.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "https://kpk-recipe-api.hi-7e4.workers.dev" }
+  ],
+  "paths": {
+    "/commit": {
+      "post": {
+        "operationId": "publishRecipe",
+        "summary": "Create or update a recipe on the live site",
+        "description": "Commits a recipe markdown file to content/recetas/<categoria>/<slug>.md on the main branch. Committing to a path that already exists updates that recipe, so this handles both creating and editing.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["path", "content", "message"],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Repository path for the recipe, e.g. content/recetas/postres/flan-de-coco.md. The category folder must be one of desayunos, ensaladas, pastas, postres, and the filename slug must match the recipe's id.",
+                    "pattern": "^content/recetas/(desayunos|ensaladas|pastas|postres)/[a-z0-9-]+\\.md$"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "The complete recipe markdown as PLAIN TEXT (not base64). Must follow the documented recipe format exactly, including the frontmatter block and the unaccented headings Titulo, Utensilios, Ingredientes, Preparacion, Macros por persona (estimado) and Costeo aproximado."
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Commit message, e.g. 'receta: Flan de coco'."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recipe published",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "sha": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing path, content or message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "adminToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "The admin token: SHA256(allowed_email_lowercased + ':' + admin_password), hex-encoded. Configure it as the Action's authentication value; never hardcode it in the schema."
+      }
+    }
+  },
+  "security": [{ "adminToken": [] }]
+}
