@@ -2,8 +2,25 @@
   "accessCodeHash": "",
   "freeRecipes": [
     "avocado-toast-huevo",
+    "burrito-desayuno",
+    "chilaquiles-migas",
+    "cowboy-breakfast",
+    "huevo-ranchero-gratinado",
+    "huevos-ahogados-salsa-roja",
     "molletes-carne-seca",
-    "ensalada-aguacate-tomate-cebolla"
+    "omelette-papitas",
+    "tortilla-espanola",
+    "aguacate-relleno-blt",
+    "ensalada-aguacate-tomate-cebolla",
+    "espagueti-tomate-queso",
+    "macarron-estilo-elote",
+    "pasta-estofado-atun",
+    "pasta-tocino-limon-aceitunas",
+    "bizcocho-galleta-sandwich",
+    "bizcocho-manzana-microondas",
+    "mousse-fresa-yogur",
+    "napoleon-chocolate",
+    "rollos-dulces-tortilla-platano"
   ],
   "categories": {
     "desayunos": { "emoji": "🍳", "en": "Breakfasts", "es": "Desayunos" },
