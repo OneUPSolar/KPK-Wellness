@@ -1,5 +1,7 @@
 # Local Claude Code preview/dev config
-.claude/
+.claude/*
+# ...but the shared design skills are part of the project and must be tracked.
+!.claude/skills/
 
 # Raw event photos
 assets/events/18-junio/raw_photos/
