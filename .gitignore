@@ -5,3 +5,6 @@
 
 # Raw event photos
 assets/events/18-junio/raw_photos/
+
+# Image tooling installed on demand (sharp); never part of the site
+node_modules/
