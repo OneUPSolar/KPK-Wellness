@@ -141,10 +141,15 @@ function parseRecipeMarkdown(md, category, availableImages, availableAudios) {
   const id = frontmatter.id || '';
   let imageUrl = null;
   if (availableImages) {
-    const matchingImg = availableImages.find(f => {
-      const baseName = f.name.replace(/\.(png|jpg|jpeg|webp)$/i, '');
-      return baseName.toLowerCase().includes(id.toLowerCase().split('-')[0]);
-    });
+    const slug = id.toLowerCase();
+    const baseOf = f => f.name.replace(/\.(png|jpg|jpeg|webp)$/i, '').toLowerCase();
+    // Prefer the image named exactly for this recipe. The loose fallback only
+    // runs when there is no exact match, so a newly dropped photo still shows
+    // up before anyone renames it -- but it can no longer steal another
+    // recipe's picture, which is how huevo-ranchero was showing huevos-ahogados.
+    const matchingImg =
+      availableImages.find(f => baseOf(f) === slug) ||
+      availableImages.find(f => baseOf(f).includes(slug.split('-')[0]));
     if (matchingImg) {
       imageUrl = matchingImg.download_url;
     }
