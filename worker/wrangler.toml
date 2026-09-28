@@ -7,7 +7,7 @@ compatibility_date = "2026-01-15"
 #   GITHUB_TOKEN     fine-grained PAT, Contents: read and write on this repo
 #   ADMIN_PASSWORD   optional; only for the legacy password login
 [vars]
-GOOGLE_CLIENT_ID = "REPLACE_WITH_OAUTH_CLIENT_ID"
+GOOGLE_CLIENT_ID = "675060924547-ga9i8sdnsg5bp4c1de68nork9cqhvdn5.apps.googleusercontent.com"
 ALLOWED_EMAILS = "kpazkennedy@gmail.com,jumarenga@gmail.com"
 ALLOWED_ORIGINS = "https://kpk.associates"
 REPO = "OneUPSolar/KPK-Wellness"
