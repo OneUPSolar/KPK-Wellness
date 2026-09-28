@@ -57,7 +57,7 @@ async function loadRecipes() {
     }
 
     // Load all recipe markdown files by category
-    const categories = ['desayunos', 'ensaladas', 'pastas', 'postres'];
+    const categories = ['desayunos', 'ensaladas', 'pastas', 'postres', 'vegetarianas'];
     const allRecipes = [];
 
     for (const cat of categories) {

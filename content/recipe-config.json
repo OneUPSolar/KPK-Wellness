@@ -24,9 +24,30 @@
     "rollos-dulces-tortilla-platano"
   ],
   "categories": {
-    "desayunos": { "emoji": "🍳", "en": "Breakfasts", "es": "Desayunos" },
-    "ensaladas": { "emoji": "🥗", "en": "Salads", "es": "Ensaladas" },
-    "pastas": { "emoji": "🍝", "en": "Pastas", "es": "Pastas" },
-    "postres": { "emoji": "🍰", "en": "Desserts", "es": "Postres" }
+    "desayunos": {
+      "emoji": "🍳",
+      "en": "Breakfasts",
+      "es": "Desayunos"
+    },
+    "ensaladas": {
+      "emoji": "🥗",
+      "en": "Salads",
+      "es": "Ensaladas"
+    },
+    "pastas": {
+      "emoji": "🍝",
+      "en": "Pastas",
+      "es": "Pastas"
+    },
+    "postres": {
+      "emoji": "🍰",
+      "en": "Desserts",
+      "es": "Postres"
+    },
+    "vegetarianas": {
+      "emoji": "🥗",
+      "en": "Vegetarian",
+      "es": "Vegetarianas"
+    }
   }
 }
