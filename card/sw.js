@@ -11,8 +11,8 @@ const ASSETS = [
   './icons/icon-512.png',
   './icons/maskable-512.png',
   './icons/icon-180.png',
-  '../assets/chef_portrait_new.png',
-  '../assets/karina-yoga-pose.png'
+  '../assets/chef_portrait_new.webp',
+  '../assets/karina-yoga-pose.webp'
 ];
 
 self.addEventListener('install', (e) => {

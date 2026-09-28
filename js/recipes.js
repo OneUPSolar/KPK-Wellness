@@ -295,17 +295,17 @@ function buildRecipeCard(recipe) {
 
   // Fallback image based on category
   const fallbackImages = {
-    desayunos: 'assets/exp-culinary.jpg',
-    ensaladas: 'assets/exp-nutrition.jpg',
-    pastas: 'assets/exp-retreat.jpg',
-    postres: 'assets/philosophy-chef.png'
+    desayunos: 'assets/exp-culinary.webp',
+    ensaladas: 'assets/exp-nutrition.webp',
+    pastas: 'assets/exp-retreat.webp',
+    postres: 'assets/philosophy-chef.webp'
   };
-  const imgSrc = recipe.imageUrl || fallbackImages[recipe.category] || 'assets/exp-culinary.jpg';
+  const imgSrc = recipe.imageUrl || fallbackImages[recipe.category] || 'assets/exp-culinary.webp';
 
   return `
     <div class="recipe-card${lockedClass}" data-id="${recipe.id}" onclick="handleRecipeClick('${recipe.id}')">
       <div class="recipe-card-img">
-        <img src="${imgSrc}" alt="${recipe.name}" loading="lazy" onerror="this.src='assets/exp-culinary.jpg'">
+        <img src="${imgSrc}" alt="${recipe.name}" loading="lazy" onerror="this.src='assets/exp-culinary.webp'">
         <div class="recipe-card-badge">${cat.emoji} <span lang="en">${cat.en}</span><span lang="es">${cat.es}</span></div>
         ${recipe.isFree ? '<div class="recipe-card-free-badge" lang="en">FREE</div><div class="recipe-card-free-badge" lang="es">GRATIS</div>' : ''}
         ${!canView ? `
@@ -369,18 +369,18 @@ function showRecipeDetail(recipe) {
   if (!overlay) return;
 
   const fallbackImages = {
-    desayunos: 'assets/exp-culinary.jpg',
-    ensaladas: 'assets/exp-nutrition.jpg',
-    pastas: 'assets/exp-retreat.jpg',
-    postres: 'assets/philosophy-chef.png'
+    desayunos: 'assets/exp-culinary.webp',
+    ensaladas: 'assets/exp-nutrition.webp',
+    pastas: 'assets/exp-retreat.webp',
+    postres: 'assets/philosophy-chef.webp'
   };
-  const imgSrc = recipe.imageUrl || fallbackImages[recipe.category] || 'assets/exp-culinary.jpg';
+  const imgSrc = recipe.imageUrl || fallbackImages[recipe.category] || 'assets/exp-culinary.webp';
 
   const diffLabels = { facil: 'Fácil', medio: 'Medio', dificil: 'Difícil' };
 
   overlay.querySelector('.detail-card').innerHTML = `
     <div class="detail-hero">
-      <img src="${imgSrc}" alt="${recipe.name}" onerror="this.src='assets/exp-culinary.jpg'">
+      <img src="${imgSrc}" alt="${recipe.name}" onerror="this.src='assets/exp-culinary.webp'">
       <div class="detail-hero-overlay">
         <h1>${recipe.name}</h1>
         ${recipe.titleSerio ? `<div class="detail-subtitle">${recipe.titleSerio}</div>` : ''}
