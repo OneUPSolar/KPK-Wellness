@@ -1,0 +1,13 @@
+name = "kpk-recipe-api"
+main = "index.js"
+compatibility_date = "2026-01-15"
+
+# Set with `wrangler secret put <NAME>` — never commit these:
+#   SESSION_SECRET   signs admin session tokens (any long random string)
+#   GITHUB_TOKEN     fine-grained PAT, Contents: read and write on this repo
+#   ADMIN_PASSWORD   optional; only for the legacy password login
+[vars]
+GOOGLE_CLIENT_ID = "REPLACE_WITH_OAUTH_CLIENT_ID"
+ALLOWED_EMAILS = "kpazkennedy@gmail.com"
+ALLOWED_ORIGINS = "https://kpk.associates"
+REPO = "OneUPSolar/KPK-Wellness"

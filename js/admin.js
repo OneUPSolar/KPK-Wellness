@@ -5,6 +5,80 @@ let imageData = null;
 let imageName = '';
 
 /* ── Auth ─────────────────────────────── */
+
+/**
+ * Google Sign-In.
+ *
+ * The button hands us the ID token Google minted; the Worker verifies it
+ * against Google's public keys and checks the address against its allowlist.
+ * Nothing here is trusted client-side — this code cannot grant itself access.
+ */
+async function initAuth() {
+  let config;
+  try {
+    const res = await fetch(`${API_URL}/auth/config`, { method: 'POST' });
+    config = await res.json();
+  } catch {
+    showAuthError('No se pudo conectar al servidor');
+    return;
+  }
+
+  // Only offer the password box if the server still has one configured.
+  if (config.passwordFallback) document.getElementById('passwordFallback').hidden = false;
+
+  if (!config.googleClientId) {
+    document.getElementById('googleHint').textContent =
+      'El acceso con Google aún no está configurado.';
+    document.getElementById('passwordFallback').hidden = false;
+    document.getElementById('passwordFallback').open = true;
+    return;
+  }
+
+  if (!window.google?.accounts?.id) {
+    document.getElementById('googleHint').textContent = 'No se pudo cargar Google.';
+    return;
+  }
+
+  google.accounts.id.initialize({
+    client_id: config.googleClientId,
+    callback: onGoogleCredential,
+  });
+  google.accounts.id.renderButton(document.getElementById('googleBtn'), {
+    theme: 'outline',
+    size: 'large',
+    text: 'signin_with',
+    locale: 'es',
+  });
+}
+
+async function onGoogleCredential(response) {
+  showAuthError('');
+  try {
+    const res = await fetch(`${API_URL}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: response.credential }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showAuthError(data.error || 'No se pudo iniciar sesión');
+      return;
+    }
+    AUTH_TOKEN = data.token;
+    localStorage.setItem('kpk_auth', JSON.stringify({ token: data.token, email: data.email }));
+    showApp(data.email);
+  } catch {
+    showAuthError('No se pudo conectar al servidor');
+  }
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+
 async function authenticate() {
   const email = document.getElementById('emailInput').value.trim();
   const password = document.getElementById('passwordInput').value;
@@ -55,6 +129,8 @@ function showApp(email) {
   document.getElementById('app').style.display = 'block';
   document.getElementById('userEmail').textContent = email || '';
 }
+
+window.addEventListener('load', initAuth);
 
 /* Auto-login */
 (function() {
