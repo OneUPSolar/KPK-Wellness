@@ -18,3 +18,7 @@
 /karina-contact-card  /card/  302
 /karina-paz-contact   /card/  302
 /karina               /card/  302
+
+# Propuesta para Casa de la Cultura Playas (enlace privado, noindex)
+/playas/ayuntamiento-cultural   /playas/ayuntamiento-cultural/index.html  200
+/playas                         /playas/ayuntamiento-cultural/index.html  302
