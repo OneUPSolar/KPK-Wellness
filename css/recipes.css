@@ -21,7 +21,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: url('../assets/exp-nutrition.jpg') center/cover no-repeat;
+  background: url('../assets/exp-nutrition.webp') center/cover no-repeat;
   opacity: 0.08;
   filter: blur(4px);
 }

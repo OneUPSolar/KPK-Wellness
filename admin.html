@@ -27,6 +27,13 @@ h1,h2,h3{font-family:'Playfair Display',serif}
 .auth-card button{margin-top:16px;width:100%;padding:14px;background:var(--clay);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s}
 .auth-card button:hover{background:var(--cacao)}
 .auth-error{color:#c0392b;font-size:.85rem;margin-top:12px;display:none}
+.google-btn{display:flex;justify-content:center;min-height:44px}
+.auth-hint{color:#999;font-size:.82rem;margin-top:14px}
+.auth-fallback{margin-top:20px;text-align:left;border-top:1px solid var(--sand);padding-top:14px}
+.auth-fallback summary{cursor:pointer;color:#999;font-size:.82rem;text-align:center;list-style:none}
+.auth-fallback summary::-webkit-details-marker{display:none}
+.auth-fallback summary:hover{color:var(--clay)}
+.auth-fallback input{margin-top:10px}
 
 /* Layout */
 .app{display:none}
@@ -135,9 +142,20 @@ h1,h2,h3{font-family:'Playfair Display',serif}
   <div class="auth-card">
     <h1>🌿 KPK Recetas</h1>
     <p>Inicia sesión para administrar las recetas.</p>
-    <input type="email" id="emailInput" placeholder="tu@email.com" style="margin-bottom:12px">
-    <input type="password" id="passwordInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')authenticate()">
-    <button onclick="authenticate()">Entrar</button>
+
+    <!-- Google Sign-In. Rendered by js/admin.js once the client id is fetched. -->
+    <div id="googleBtn" class="google-btn"></div>
+    <p class="auth-hint" id="googleHint">Entra con tu cuenta de Google. No hay contraseña que recordar.</p>
+
+    <!-- Password login stays available until Google access is confirmed working,
+         so a bad deploy cannot lock anyone out. Hidden unless the server says it exists. -->
+    <details class="auth-fallback" id="passwordFallback" hidden>
+      <summary>Entrar con contraseña</summary>
+      <input type="email" id="emailInput" placeholder="tu@email.com" style="margin-bottom:12px">
+      <input type="password" id="passwordInput" placeholder="Contraseña" onkeydown="if(event.key==='Enter')authenticate()">
+      <button onclick="authenticate()">Entrar</button>
+    </details>
+
     <p class="auth-error" id="authError">Credenciales inválidas. Intenta de nuevo.</p>
   </div>
 </div>
@@ -359,6 +377,7 @@ dificultad: facil
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="js/admin.js"></script>
 </body>
 </html>
