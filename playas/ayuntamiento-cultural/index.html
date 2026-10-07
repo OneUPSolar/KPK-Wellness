@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Enlace privado: se comparte directamente, no se indexa ni se enlaza desde el sitio. -->
+<meta name="robots" content="noindex, nofollow">
+<title>Bar gastronómico en Casa de la Cultura Playas | Propuesta</title>
+<meta name="description" content="Propuesta comercial de Karina Paz Kennedy para la operación de un bar gastronómico en Casa de la Cultura Playas de Tijuana.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #FAFAFA; --off-white: #F5F4F2; --concrete: #E8E6E3;
+    --charcoal: #1E1E2E; --charcoal-light: #3A3A4A;
+    --navy: #2B3A5C; --navy-light: #3D4F73; --eucalyptus: #7A9E8E;
+    --muted: #6B6B7B;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --gutter: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans); background: var(--charcoal); color: var(--charcoal);
+    line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+
+  /* Each slide keeps the deck's 16:9 proportion on wide screens and simply
+     flows as a tall block on a phone, where fixed ratios cut text off. */
+  .slide {
+    position: relative; width: 100%; max-width: 1280px; margin: 0 auto 10px;
+    background: var(--white); padding: 56px var(--gutter) 64px;
+  }
+  @media (min-width: 900px) {
+    .slide { padding: 72px 72px 80px; }
+  }
+  /* Section breaks need presence, but a page that scrolls should not pad every
+     slide out to 16:9 — that just produced screens of empty white. */
+  .slide--navy { padding-top: 96px; padding-bottom: 104px; }
+  .slide--dark { background: var(--charcoal); color: var(--white); }
+  .slide--navy { background: var(--navy); color: var(--white); }
+
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: 0.01em; line-height: 1.15; }
+  h1 { font-size: clamp(2rem, 5.5vw, 3.4rem); }
+  h2 { font-size: clamp(1.6rem, 4vw, 2.6rem); margin-bottom: 28px; }
+  .slide--dark h2, .slide--navy h2 { color: var(--white); }
+  h3 { font-family: var(--sans); font-size: 1.05rem; font-weight: 600; color: var(--navy); margin-bottom: 12px; }
+
+  .lede { font-family: var(--serif); font-style: italic; font-size: clamp(1rem, 2.2vw, 1.25rem); color: var(--navy); margin: -14px 0 30px; }
+  .slide--dark .lede, .slide--navy .lede { color: var(--concrete); font-style: normal; font-family: var(--sans); font-size: 1rem; }
+
+  .mark {
+    width: 54px; height: 54px; border-radius: 50%; background: var(--eucalyptus);
+    color: var(--white); display: grid; place-items: center;
+    font-family: var(--sans); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.04em;
+    margin-bottom: 28px;
+  }
+  .meta { font-size: 0.9rem; color: var(--concrete); margin-top: 22px; }
+
+  .grid { display: grid; gap: 16px; }
+  @media (min-width: 760px) { .cols-2 { grid-template-columns: 1fr 1fr; } .cols-3 { grid-template-columns: repeat(3, 1fr); } }
+
+  .card { background: var(--off-white); border-radius: 10px; padding: 24px; }
+  .card--dark { background: var(--charcoal); color: var(--white); }
+  .card--dark h3 { color: var(--eucalyptus); }
+  .card p { font-size: 0.92rem; color: var(--charcoal-light); }
+  .card--dark p { color: var(--off-white); }
+
+  ul.list { list-style: none; }
+  ul.list li { position: relative; padding-left: 18px; margin-bottom: 9px; font-size: 0.92rem; }
+  ul.list li::before { content: ''; position: absolute; left: 0; top: 0.6em; width: 5px; height: 5px; border-radius: 50%; background: var(--eucalyptus); }
+
+  .stat { font-family: var(--serif); font-weight: 700; font-size: clamp(2.4rem, 7vw, 3.6rem); line-height: 1; color: var(--navy); }
+  .stat--alt { color: var(--eucalyptus); }
+  .stat-label { font-weight: 600; font-size: 0.95rem; margin: 10px 0 6px; }
+  .stat-note { font-size: 0.84rem; color: var(--muted); }
+
+  .row { display: grid; gap: 10px; align-items: start; background: var(--off-white); border-radius: 10px; padding: 18px 22px; margin-bottom: 10px; }
+  @media (min-width: 760px) { .row { grid-template-columns: 1fr 2fr; gap: 24px; align-items: center; } }
+  .row strong { font-size: 0.98rem; }
+  .row > span { font-size: 0.9rem; color: var(--charcoal-light); }
+  .row--alt { background: var(--concrete); }
+
+  .numbered { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 18px; }
+  .num { flex: 0 0 38px; height: 38px; border-radius: 50%; background: var(--navy); color: var(--white);
+         display: grid; place-items: center; font-size: 0.82rem; font-weight: 700; }
+  .num--last { background: var(--eucalyptus); }
+  .numbered p { font-size: 0.95rem; padding-top: 7px; }
+
+  .note { background: var(--concrete); border-radius: 10px; padding: 18px 22px; margin-top: 24px; font-size: 0.9rem; }
+  .note strong { font-weight: 600; }
+
+  /* Sticky download bar — the Ayuntamiento will want a file, not a link. */
+  .bar {
+    position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; gap: 10px 20px;
+    align-items: center; justify-content: space-between;
+    background: var(--charcoal); color: var(--white);
+    padding: 12px var(--gutter); font-size: 0.82rem;
+    max-width: 1280px; margin: 0 auto;
+  }
+  .bar a { color: var(--white); text-decoration: none; border: 1px solid rgba(255,255,255,0.35);
+           border-radius: 999px; padding: 7px 16px; font-weight: 500; white-space: nowrap; }
+  .bar a:hover { background: var(--white); color: var(--charcoal); }
+  .bar-title { font-family: var(--serif); font-size: 1rem; }
+
+  footer { max-width: 1280px; margin: 0 auto; padding: 28px var(--gutter) 40px; color: var(--concrete); font-size: 0.8rem; }
+  footer a { color: var(--concrete); }
+
+  @media print {
+    body { background: #fff; }
+    .bar { display: none; }
+    .slide { page-break-after: always; margin: 0; min-height: auto; max-width: none; }
+    .slide--dark, .slide--navy { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span class="bar-title">Propuesta · Casa de la Cultura Playas</span>
+  <a href="../../assets/docs/contrapropuesta-kpk.pdf" download>Descargar PDF</a>
+</div>
+
+<section class="slide slide--dark">
+  <div class="mark">KPK</div>
+  <h1>Bar gastronómico en Casa de la Cultura Playas</h1>
+  <p class="meta">Propuesta comercial · Karina Paz Kennedy, persona física con actividad empresarial<br>Octubre 2026</p>
+</section>
+
+<section class="slide">
+  <h2>El proyecto</h2>
+  <p class="lede">Un bar gastronómico dentro de Casa de la Cultura Playas de Tijuana, para público de 35 años en adelante.</p>
+  <div class="grid cols-3">
+    <div class="card"><h3>Concepto</h3><p>Steakhouse accesible. Espacio de convivencia con propuesta gastronómica sencilla y de calidad.</p></div>
+    <div class="card"><h3>Oferta</h3><p>Botanas, carnes, vinos, coctelería y bebidas sin alcohol. Menú práctico y de fácil operación.</p></div>
+    <div class="card"><h3>Propósito</h3><p>Nueva oferta gastronómica para la comunidad de Playas, con un modelo rentable para ambas partes.</p></div>
+  </div>
+</section>
+
+<section class="slide slide--navy">
+  <h2>Las partes del acuerdo</h2>
+  <p class="lede">Un acuerdo directo entre la sede cultural y la parte operadora, sin intermediarios.</p>
+</section>
+
+<section class="slide">
+  <h2>Las dos partes</h2>
+  <div class="row"><div><div class="numbered" style="margin:0"><span class="num">1</span><p style="font-weight:600;color:var(--navy)">Ayuntamiento y Secretaría de Cultura</p></div></div>
+    <span>A través de Casa de la Cultura Playas. Aporta el inmueble, los permisos que le correspondan, y los servicios de agua y electricidad.</span></div>
+  <div class="row"><div><div class="numbered" style="margin:0"><span class="num" style="background:var(--charcoal-light)">2</span><p style="font-weight:600;color:var(--charcoal-light)">Karina Paz Kennedy</p></div></div>
+    <span>Persona física con actividad empresarial. Parte operadora: concepto, equipo, personal, compras y operación cotidiana.</span></div>
+</section>
+
+<section class="slide">
+  <h2>La parte operadora</h2>
+  <p class="lede">Karina Paz Kennedy · Persona física con actividad empresarial</p>
+  <div class="grid cols-2">
+    <ul class="list">
+      <li>Chef con operación propia en Tijuana y San Diego bajo la marca KPK Wellness.</li>
+      <li>Experiencia dirigiendo talleres de cocina y nutrición en Playas de Tijuana.</li>
+      <li>Asume la administración y operación cotidiana del establecimiento.</li>
+      <li>Al ser persona física con actividad empresarial, puede facturar y contratar personal directamente.</li>
+    </ul>
+    <div class="card card--dark"><h3>Régimen fiscal</h3><p>Persona física con actividad empresarial: emite CFDI, retiene y entera impuestos, y responde directamente de las obligaciones de la operación.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Qué aporta cada parte</h2>
+  <div class="grid cols-2">
+    <div class="card"><h3>Ayuntamiento · Cultura</h3>
+      <ul class="list">
+        <li>El espacio destinado a la operación</li>
+        <li>Los permisos que le correspondan</li>
+        <li>Las instalaciones existentes del inmueble</li>
+        <li>Servicios de agua y electricidad</li>
+        <li>Adecuaciones para dejar las instalaciones funcionales y seguras</li>
+        <li>Instalación de gas entregada en condiciones de operación</li>
+      </ul></div>
+    <div class="card"><h3 style="color:var(--charcoal-light)">Karina Paz Kennedy</h3>
+      <ul class="list">
+        <li>Concepto gastronómico y comercial</li>
+        <li>Menú y propuesta de bebidas</li>
+        <li>Imagen del establecimiento</li>
+        <li>Mobiliario de comedor y áreas de servicio</li>
+        <li>Equipamiento de cocina y de operación</li>
+        <li>Capital para la puesta en marcha</li>
+      </ul></div>
+  </div>
+</section>
+
+<section class="slide slide--navy">
+  <h2>Modelo económico</h2>
+  <p class="lede">Renta fija mensual, más participación sobre la utilidad de bebidas alcohólicas.</p>
+</section>
+
+<section class="slide">
+  <h2>Las cifras del acuerdo</h2>
+  <div class="grid cols-2">
+    <div class="card"><div class="stat">$4,000</div><div class="stat-label">MXN mensuales de renta</div>
+      <div class="stat-note">Incluye el uso del espacio y los servicios de agua y electricidad.</div></div>
+    <div class="card"><div class="stat stat--alt">50 / 50</div><div class="stat-label">sobre la utilidad neta</div>
+      <div class="stat-note">Exclusivamente de la venta de bebidas alcohólicas. Liquidación mensual.</div></div>
+  </div>
+  <h3 style="margin-top:32px">Cómo se calcula la utilidad neta de bebidas</h3>
+  <ul class="list">
+    <li>Ventas de bebidas alcohólicas, menos el costo de adquisición de las bebidas.</li>
+    <li>Menos el personal directamente relacionado con el servicio de bebidas.</li>
+    <li>Menos los gastos operativos proporcionales a esa venta.</li>
+    <li>La metodología de gastos deducibles debe quedar establecida en el contrato definitivo.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <h2>Obligaciones de pago y operación</h2>
+  <div class="grid cols-2">
+    <div class="card"><h3>Paga el Ayuntamiento</h3>
+      <ul class="list"><li>Agua</li><li>Electricidad</li><li>Adecuaciones de instalaciones básicas</li></ul></div>
+    <div class="card"><h3 style="color:var(--charcoal-light)">Paga la operadora</h3>
+      <ul class="list"><li>Renta mensual de $4,000 MXN</li><li>Suministro y consumo de gas</li><li>Personal, compras y proveedores</li><li>Mantenimiento del equipo y mobiliario</li></ul></div>
+  </div>
+  <div class="note"><strong>Nota:</strong> la recolección de basura no aparece en la contrapropuesta. Si debe correr por cuenta del Ayuntamiento, hay que agregarla expresamente al contrato.</div>
+</section>
+
+<section class="slide">
+  <h2>Control, transparencia y activos</h2>
+  <div class="grid cols-2">
+    <div class="card"><div class="numbered"><span class="num">1</span><div><h3>Administración</h3><p>La administración financiera y operativa queda a cargo de la parte operadora.</p></div></div></div>
+    <div class="card"><div class="numbered"><span class="num">2</span><div><h3>Punto de venta</h3><p>Las bebidas alcohólicas se registran en un sistema que permite identificarlas por separado.</p></div></div></div>
+    <div class="card"><div class="numbered"><span class="num">3</span><div><h3>Acceso a reportes</h3><p>Ambas partes pueden consultar los reportes de venta de bebidas y los comprobantes del cálculo de utilidad.</p></div></div></div>
+    <div class="card"><div class="numbered"><span class="num">4</span><div><h3>Propiedad de activos</h3><p>El mobiliario y el equipo aportados por el operador siguen siendo suyos y pueden retirarse al terminar la relación.</p></div></div></div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Lo que falta definir</h2>
+  <p class="lede">Cuatro puntos abiertos antes de poder firmar.</p>
+  <div class="row"><strong>Permisos de venta de alcohol</strong><span>El documento dice que Casa de la Cultura aporta los permisos que le correspondan, sin precisar la licencia de alcoholes. Siendo un bar, hay que definir a nombre de quién va.</span></div>
+  <div class="row row--alt"><strong>Vigencia y renovación</strong><span>La contrapropuesta remite al contrato definitivo sin fijar plazo ni condiciones de renovación.</span></div>
+  <div class="row"><strong>Gastos deducibles de bebidas</strong><span>La metodología para determinarlos debe quedar escrita; de ella depende el monto del 50/50.</span></div>
+  <div class="row row--alt"><strong>Recolección de basura</strong><span>No aparece en el documento. Debe agregarse si corre por cuenta del Ayuntamiento.</span></div>
+</section>
+
+<section class="slide">
+  <h2>Siguientes pasos</h2>
+  <div class="numbered"><span class="num">01</span><p>Definir a nombre de quién va la licencia de alcoholes</p></div>
+  <div class="numbered"><span class="num">02</span><p>Acordar vigencia, renovación y causas de terminación</p></div>
+  <div class="numbered"><span class="num">03</span><p>Fijar la metodología de gastos deducibles de bebidas</p></div>
+  <div class="numbered"><span class="num">04</span><p>Confirmar servicios incluidos, incluida la recolección de basura</p></div>
+  <div class="numbered"><span class="num num--last">05</span><p>Elaborar y firmar el contrato definitivo</p></div>
+</section>
+
+<section class="slide slide--dark">
+  <h2>Una sede cultural con una nueva razón para visitarla</h2>
+  <p class="meta">Karina Paz Kennedy · Persona física con actividad empresarial<br><a href="https://kpk.associates" style="color:var(--eucalyptus)">kpk.associates</a></p>
+</section>
+
+<footer>
+  Documento de trabajo. Las cifras provienen de la contrapropuesta comercial para Casa de la Cultura Playas de Tijuana.
+</footer>
+
+</body>
+</html>

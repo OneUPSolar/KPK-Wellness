@@ -3,3 +3,6 @@
 
 # Raw event photos
 assets/events/18-junio/raw_photos/
+
+# Local tooling (screenshots, build helpers) — not part of the static site
+node_modules/
