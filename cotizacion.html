@@ -541,7 +541,8 @@
       leyenda: "Cotización en pesos mexicanos, con factura.",
       preguntas: "¿Tienes preguntas?", escribe: "Escríbele directo a Karina por WhatsApp",
       respondo: "Te contesta ella misma, en su horario.", waPregunta: "Hola Karina, tengo una pregunta sobre la cotización",
-      pagoRecibido: "Pago recibido", fechaApartada: "Tu fecha queda apartada",
+      pagoRecibido: "Pago recibido", fechaApartada: "Tu fecha queda apartada", avisarPago: "Avisar a Karina por WhatsApp",
+      waPagado: "Hola Karina, ya pagué el anticipo de {e} ({f}). Mi fecha queda agendada.",
       calendario: "Agregar a mi calendario", invitacion: "Crear la invitación para mis invitados",
       reservar: "Pagar anticipo y reservar fecha",
       reservarWa: "Hola Karina, quiero pagar el anticipo y reservar la fecha para",
@@ -567,7 +568,8 @@
       leyenda: "Quote in US dollars, with an invoice.",
       preguntas: "Questions?", escribe: "Message Karina directly on WhatsApp",
       respondo: "She answers personally, during her hours.", waPregunta: "Hi Karina, I have a question about the quote for",
-      pagoRecibido: "Payment received", fechaApartada: "Your date is held",
+      pagoRecibido: "Payment received", fechaApartada: "Your date is held", avisarPago: "Let Karina know on WhatsApp",
+      waPagado: "Hi Karina, I just paid the deposit for {e} ({f}). My date is booked.",
       calendario: "Add to my calendar", invitacion: "Create the invitation for my guests",
       reservar: "Pay the deposit and reserve the date",
       reservarWa: "Hi Karina, I'd like to pay the deposit and reserve the date for",
@@ -856,10 +858,14 @@
     var calendario = ics
       ? '<a class="boton claro" download="' + esc(c.slug) + '.ics" href="' + ics + '">' + esc(t9.calendario) + "</a>"
       : "";
+    var waPagado = chef.whatsapp
+      ? '<a class="boton primario con-ico" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
+        encodeURIComponent(t9.waPagado.replace("{e}", tx(c.titulo, L)).replace("{f}", tx(c.fecha, L))) + '">' + WA_SVG + esc(t9.avisarPago) + "</a>"
+      : "";
     var aprobado = pagoAprobado()
       ? '<section><div class="aprobado"><div><b>' + esc(t9.pagoRecibido) + "</b><span>" +
         esc(t9.fechaApartada + ": " + tx(c.fecha, L) + (tx(c.horario, L) ? " · " + tx(c.horario, L) : "")) + "</span></div>" +
-        calendario + "</div></section>"
+        '<div class="acciones">' + waPagado + calendario + "</div></div></section>"
       : "";
     var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
     var chips = preguntas.map(function (q, i) {
@@ -973,7 +979,7 @@
               "</div>" +
           "</div>" +
           '<div class="pago-cuerpo">' +
-            '<div class="acciones">' + reservar + (pagoAprobado() ? "" : calendario) +
+            '<div class="acciones">' + (pagoAprobado() ? waPagado : reservar + calendario) +
               '<button class="boton claro" type="button" data-copiar-resumen>' + esc(t9.copiarResumen) + "</button>" +
             "</div>" +
             zelle +
@@ -1414,6 +1420,11 @@
             campo("Link en pesos · tarjeta (Mercado Pago)", c.linkMxn, "linkMxn") +
             campo("Link en pesos · transferencia o efectivo, con descuento", c.linkMxnEfectivo, "linkMxnEfectivo") +
             '<button type="button" class="agregar" id="btn-cobro-es">Generar cobros</button>' +
+            '<div class="aviso" id="cobro-estado">' +
+              (c.linkMxn ? "Tarjeta: link listo ✓" : "Tarjeta: sin link todavía") + " · " +
+              (c.linkMxnEfectivo ? "Transferencia/efectivo: link listo ✓" : "Transferencia/efectivo: sin link todavía") +
+              (c.linkMxn || c.linkMxnEfectivo ? " · Recuerda Guardar." : "") +
+            "</div>" +
             campo("Link en dólares · tarjeta, Apple Pay, Klarna/Affirm (Stripe)", c.linkUsd, "linkUsd") +
             '<button type="button" class="agregar" id="btn-cobro-en">Generar cobro en dólares</button>' +
             '<div class="aviso">El lado en español cobra con el link en pesos; el inglés, con el de dólares. ' +
@@ -1716,7 +1727,12 @@
           (conDescuento ? " y " + dinero(t.anticipoEfectivo, t.moneda) + " con descuento" : "") + ". Falta Guardar.");
         cerrarPanel(); abrirPanel();
       })
-      .catch(function (e) { brindis(e.message); })
+      .catch(function (e) {
+        brindis(e.message);
+        // El aviso de 3 segundos se pierde; esto se queda escrito hasta que se cierre el panel.
+        var est = $("#cobro-estado");
+        if (est) { est.textContent = "No se pudo generar el cobro: " + e.message; est.style.borderLeftColor = "#C79A91"; est.style.color = "#9A5A4F"; }
+      })
       .finally(function () {
         if (boton && boton.isConnected) { boton.disabled = false; boton.textContent = lado === "es" ? "Generar cobros" : "Generar cobro en dólares"; }
       });
