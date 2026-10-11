@@ -119,6 +119,62 @@
 
   footer { margin-top: auto; padding-block: 26px 36px; color: var(--muted); font-size: 0.8rem;
            display: flex; flex-wrap: wrap; gap: 10px 16px; justify-content: space-between; align-items: center; }
+  /* ---------- Silver ---------- */
+  .chat { flex: 1; display: flex; flex-direction: column; }
+  .hilo { display: flex; flex-direction: column; gap: 10px; padding-bottom: 12px; }
+  .msg {
+    max-width: 92%; padding: 12px 15px; border-radius: 14px; font-size: 0.95rem; line-height: 1.5;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .msg.yo { align-self: flex-end; background: var(--navy); border-bottom-right-radius: 4px; }
+  .msg.silver { align-self: flex-start; background: var(--charcoal-2); border: 1px solid #343447; border-bottom-left-radius: 4px; }
+  .msg.error { background: #3A2A2E; border-color: #5A3A40; color: #E8B4B4; }
+  .msg.espera { color: var(--muted); font-style: italic; }
+  .publicada {
+    display: inline-block; margin-top: 8px; font-size: 0.8rem; color: var(--eucalyptus);
+    text-decoration: none; border: 1px solid var(--eucalyptus); border-radius: 999px; padding: 4px 10px;
+  }
+  /* Karina elige con qué motor habla Silver; solo aparece si hay más de uno con llave. */
+  .motores { display: flex; gap: 6px; margin: -8px 0 18px; }
+  .motor {
+    font-family: var(--sans); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em;
+    border: 1px solid #4A4A5C; border-radius: 999px; padding: 6px 13px;
+    background: transparent; color: var(--muted); cursor: pointer;
+  }
+  .motor.activo { border-color: var(--eucalyptus); color: var(--white); background: #2E2E3E; }
+  .redactar {
+    position: sticky; bottom: 0; background: var(--charcoal); padding: 12px 0 26px;
+    display: flex; gap: 10px; align-items: flex-end; border-top: 1px solid var(--linea);
+  }
+  .redactar textarea {
+    flex: 1; font-family: var(--sans); font-size: 16px; line-height: 1.4;
+    background: var(--charcoal-2); color: var(--white); border: 1px solid #343447; border-radius: 13px;
+    padding: 12px 14px; resize: none; min-height: 48px;
+  }
+  .redactar textarea:focus { outline: none; border-color: var(--eucalyptus); }
+  .enviar { background: var(--eucalyptus); color: var(--charcoal); border-color: var(--eucalyptus); }
+  .enviar:hover { color: var(--charcoal); }
+  .enviar:disabled { opacity: 0.5; cursor: default; }
+
+  /* ---------- Reportar ---------- */
+  .campo { width: 100%; font-family: var(--sans); font-size: 16px; line-height: 1.4;
+    background: var(--charcoal-2); color: var(--white); border: 1px solid #343447; border-radius: 13px;
+    padding: 12px 14px; margin-bottom: 10px; }
+  .campo:focus { outline: none; border-color: var(--eucalyptus); }
+  textarea.campo { resize: vertical; min-height: 110px; }
+  .tickets { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 9px; }
+  .ticket { display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+    background: var(--charcoal-2); border: 1px solid #343447; border-radius: 13px; padding: 13px 16px; }
+  .ticket b { font-weight: 600; font-size: 0.95rem; }
+  .ticket small { color: var(--muted); font-size: 0.8rem; display: block; margin-top: 2px; }
+  .estado { flex: none; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    border-radius: 999px; padding: 4px 10px; border: 1px solid #4A4A5C; color: var(--muted); }
+  .estado.resuelto { border-color: var(--eucalyptus); color: var(--eucalyptus); }
+  .sub-seccion { font-family: var(--serif); font-size: 1.3rem; font-weight: 600; margin: 28px 0 10px; }
+  .aviso { margin: 12px 0 0; font-size: 0.9rem; }
+  .aviso.ok { color: var(--eucalyptus); }
+  .aviso.error { color: #E8B4B4; }
+
   [hidden] { display: none !important; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -157,6 +213,14 @@
         <span class="punto"></span>
         <span><b>Recetas</b><small>Publicar y administrar el recetario</small></span>
       </a>
+      <a class="tarjeta" href="#silver" id="abrir-silver">
+        <span class="punto"></span>
+        <span><b>Silver y Claudio</b><small>Dicta un platillo y publícalo como receta</small></span>
+      </a>
+      <a class="tarjeta" href="#reportar" id="abrir-reportar">
+        <span class="punto"></span>
+        <span><b>Reportar</b><small>Una falla o una mejora; Bug-off la atiende</small></span>
+      </a>
       <a class="tarjeta" href="/card/">
         <span class="punto"></span>
         <span><b>Tarjeta digital</b><small>Tu tarjeta de presentación</small></span>
@@ -171,6 +235,46 @@
     <span></span>
     <button type="button" class="boton" id="salir">Cerrar sesión</button>
   </footer>
+</div>
+
+<!-- Silver: el chat con su asistente de recetas -->
+<div class="envoltura" id="silver" hidden>
+  <div class="cabeza-panel">
+    <div class="marca-chica"><span id="silver-titulo" style="display:inline;font:inherit;color:inherit;letter-spacing:0;text-transform:none;margin:0">Silver</span><span>Recetas</span></div>
+    <button type="button" class="boton" id="volver">← Panel</button>
+  </div>
+  <div class="motores" id="motores" hidden></div>
+  <main class="chat">
+    <p class="nota" id="silver-estado" hidden></p>
+    <div class="hilo" id="hilo" aria-live="polite"></div>
+  </main>
+  <form class="redactar" id="redactar">
+    <textarea id="texto" rows="2" placeholder="Describe el platillo…" required></textarea>
+    <button type="submit" class="boton enviar" id="enviar">Enviar</button>
+  </form>
+</div>
+
+<!-- Reportar: una falla o una mejora, que Bug-off atiende -->
+<div class="envoltura" id="reportar" hidden>
+  <div class="cabeza-panel">
+    <div class="marca-chica">Reportar<span>Bug-off</span></div>
+    <button type="button" class="boton" id="volver-reportar">← Panel</button>
+  </div>
+  <main>
+    <form id="forma-ticket">
+      <div class="motores" id="tipos">
+        <button type="button" class="motor activo" data-tipo="falla">Falla</button>
+        <button type="button" class="motor" data-tipo="mejora">Mejora</button>
+      </div>
+      <input class="campo" id="t-titulo" placeholder="En una línea: ¿qué pasa?" maxlength="120" required>
+      <textarea class="campo" id="t-detalle" placeholder="Cuenta más: dónde estabas, qué esperabas, qué pasó…"></textarea>
+      <button type="submit" class="boton enviar" id="t-enviar">Enviar ticket</button>
+      <p class="aviso" id="t-aviso" hidden></p>
+    </form>
+    <h2 class="sub-seccion">Tus tickets</h2>
+    <ul class="tickets" id="lista-tickets"><li class="nota">Cargando…</li></ul>
+  </main>
+  <footer><span></span></footer>
 </div>
 
 <script>
@@ -203,6 +307,151 @@
     if (!window.matchMedia('(display-mode: standalone)').matches && !navigator.standalone) {
       $('instalar').hidden = false;
     }
+  }
+
+  /* ---------- Silver ---------- */
+  // El hilo vive en esta pestaña nada más; la llave de OpenAI nunca llega aquí.
+  var HILO = 'kpk_silver';
+  var MOTOR = 'kpk_silver_motor';
+  var hilo = [];
+  var motor = null;
+  var nombres = {};
+  function nombreActivo() { return nombres[motor] || 'Silver'; }
+  function ponerTitulo() { $('silver-titulo').textContent = nombreActivo(); }
+  function pintarMotores(st) {
+    var caja = $('motores'); caja.innerHTML = '';
+    var claves = Object.keys(st.proveedores || {}).filter(function (k) { return st.proveedores[k].habilitado; });
+    var guardado = null;
+    try { guardado = localStorage.getItem(MOTOR); } catch (e) { /* sin memoria */ }
+    motor = claves.indexOf(guardado) >= 0 ? guardado : st.predeterminado;
+    claves.forEach(function (k) { nombres[k] = st.proveedores[k].nombre; });
+    ponerTitulo(); pintarHilo();
+    caja.hidden = claves.length < 2;
+    claves.forEach(function (k) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'motor' + (k === motor ? ' activo' : '');
+      b.textContent = st.proveedores[k].nombre; b.title = st.proveedores[k].motor + ' · ' + st.proveedores[k].modelo;
+      b.addEventListener('click', function () {
+        motor = k; ponerTitulo(); pintarHilo();
+        try { localStorage.setItem(MOTOR, k); } catch (e) { /* sin memoria */ }
+        Array.prototype.forEach.call(caja.children, function (x) { x.classList.toggle('activo', x === b); });
+      });
+      caja.appendChild(b);
+    });
+  }
+  function cargarHilo() { try { hilo = JSON.parse(sessionStorage.getItem(HILO) || '[]'); } catch (e) { hilo = []; } }
+  function guardarHilo() { try { sessionStorage.setItem(HILO, JSON.stringify(hilo.slice(-24))); } catch (e) { /* sin memoria, sin drama */ } }
+  function burbuja(clase, texto) {
+    var d = document.createElement('div');
+    d.className = 'msg ' + clase; d.textContent = texto;
+    $('hilo').appendChild(d); d.scrollIntoView({ block: 'end' });
+    return d;
+  }
+  function pintarHilo() {
+    $('hilo').innerHTML = '';
+    if (!hilo.length) burbuja('silver', 'Hola, Karina, soy ' + nombreActivo() + '. Descríbeme un platillo y lo convierto en receta. Te la enseño antes de publicarla.');
+    hilo.forEach(function (m) { burbuja(m.role === 'user' ? 'yo' : 'silver', m.content); });
+  }
+  function abrirSilver() {
+    $('panel').hidden = true; $('silver').hidden = false;
+    cargarHilo(); pintarHilo();
+    var sesion = leerSesion();
+    fetch('/api/silver/chat', { headers: { authorization: 'Bearer ' + (sesion && sesion.token) } })
+      .then(function (r) { return r.json(); })
+      .then(function (st) {
+        if (st.habilitada) { pintarMotores(st); return; }
+        $('silver-estado').textContent = 'Silver aún no está conectada: falta OPENAI_API_KEY o ANTHROPIC_API_KEY en Cloudflare.';
+        $('silver-estado').hidden = false;
+        $('enviar').disabled = true;
+      })
+      .catch(function () { /* el envío lo dirá */ });
+    $('texto').focus();
+  }
+  function cerrarSilver() { $('silver').hidden = true; $('panel').hidden = false; }
+  function enviar(ev) {
+    ev.preventDefault();
+    var texto = $('texto').value.trim();
+    if (!texto || $('enviar').disabled) return;
+    var sesion = leerSesion();
+    hilo.push({ role: 'user', content: texto }); guardarHilo();
+    burbuja('yo', texto); $('texto').value = '';
+    $('enviar').disabled = true;
+    var espera = burbuja('silver espera', nombreActivo() + ' está escribiendo…');
+    fetch('/api/silver/chat', {
+      method: 'POST',
+      headers: { authorization: 'Bearer ' + (sesion && sesion.token), 'content-type': 'application/json' },
+      body: JSON.stringify({ messages: hilo, proveedor: motor })
+    })
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
+      .then(function (out) {
+        espera.remove();
+        if (!out.ok) { burbuja('silver error', out.b.error || (nombreActivo() + ' no pudo responder.')); return; }
+        hilo.push({ role: 'assistant', content: out.b.reply }); guardarHilo();
+        var d = burbuja('silver', out.b.reply);
+        (out.b.publicadas || []).forEach(function (p) {
+          var a = document.createElement('a');
+          a.className = 'publicada'; a.href = p.url; a.target = '_blank'; a.rel = 'noopener';
+          a.textContent = (p.actualizada ? 'Actualizada: ' : 'Publicada: ') + p.id;
+          d.appendChild(document.createElement('br')); d.appendChild(a);
+        });
+      })
+      .catch(function () { espera.remove(); burbuja('silver error', 'No se pudo contactar al servidor.'); })
+      .then(function () { $('enviar').disabled = false; $('texto').focus(); });
+  }
+
+  /* ---------- Reportar ---------- */
+  var tipoTicket = 'falla';
+  function abrirReportar() {
+    $('panel').hidden = true; $('reportar').hidden = false;
+    cargarTickets(); $('t-titulo').focus();
+  }
+  function cerrarReportar() { $('reportar').hidden = true; $('panel').hidden = false; }
+  function pintarTickets(lista) {
+    var ul = $('lista-tickets'); ul.innerHTML = '';
+    if (!lista.length) { ul.innerHTML = '<li class="nota">Todavía no hay tickets.</li>'; return; }
+    lista.forEach(function (t) {
+      var li = document.createElement('li'); li.className = 'ticket';
+      var a = document.createElement('a'); a.href = t.url; a.target = '_blank'; a.rel = 'noopener';
+      a.style.color = 'inherit'; a.style.textDecoration = 'none';
+      var b = document.createElement('b'); b.textContent = '#' + t.numero + ' · ' + t.titulo;
+      var sm = document.createElement('small'); sm.textContent = (t.tipo === 'mejora' ? 'Mejora' : 'Falla') + ' · ' + new Date(t.creado).toLocaleDateString('es-MX');
+      a.appendChild(b); a.appendChild(sm);
+      var e = document.createElement('span'); e.className = 'estado ' + t.estado; e.textContent = t.estado;
+      li.appendChild(a); li.appendChild(e); ul.appendChild(li);
+    });
+  }
+  function cargarTickets() {
+    var sesion = leerSesion();
+    fetch('/api/tickets', { headers: { authorization: 'Bearer ' + (sesion && sesion.token) } })
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
+      .then(function (out) {
+        if (!out.ok) { $('lista-tickets').innerHTML = '<li class="nota">' + (out.b.error || 'No se pudieron leer los tickets.') + '</li>'; return; }
+        pintarTickets(out.b.tickets || []);
+      })
+      .catch(function () { $('lista-tickets').innerHTML = '<li class="nota">No se pudo contactar al servidor.</li>'; });
+  }
+  function aviso(clase, texto) { var p = $('t-aviso'); p.className = 'aviso ' + clase; p.textContent = texto; p.hidden = false; }
+  function enviarTicket(ev) {
+    ev.preventDefault();
+    var sesion = leerSesion();
+    $('t-enviar').disabled = true; $('t-aviso').hidden = true;
+    fetch('/api/tickets', {
+      method: 'POST',
+      headers: { authorization: 'Bearer ' + (sesion && sesion.token), 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tipo: tipoTicket, titulo: $('t-titulo').value, detalle: $('t-detalle').value,
+        pagina: document.referrer || '/app', dispositivo: navigator.userAgent
+      })
+    })
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
+      .then(function (out) {
+        if (!out.ok) { aviso('error', out.b.error || 'No se pudo crear el ticket.'); return; }
+        aviso('ok', 'Ticket #' + out.b.ticket.numero + ' creado. Bug-off ya lo tiene.');
+        $('t-titulo').value = ''; $('t-detalle').value = '';
+        cargarTickets();
+      })
+      .catch(function () { aviso('error', 'No se pudo contactar al servidor.'); })
+      .then(function () { $('t-enviar').disabled = false; });
   }
 
   function salir() {
@@ -280,6 +529,23 @@
       navigator.serviceWorker.register('sw.js').catch(function () { /* sin app instalable */ });
     });
   }
+
+  $('abrir-silver').addEventListener('click', function (e) { e.preventDefault(); abrirSilver(); });
+  $('volver').addEventListener('click', cerrarSilver);
+  $('redactar').addEventListener('submit', enviar);
+  // Enter manda; Shift+Enter hace salto de línea.
+  $('texto').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('redactar').requestSubmit(); }
+  });
+  $('abrir-reportar').addEventListener('click', function (e) { e.preventDefault(); abrirReportar(); });
+  $('volver-reportar').addEventListener('click', cerrarReportar);
+  $('forma-ticket').addEventListener('submit', enviarTicket);
+  Array.prototype.forEach.call($('tipos').children, function (b) {
+    b.addEventListener('click', function () {
+      tipoTicket = b.getAttribute('data-tipo');
+      Array.prototype.forEach.call($('tipos').children, function (x) { x.classList.toggle('activo', x === b); });
+    });
+  });
 }());
 </script>
 </body>

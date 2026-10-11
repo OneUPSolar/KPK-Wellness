@@ -23,6 +23,9 @@
 /playas/ayuntamiento-cultural   /playas/ayuntamiento-cultural/index.html  200
 /playas                         /playas/ayuntamiento-cultural/index.html  302
 
-# Cotizaciones (enlace privado por cliente, noindex)
-/cotizacion        /cotizacion.html  200
+# La app de Karina (PWA instalable)
 /app               /app/index.html   200
+
+# /cotizacion no lleva regla: Pages ya sirve cotizacion.html ahí. Reescribirlo
+# al .html hace que Pages lo normalice de vuelta y entre la regla otra vez:
+# ERR_TOO_MANY_REDIRECTS.

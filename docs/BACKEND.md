@@ -33,6 +33,9 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/commit` | POST | admin — guarda un archivo en el repo |
 | `/api/recipe-config` | GET · POST | admin — configuración del recetario |
 | `/api/register` | POST | pública — registro a eventos |
+| `/api/agent/recipe` | GET · POST | agente — Silver (GPT en ChatGPT) publica una receta |
+| `/api/silver/chat` | GET · POST | admin — Silver dentro de la app, con las llaves de OpenAI y Anthropic de Karina |
+| `/api/tickets` | GET · POST | admin — tickets de fallas y mejoras, como issues `bug-off` (ver `docs/BUG-OFF.md`) |
 
 ## Variables del proyecto
 
@@ -42,11 +45,18 @@ Environment variables. Las marcadas como secreto quedan cifradas.
 | variable | secreto | para qué |
 |---|---|---|
 | `SESSION_SECRET` | sí | firma las sesiones de admin. `openssl rand -base64 48` |
-| `GITHUB_TOKEN` | sí | PAT de alcance fino, Contents: read & write en este repo |
+| `GITHUB_TOKEN` | sí | PAT de alcance fino: Contents: read & write, **Issues: read & write** (para los tickets) |
 | `ADMIN_PASSWORD` | sí | opcional. Si no está, `/api/login` responde 404 |
 | `GOOGLE_CLIENT_ID` | no | cliente OAuth de Google |
 | `ALLOWED_EMAILS` | no | lista separada por comas de quién puede entrar |
 | `REPO` | no | `OneUPSolar/KPK-Wellness` |
+| `AGENT_TOKEN` | sí | credencial de Silver (ChatGPT). `openssl rand -hex 32`. Sin ella, `/api/agent/*` responde 503 |
+| `OPENAI_API_KEY` | sí | llave de OpenAI de Karina, para Silver en la app |
+| `OPENAI_MODEL` | no | opcional; predeterminado `gpt-4.1` |
+| `ANTHROPIC_API_KEY` | sí | llave de Anthropic de Karina, para Silver en la app |
+| `ANTHROPIC_MODEL` | no | opcional; predeterminado `claude-opus-5-5` |
+
+El asistente de recetas de la app se llama **Silver** cuando contesta OpenAI y **Claudio** cuando contesta Claude; funciona con cualquiera de las dos llaves y, con las dos, Karina elige en la app. Sin ninguna, `/api/silver/chat` responde 503.
 
 Sin `SESSION_SECRET` nadie puede entrar: las rutas responden 503 en vez de
 dejar pasar. Es a propósito — una configuración incompleta no debe abrir el

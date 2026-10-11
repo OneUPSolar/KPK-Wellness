@@ -1,0 +1,58 @@
+# Bug-off: Karina reporta desde la app, el issue recibe la etiqueta `bug-off`,
+# y Claude investiga y propone un PR. Nunca escribe en main; Manny revisa y
+# fusiona.
+#
+# La llave es la de desarrollo (secreto ANTHROPIC_API_KEY del repo), no la de
+# la app: este bot hace mejoras al sitio, no recetas. Para quitar la llave
+# estática: identity federation, ver docs/BUG-OFF.md.
+name: Bug-off
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  bug-off:
+    if: github.event.label.name == 'bug-off'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Sin llave estática (opcional): borra la línea de arriba y usa
+          #   anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          #   anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          #   anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          # La Action usa la llave si está presente; no se mezclan.
+          branch_prefix: bugoff/
+          use_sticky_comment: true
+          prompt: |
+            Eres Bug-off, el bot de mantenimiento de kpk.associates (este repo).
+            Karina, la dueña del sitio, reportó el issue #${{ github.event.issue.number }}
+            desde su app. Léelo con `gh issue view ${{ github.event.issue.number }}`.
+
+            Reglas:
+            - Trabaja en la rama que ya tienes (bugoff/...). Nunca en main.
+            - Si es una falla o una mejora chica y clara: investiga el código,
+              haz el cambio mínimo que la resuelve, verifica que el JS/JSON
+              siga válido (`node --check`, `python3 -m json.tool`), commitea con
+              un mensaje en español que explique el porqué, y abre el PR con
+              `gh pr create --base main` referenciando el issue (Closes #N).
+            - Si es grande, ambigua, o toca pagos, autenticación, secretos o
+              `functions/_lib/`: NO cambies código. Comenta en el issue un plan
+              corto en español y qué decisión necesitas de Manny.
+            - Nunca toques archivos bajo `.github/`, ni `_redirects`, ni
+              credenciales. Nunca agregues dependencias.
+            - Todo lo que escribas (commits, PR, comentarios) va en español,
+              claro, sin tecnicismos innecesarios: Karina lo va a leer.
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Read,Glob,Grep,Edit,Write,Bash(git:*),Bash(gh issue view:*),Bash(gh issue comment:*),Bash(gh pr create:*),Bash(node --check:*),Bash(python3 -m json.tool:*)"

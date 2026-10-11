@@ -38,6 +38,22 @@ export async function requireAdmin(request, env) {
   return payload;
 }
 
+/**
+ * Cuarto plano: los agentes. Silver es un GPT de ChatGPT, y un token de
+ * sesión que expira en 12 horas no le sirve — no hay quién lo renueve. Lleva
+ * su propia credencial de larga vida, y por eso sus rutas son estrechas: solo
+ * puede publicar recetas, no escribir en cualquier parte del repo.
+ */
+export function requireAgent(request, env) {
+  if (!env.AGENT_TOKEN) throw json({ error: 'Los agentes no están habilitados.' }, 503);
+  const token = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
+  // Comparación de tiempo constante: una credencial no se adivina a tientas.
+  if (!token || token.length !== env.AGENT_TOKEN.length) throw json({ error: 'Credencial inválida.' }, 401);
+  let diff = 0;
+  for (let i = 0; i < token.length; i++) diff |= token.charCodeAt(i) ^ env.AGENT_TOKEN.charCodeAt(i);
+  if (diff !== 0) throw json({ error: 'Credencial inválida.' }, 401);
+}
+
 /** Lee un archivo del repo. Devuelve { content, sha } o null si no existe. */
 export async function ghRead(env, path) {
   const res = await fetch(`${GITHUB_API}/repos/${env.REPO}/contents/${encodeURI(path)}`, {
@@ -46,7 +62,10 @@ export async function ghRead(env, path) {
   if (res.status === 404) return null;
   if (!res.ok) throw json({ error: `GitHub respondió ${res.status} al leer ${path}.` }, 502);
   const data = await res.json();
-  return { content: atob(data.content.replace(/\n/g, '')), sha: data.sha };
+  // atob devuelve bytes como Latin-1; hay que decodificarlos como UTF-8 o
+  // "Preparación" llega como "PreparaciÃ³n".
+  const bytes = Uint8Array.from(atob(data.content.replace(/\n/g, '')), (c) => c.charCodeAt(0));
+  return { content: new TextDecoder().decode(bytes), sha: data.sha };
 }
 
 /** Escribe un archivo del repo. `content` es texto, o base64 si isBase64. */
