@@ -346,13 +346,6 @@
   .lapiz[data-editar="precio"], .lapiz[data-editar="cobro"] { top: -14px; right: 14px; }
   .caja { position: relative; }
   .caja .lapiz { top: 10px; right: 10px; }
-  .asistencia { background: var(--papel); border: 1px solid var(--linea); border-radius: 14px; padding: 18px 20px; display: grid; gap: 10px; }
-  .asis-cifras { font-family: var(--display); font-size: 1.6rem; font-weight: 600; line-height: 1.1; }
-  .asis-cifras small { font-family: var(--texto); font-size: 0.85rem; font-weight: 500; color: var(--tinta-sueve); margin-left: 8px; }
-  .asis-lista { display: grid; gap: 4px; font-size: 0.92rem; }
-  .asis-lista div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--linea); }
-  .asis-lista .no { color: var(--tinta-sueve); text-decoration: line-through; }
-  .asis-lista small { color: var(--tinta-sueve); }
   .karina.asistente .retrato.vacia { background: linear-gradient(135deg, #2B3A5C 0%, #1F2024 100%); }
   .karina.asistente .respuesta { background: var(--crema); border-left-color: #2B3A5C; white-space: pre-wrap; }
 
@@ -406,6 +399,72 @@
   }
   .barra-admin button.fantasma { background: transparent; color: var(--arena); }
   .barra-admin .crece { margin-left: auto; }
+  .barra-admin .modo { font-size: 0.78rem; color: #B9BAB8; text-align: right; }
+  @media (max-width: 860px) { .barra-admin .modo { display: none; } }
+  body.vista-cliente .barra-admin { display: none; }
+  .aviso-cliente {
+    position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 45;
+    font: 500 0.82rem/1 var(--texto); color: #fff; background: var(--tinta); border: 0; border-radius: 999px;
+    padding: 10px 16px; cursor: pointer; box-shadow: 0 8px 24px rgba(31,32,36,0.25); white-space: nowrap;
+  }
+  .aviso-cliente b { color: var(--arena); margin-left: 10px; font-weight: 600; }
+
+  /* ---------- Karina, abajo a la derecha ---------- */
+  .k-lanzador { position: fixed; right: 20px; bottom: 20px; z-index: 30; display: grid; justify-items: end; gap: 12px; }
+  .k-boton { width: 68px; height: 68px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+  .k-boton .halo { width: 68px; height: 68px; display: block; }
+  .k-boton .retrato { display: grid; border-width: 2px; box-shadow: 0 10px 28px rgba(31,32,36,0.28); }
+  .k-boton .retrato.vacia { font-size: 1.9rem; }
+  .k-boton:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 6px; }
+  .k-teaser {
+    position: absolute; right: 80px; bottom: 20px; white-space: nowrap; pointer-events: none;
+    background: var(--papel); color: var(--tinta); font: 500 0.86rem/1 var(--texto); padding: 10px 14px; border-radius: 999px;
+    box-shadow: 0 6px 20px rgba(31,32,36,0.16); opacity: 0; transform: translateX(6px);
+    animation: asoma 0.5s ease 2.5s forwards;
+  }
+  @keyframes asoma { to { opacity: 1; transform: none; } }
+  .k-lanzador.abierto .k-teaser { display: none; }
+  .k-panel {
+    width: min(380px, calc(100vw - 32px)); max-height: min(560px, calc(100vh - 120px)); overflow-y: auto;
+    background: var(--papel); border: 1px solid var(--linea); border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(31,32,36,0.28); padding: 18px; display: grid; gap: 14px;
+    transform-origin: bottom right; animation: abre 0.22s ease-out;
+  }
+  .k-panel[hidden] { display: none; }
+  @keyframes abre { from { opacity: 0; transform: translateY(8px) scale(0.97); } }
+  .k-panel-cab { display: flex; gap: 12px; align-items: center; }
+  .k-panel-cab b { display: block; font-family: var(--display); font-size: 1.35rem; font-weight: 600; line-height: 1.1; }
+  .k-panel-cab span { color: var(--tinta-sueve); font-size: 0.9rem; }
+  .k-panel-cab > div { flex: 1; min-width: 0; }
+  .halo.chico { width: 52px; height: 52px; }
+  .halo.chico .retrato { display: grid; border-width: 2px; }
+  .halo.chico .retrato.vacia { font-size: 1.5rem; }
+  .k-cerrar { align-self: start; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--linea); background: transparent; font-size: 1.3rem; line-height: 1; color: var(--tinta-sueve); cursor: pointer; }
+  .k-cerrar:hover { color: var(--tinta); border-color: var(--tinta-sueve); }
+  .k-vista { display: grid; gap: 8px; }
+  .k-vista[hidden] { display: none; }
+  .k-opcion {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left;
+    font: 500 0.95rem/1.3 var(--texto); color: var(--tinta); text-decoration: none; cursor: pointer;
+    background: var(--crema); border: 1px solid transparent; border-radius: 14px; padding: 14px 16px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .k-opcion:hover { border-color: var(--eucalipto); background: #EAF1ED; }
+  .k-opcion:focus-visible, .k-volver:focus-visible, .k-cerrar:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 2px; }
+  .k-opcion svg { width: 18px; height: 18px; flex: none; color: var(--eucalipto-h); }
+  .k-opcion small { display: block; font-size: 0.82rem; font-weight: 500; opacity: 0.85; margin-top: 2px; }
+  .k-opcion.fuerte { background: var(--eucalipto-h); color: #fff; }
+  .k-opcion.fuerte svg { color: #fff; }
+  .k-opcion.fuerte:hover { background: #42665A; border-color: #42665A; }
+  .k-opcion .con-ico { display: inline-flex; align-items: center; gap: 8px; }
+  .k-opcion .con-ico .wa-ico { color: var(--eucalipto-h); }
+  .k-volver { justify-self: start; background: none; border: 0; padding: 4px 0; font: 600 0.85rem var(--texto); color: var(--eucalipto-h); cursor: pointer; }
+  .k-titulo { font-family: var(--display); font-size: 1.3rem; font-weight: 600; }
+  @media (max-width: 560px) {
+    .k-lanzador { right: 14px; bottom: 14px; }
+    .k-boton, .k-boton .halo { width: 60px; height: 60px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .k-teaser { animation: none; opacity: 1; transform: none; } .k-panel { animation: none; } }
 
   .panel { position: fixed; inset: 0; z-index: 40; background: rgba(32,33,35,0.55); display: grid; justify-items: end; }
   .panel-caja {
@@ -551,11 +610,14 @@
       respondo: "Te contesta ella misma, en su horario.", waPregunta: "Hola Karina, tengo una pregunta sobre la cotización",
       pagoRecibido: "Pago recibido", fechaApartada: "Tu fecha queda apartada", avisarPago: "Avisar a Karina por WhatsApp",
       waPagado: "Hola Karina, ya pagué el anticipo de {e} ({f}). Mi fecha queda agendada.",
-      calendario: "Agregar a mi calendario", invitacion: "Crear la invitación para mis invitados",
+      calendario: "Agregar a mi calendario",
       fotosNota: "Las fotografías son representativas del tipo de platillo; el tamaño y las porciones pueden variar. Solo con fines de presentación.",
       reservar: "Pagar anticipo y reservar fecha",
       reservarWa: "Hola Karina, quiero pagar el anticipo y reservar la fecha para",
-      holaSoy: "Hola, soy Karina Kennedy.", ayudar: "¿En qué te puedo ayudar? Elige una pregunta o escríbeme.",
+      kAbrir: "Pregúntale a Karina", kTeaser: "¿Dudas? Pregúntame", kPagar: "Pagar anticipo y agendar el evento",
+      kMenu: "Preguntas sobre el menú", kOtras: "Otras preguntas", kHablar: "Hablar con Karina directamente",
+      kHablarWa: "Hola Karina, quiero platicar sobre la cotización", kVolver: "Volver", kCerrar: "Cerrar",
+      holaSoy: "Hola, soy Karina Kennedy.", ayudar: "¿En qué te puedo ayudar?",
       sobreCot: "Hola Karina, sobre la cotización", preguntarWa: "Preguntar esto por WhatsApp",
       tuPregunta: "Escribe tu pregunta…", enviarWa: "Enviar por WhatsApp",
       descuento: "{d}% de descuento", conDescuento: "Transferencia o efectivo: {m} ({d}% de descuento)",
@@ -579,11 +641,14 @@
       respondo: "She answers personally, during her hours.", waPregunta: "Hi Karina, I have a question about the quote for",
       pagoRecibido: "Payment received", fechaApartada: "Your date is held", avisarPago: "Let Karina know on WhatsApp",
       waPagado: "Hi Karina, I just paid the deposit for {e} ({f}). My date is booked.",
-      calendario: "Add to my calendar", invitacion: "Create the invitation for my guests",
+      calendario: "Add to my calendar",
       fotosNota: "Photos are representative of each dish; size and portions may vary. For presentation purposes only.",
       reservar: "Pay the deposit and reserve the date",
       reservarWa: "Hi Karina, I'd like to pay the deposit and reserve the date for",
-      holaSoy: "Hi, I'm Karina Kennedy.", ayudar: "How can I help? Pick a question or write to me.",
+      kAbrir: "Ask Karina", kTeaser: "Questions? Ask me", kPagar: "Pay the deposit and book the event",
+      kMenu: "Questions about the menu", kOtras: "Other questions", kHablar: "Talk to Karina directly",
+      kHablarWa: "Hi Karina, I'd like to talk about the quote for", kVolver: "Back", kCerrar: "Close",
+      holaSoy: "Hi, I'm Karina Kennedy.", ayudar: "How can I help?",
       sobreCot: "Hi Karina, about the quote for", preguntarWa: "Ask this on WhatsApp",
       tuPregunta: "Type your question…", enviarWa: "Send on WhatsApp",
       descuento: "{d}% off", conDescuento: "",
@@ -666,6 +731,8 @@
    * arma con lo que ya traen las cotizaciones, sin una base de clientes aparte.
    */
   function pintarLanding(admin) {
+    var k = document.getElementById("k-lanzador");
+    if (k) k.remove();
     var cab =
       '<section><div class="etq">Cotizador</div><h1>Cotizaciones</h1>' +
       '<p class="sub">Karina Paz Kennedy · Eventos Tijuana / San Diego</p>';
@@ -709,7 +776,7 @@
       if (c && (c.idioma === "en" || c.idioma === "es")) idioma = c.idioma;
       pintar();
     } else {
-      pintarLanding(Boolean(AUTH));
+      pintarLanding(esAdmin());
     }
     llenarSelector();
   }
@@ -771,7 +838,7 @@
   function pintar() {
     var c = cotizacionActiva();
     var L = idioma, t9 = T[L], chef = estado.chef || {};
-    var admin = Boolean(AUTH);
+    var admin = esAdmin();
 
     if (!c) {
       hoja.innerHTML = '<div class="cuerpo"><section><h2>' + esc(t9.sinCotizaciones) + "</h2></section></div>";
@@ -859,6 +926,8 @@
     // El botón principal siempre está. Con link de cobro va al checkout; sin él,
     // va al WhatsApp de Karina con la intención ya escrita.
     var textoReservar = t9.reservar + " · " + dinero(t.anticipoConIva, t.moneda);
+    var hrefReservar = pagoAprobado() ? "" : link || (L === "en" && chef.zelleLink) || (chef.whatsapp ? "https://wa.me/" + soloDigitos(chef.whatsapp) + "?text=" +
+      encodeURIComponent(t9.reservarWa + " " + tx(c.titulo, L) + " (" + tx(c.fecha, L) + ") — " + dinero(t.anticipoConIva, t.moneda)) : "");
     var reservar = link
       ? '<a class="boton primario" target="_blank" rel="noopener" href="' + esc(link) + '">' + esc(textoReservar) + "</a>"
       : L === "en" && chef.zelleLink
@@ -903,20 +972,6 @@
             '<input type="text" id="asis-entrada" placeholder="Pídele algo: cambia la tostada por aguachile, sube a 60 invitados…" maxlength="600" required>' +
             '<button type="submit" class="boton primario" id="asis-enviar">Pedir</button></form>' +
         "</div></section>"
-      : chef.whatsapp
-      ? '<section><div class="karina">' +
-          '<div class="k-cab"><div class="halo">' +
-            (chef.foto
-              ? '<div class="retrato" style="background-image:url(' + "'" + esc(chef.foto) + "'" + ')"></div>'
-              : '<div class="retrato vacia">' + esc(String(chef.nombre || "K").replace(/^chef\s+/i, "").charAt(0)) + "</div>") +
-          '</div><div class="burbuja"><b>' + esc(t9.holaSoy) + "</b><span>" + esc(t9.ayudar) + "</span></div></div>" +
-          '<div class="chips">' + chips + "</div>" +
-          '<div class="respuesta" id="faq-respuesta" hidden><p id="faq-texto"></p>' +
-            '<a class="enlace-wa" id="faq-wa" target="_blank" rel="noopener" href="#">' + WA_SVG + esc(t9.preguntarWa) + "</a></div>" +
-          '<form class="pregunta-libre" id="pregunta-libre">' +
-            '<input type="text" id="pregunta-texto" placeholder="' + esc(t9.tuPregunta) + '" maxlength="300" required>' +
-            '<button type="submit" class="ico-wa" aria-label="' + esc(t9.enviarWa) + '" title="' + esc(t9.enviarWa) + '">' + WA_SVG + "</button></form>" +
-        "</div></section>"
       : "";
 
     hoja.innerHTML =
@@ -950,12 +1005,6 @@
       "</div>" +
 
       '<div class="cuerpo">' + aprobado +
-        (admin ? '<section><div class="asistencia" id="asistencia"><div class="etq">Asistencia</div>' +
-          '<div class="asis-cifras" id="asis-cifras">Cargando…</div><div class="asis-lista" id="asis-lista"></div>' +
-          '<div class="acciones"><a class="boton claro" href="invitacion?c=' + encodeURIComponent(c.slug) + '" target="_blank" rel="noopener">Abrir la invitación para los invitados</a>' +
-            '<button type="button" class="boton claro" data-copiar-invitacion>Copiar enlace de la invitación</button></div>' +
-          '<div class="aviso">La invitación es para que el cliente la comparta con sus invitados: misma portada, sin precios. ' +
-          "Cada confirmación queda registrada aquí aunque no manden el WhatsApp.</div></div></section>" : "") +
         (menu ? '<section>' + lapiz("menu", "Editar menú") + '<div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
           (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
           '</div><div class="carrusel"><div class="pista" id="pista" data-lenis-prevent>' + menu + "</div>" +
@@ -1011,7 +1060,7 @@
         "<div>" + esc(chef.correo) + "</div>" +
       "</div>";
 
-    cablear(c, t, t9, L, iva);
+    cablear(c, t, t9, L, iva, hrefReservar);
   }
 
   function dato(etq, val) {
@@ -1143,49 +1192,94 @@
   }
 
   /** Karina te atiende: cada pregunta muestra su respuesta y ofrece seguir por WhatsApp. */
-  function atencion(c, t, t9, L, chef) {
+  /* El cliente tiene a Karina abajo a la derecha: un retrato que brilla y,
+     al abrirlo, cuatro caminos (pagar, menú, otras dudas, WhatsApp). Vive en
+     <body>, fuera de la hoja, para que ningún transform de la animación lo mueva. */
+  function lanzador(c, t, t9, L, chef, hrefPagar) {
+    var viejo = document.getElementById("k-lanzador");
+    if (viejo) viejo.remove();
+    if (esAdmin() || !chef.whatsapp) return;
+    var wa = soloDigitos(chef.whatsapp);
+    function enlaceWa(m) { return "https://wa.me/" + wa + "?text=" + encodeURIComponent(t9.sobreCot + " " + tx(c.titulo, L) + ": " + m); }
     var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
-    var caja = $("#faq-respuesta"), texto = $("#faq-texto"), wa = $("#faq-wa");
-    if (!caja) return;
-    function enlaceWa(mensaje) {
-      return "https://wa.me/" + soloDigitos(chef.whatsapp) + "?text=" + encodeURIComponent(t9.sobreCot + " " + tx(c.titulo, L) + ": " + mensaje);
+    function tema(q) { return q.tema || (/men[uú]|platill|porci|vegetari|gluten|dish|portion|vegan/i.test(tx(q.nombre, "es") + " " + tx(q.nombre, "en")) ? "menu" : "otras"); }
+    var inicial = esc(String(chef.nombre || "K").replace(/^chef\s+/i, "").charAt(0));
+    var retrato = chef.foto
+      ? '<span class="retrato" style="background-image:url(' + "'" + esc(chef.foto) + "'" + ')"></span>'
+      : '<span class="retrato vacia">' + inicial + "</span>";
+    var flecha = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    var raiz = document.createElement("div");
+    raiz.id = "k-lanzador";
+    raiz.className = "k-lanzador";
+    raiz.innerHTML =
+      '<div class="k-panel" id="k-panel" role="dialog" aria-label="' + esc(t9.kAbrir) + '" hidden>' +
+        '<div class="k-panel-cab"><span class="halo chico">' + retrato + "</span>" +
+          '<div><b>' + esc(t9.holaSoy) + "</b><span>" + esc(t9.ayudar) + "</span></div>" +
+          '<button type="button" class="k-cerrar" aria-label="' + esc(t9.kCerrar) + '">×</button></div>' +
+        '<div class="k-vista" data-vista="inicio">' +
+          (hrefPagar ? '<a class="k-opcion fuerte" target="_blank" rel="noopener" href="' + esc(hrefPagar) + '"><span>' + esc(t9.kPagar) +
+            "<small>" + dinero(t.anticipoConIva, t.moneda) + "</small></span>" + flecha + "</a>" : "") +
+          '<button type="button" class="k-opcion" data-ir="menu"><span>' + esc(t9.kMenu) + "</span>" + flecha + "</button>" +
+          '<button type="button" class="k-opcion" data-ir="otras"><span>' + esc(t9.kOtras) + "</span>" + flecha + "</button>" +
+          '<a class="k-opcion" target="_blank" rel="noopener" href="https://wa.me/' + esc(wa) + "?text=" +
+            encodeURIComponent(t9.kHablarWa + " " + tx(c.titulo, L) + ".") + '"><span class="con-ico">' + WA_SVG + esc(t9.kHablar) + "</span>" + flecha + "</a>" +
+        "</div>" +
+        ["menu", "otras"].map(function (v) {
+          var chips = preguntas.map(function (q, i) { return tema(q) === v ? '<button type="button" class="chip" data-faq="' + i + '" aria-expanded="false">' + esc(tx(q.nombre, L)) + "</button>" : ""; }).join("");
+          return '<div class="k-vista" data-vista="' + v + '" hidden>' +
+            '<button type="button" class="k-volver" data-ir="inicio">‹ ' + esc(t9.kVolver) + "</button>" +
+            '<div class="k-titulo">' + esc(v === "menu" ? t9.kMenu : t9.kOtras) + "</div>" +
+            (chips ? '<div class="chips">' + chips + "</div>" : "") +
+            '<div class="respuesta" hidden><p></p><a class="enlace-wa" target="_blank" rel="noopener" href="#">' + WA_SVG + esc(t9.preguntarWa) + "</a></div>" +
+            '<form class="pregunta-libre"><input type="text" placeholder="' + esc(t9.tuPregunta) + '" maxlength="300" required aria-label="' + esc(t9.tuPregunta) + '">' +
+              '<button type="submit" class="ico-wa" aria-label="' + esc(t9.enviarWa) + '" title="' + esc(t9.enviarWa) + '">' + WA_SVG + "</button></form>" +
+          "</div>";
+        }).join("") +
+      "</div>" +
+      '<span class="k-teaser" aria-hidden="true">' + esc(t9.kTeaser) + "</span>" +
+      '<button type="button" class="k-boton" aria-expanded="false" aria-controls="k-panel" aria-label="' + esc(t9.kAbrir) + '">' +
+        '<span class="halo">' + retrato + "</span></button>";
+    document.body.appendChild(raiz);
+
+    var panel = raiz.querySelector(".k-panel"), boton = raiz.querySelector(".k-boton");
+    function ir(v) {
+      Array.prototype.forEach.call(raiz.querySelectorAll(".k-vista"), function (x) { x.hidden = x.getAttribute("data-vista") !== v; });
+      var foco = raiz.querySelector('.k-vista[data-vista="' + v + '"] .k-opcion, .k-vista[data-vista="' + v + '"] .chip, .k-vista[data-vista="' + v + '"] input');
+      if (foco) foco.focus();
     }
-    Array.prototype.forEach.call(hoja.querySelectorAll("[data-faq]"), function (b) {
-      b.addEventListener("click", function () {
-        var q = preguntas[Number(b.getAttribute("data-faq"))];
-        if (!q) return;
-        var abierto = b.getAttribute("aria-expanded") === "true";
-        Array.prototype.forEach.call(hoja.querySelectorAll("[data-faq]"), function (x) { x.setAttribute("aria-expanded", "false"); });
-        if (abierto) { caja.hidden = true; return; }
-        b.setAttribute("aria-expanded", "true");
-        texto.textContent = tx(q.detalle, L).replace("{p}", t.pct);
-        wa.href = enlaceWa(tx(q.nombre, L));
-        caja.hidden = false;
-      });
+    function abrir(si) {
+      panel.hidden = !si;
+      boton.setAttribute("aria-expanded", String(si));
+      raiz.classList.toggle("abierto", si);
+      if (si) ir("inicio"); else boton.focus();
+    }
+    boton.addEventListener("click", function () { abrir(panel.hidden); });
+    raiz.querySelector(".k-cerrar").addEventListener("click", function () { abrir(false); });
+    raiz.addEventListener("keydown", function (e) { if (e.key === "Escape" && !panel.hidden) abrir(false); });
+    Array.prototype.forEach.call(raiz.querySelectorAll("[data-ir]"), function (b) {
+      b.addEventListener("click", function () { ir(b.getAttribute("data-ir")); });
     });
-    var forma = $("#pregunta-libre");
-    if (forma) {
-      forma.addEventListener("submit", function (e) {
+    Array.prototype.forEach.call(raiz.querySelectorAll(".k-vista[data-vista='menu'], .k-vista[data-vista='otras']"), function (vista) {
+      var caja = vista.querySelector(".respuesta");
+      Array.prototype.forEach.call(vista.querySelectorAll("[data-faq]"), function (b) {
+        b.addEventListener("click", function () {
+          var q = preguntas[Number(b.getAttribute("data-faq"))];
+          var abierto = b.getAttribute("aria-expanded") === "true";
+          Array.prototype.forEach.call(vista.querySelectorAll("[data-faq]"), function (x) { x.setAttribute("aria-expanded", "false"); });
+          if (abierto || !q) { caja.hidden = true; return; }
+          b.setAttribute("aria-expanded", "true");
+          caja.querySelector("p").textContent = tx(q.detalle, L).replace("{p}", t.pct);
+          caja.querySelector("a").href = enlaceWa(tx(q.nombre, L));
+          caja.hidden = false;
+        });
+      });
+      vista.querySelector("form").addEventListener("submit", function (e) {
         e.preventDefault();
-        var v = $("#pregunta-texto").value.trim();
+        var v = vista.querySelector("input").value.trim();
         if (v) window.open(enlaceWa(v), "_blank", "noopener");
       });
-    }
-  }
-
-  /** Con sesión: cuántos han confirmado desde la invitación. */
-  function asistencia(c) {
-    var cifras = $("#asis-cifras"), lista = $("#asis-lista");
-    if (!cifras) return;
-    api("/rsvp?c=" + encodeURIComponent(c.slug)).then(function (r) {
-      cifras.innerHTML = esc(r.confirmados) + " confirmados" + "<small>" + esc(r.respuestas) + " respuestas · " + esc(Number(c.invitados) || 0) + " cotizados" +
-        (r.noVienen ? " · " + esc(r.noVienen) + " no vienen" : "") + "</small>";
-      lista.innerHTML = (r.lista || []).map(function (x) {
-        var f = x.cuando ? new Date(x.cuando).toLocaleDateString("es-MX") : "";
-        return '<div class="' + (x.asiste === false ? "no" : "") + '"><span>' + esc(x.nombre) + (x.nota ? " <small>· " + esc(x.nota) + "</small>" : "") + "</span>" +
-          "<span>" + (x.asiste === false ? "no viene" : "+" + esc(x.personas)) + (f ? " <small>" + esc(f) + "</small>" : "") + "</span></div>";
-      }).join("") || '<div><small>Todavía nadie confirma.</small></div>';
-    }).catch(function (e) { cifras.textContent = e.message; });
+    });
   }
 
   var pagoAvisado = false;
@@ -1202,8 +1296,8 @@
       .catch(function () { /* el pago ya está en Mercado Pago; esto es solo el registro */ });
   }
 
-  function cablear(c, t, t9, L, iva) {
-    carrusel(); parallax(); atencion(c, t, t9, L, estado.chef || {}); asistente(c, L); asistencia(c); registrarPago(c);
+  function cablear(c, t, t9, L, iva, hrefReservar) {
+    carrusel(); parallax(); lanzador(c, t, t9, L, estado.chef || {}, hrefReservar); asistente(c, L); registrarPago(c);
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-editar]"), function (b) {
       b.addEventListener("click", function () { abrirPanel(b.getAttribute("data-editar"), b.getAttribute("data-foto-editar")); });
     });
@@ -1211,12 +1305,6 @@
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
       b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
     });
-    var inv = hoja.querySelector("[data-copiar-invitacion]");
-    if (inv) {
-      inv.addEventListener("click", function () {
-        copiar(enlacePublico(c.slug).replace("/cotizacion?c=", "/invitacion?c="), function () { brindis("Enlace de la invitación copiado."); });
-      });
-    }
     var resumen = hoja.querySelector("[data-copiar-resumen]");
     if (resumen) {
       resumen.addEventListener("click", function () {
@@ -1234,6 +1322,26 @@
 
   /* ---------- editor ---------- */
 
+  /** Con sesión, alterna entre la vista de administrador y la del cliente. */
+  function vistaCliente(si) {
+    VISTA_CLIENTE = si;
+    document.body.classList.toggle("vista-cliente", si);
+    var aviso = document.getElementById("aviso-cliente");
+    if (si && !aviso) {
+      aviso = document.createElement("button");
+      aviso.type = "button";
+      aviso.id = "aviso-cliente";
+      aviso.className = "aviso-cliente";
+      aviso.innerHTML = "Así lo ve el cliente <b>Volver a administrador</b>";
+      aviso.addEventListener("click", function () { vistaCliente(false); });
+      document.body.appendChild(aviso);
+    } else if (!si && aviso) aviso.remove();
+    var u = new URL(location.href);
+    if (si) u.searchParams.set("vista", "cliente"); else u.searchParams.delete("vista");
+    history.replaceState(null, "", u.pathname + u.search + u.hash);
+    if (enCotizacion()) pintar(); else pintarLanding(esAdmin());
+  }
+
   function barraAdmin() {
     if ($("#barra-admin")) return;
     var barra = document.createElement("div");
@@ -1242,7 +1350,8 @@
     barra.innerHTML =
       '<span class="etq" style="color:var(--arena)">Cotizador</span>' +
       '<select id="sel-cot" aria-label="Cotización a mostrar"></select>' +
-      '<span class="crece"></span>' +
+      '<span class="crece modo">Vista de administrador · el cliente no ve esta barra ni los lápices</span>' +
+      '<button type="button" id="btn-cliente" class="fantasma">Ver como cliente</button>' +
       '<button type="button" id="btn-enviar" class="fantasma">Enviar por WhatsApp</button>' +
       '<button type="button" id="btn-nueva" class="fantasma">Nueva</button>' +
       '<button type="button" id="btn-editar">Editar</button>';
@@ -1255,6 +1364,8 @@
       else { history.replaceState(null, "", location.pathname + location.search); ruta(); }
     });
     $("#btn-editar").addEventListener("click", abrirPanel);
+    $("#btn-cliente").addEventListener("click", function () { vistaCliente(true); });
+    if (VISTA_CLIENTE) vistaCliente(true);
     $("#btn-enviar").addEventListener("click", enviarAlCliente);
     $("#btn-nueva").addEventListener("click", function () { nuevaCotizacion(cotizacionActiva(), false); });
   }
@@ -1460,7 +1571,6 @@
               campo("Fin", c.fin, "fin", "datetime-local") +
             "</div>" +
             bi("Nota del menú", c.piezas, "piezas") +
-            bi("Mensaje de la invitación (para los invitados del cliente)", c.mensajeInvitacion, "mensajeInvitacion") +
             '<div class="marca">Portada</div>' + fotoCampo(c.portada, "portada") +
             '<div class="aviso">Sin portada propia se usa la foto de Rosarito. Las fotos de los platillos y la portada ' +
               "son de muestra: cámbialas por las tuyas cuando las tengas.</div>" +
@@ -1723,10 +1833,12 @@
   var PREGUNTAS_BASE = [
     { nombre: { es: "¿Cómo aparto la fecha?", en: "How do I hold the date?" },
       detalle: { es: "Con el anticipo del {p}%. El resto se liquida el día del evento.", en: "With the {p}% deposit. The balance is due on the day of the event." } },
-    { nombre: { es: "¿Puedo cambiar el menú?", en: "Can I change the menu?" },
+    { tema: "menu", nombre: { es: "¿Puedo cambiar el menú?", en: "Can I change the menu?" },
       detalle: { es: "Sí. Dime qué te gustaría y te propongo opciones al mismo precio, o te cotizo el cambio.", en: "Yes. Tell me what you'd like and I'll suggest options at the same price, or quote the change." } },
-    { nombre: { es: "¿Hay opción vegetariana o sin gluten?", en: "Vegetarian or gluten-free options?" },
+    { tema: "menu", nombre: { es: "¿Hay opción vegetariana o sin gluten?", en: "Vegetarian or gluten-free options?" },
       detalle: { es: "Sí. Dime cuántas personas y adapto el menú.", en: "Yes. Tell me how many guests and I'll adapt the menu." } },
+    { tema: "menu", nombre: { es: "¿Las porciones son como en las fotos?", en: "Are portions like the photos?" },
+      detalle: { es: "Las fotos son representativas del tipo de platillo. El tamaño y la presentación pueden variar; pregúntame y te explico cantidades.", en: "The photos show the type of dish. Size and presentation may vary; ask me and I'll walk you through portions." } },
     { nombre: { es: "¿Incluye meseros?", en: "Are servers included?" },
       detalle: { es: "Se cotizan aparte. Te recomiendo cuántos según tu grupo.", en: "They're quoted separately. I'll recommend how many for your group." } },
     { nombre: { es: "¿Y si cambio la fecha?", en: "What if I change the date?" },
@@ -1736,6 +1848,9 @@
   /* Mientras Karina no suba su propia portada, se usa esta. */
   var PORTADA_PREDETERMINADA = "assets/cotizaciones/portada-rosarito.webp";
   var AUTH = null; // { token, email } cuando hay sesión de admin
+  // "Ver como cliente": con sesión, la página se pinta exactamente como la ve el cliente.
+  var VISTA_CLIENTE = new URLSearchParams(location.search).get("vista") === "cliente";
+  function esAdmin() { return Boolean(AUTH) && !VISTA_CLIENTE; }
 
   function api(ruta, opciones) {
     var o = opciones || {};
