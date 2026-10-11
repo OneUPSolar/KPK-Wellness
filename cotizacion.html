@@ -1173,8 +1173,22 @@
     }).catch(function (e) { cifras.textContent = e.message; });
   }
 
+  var pagoAvisado = false;
+  /** Vuelve de Mercado Pago aprobado: el servidor verifica el pago, lo registra y manda el correo de reserva. */
+  function registrarPago(c) {
+    if (pagoAvisado || !pagoAprobado()) return;
+    pagoAvisado = true;
+    var q = new URLSearchParams(location.search);
+    var id = q.get("payment_id") || q.get("collection_id");
+    if (!id) return;
+    fetch("/api/pagado", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ c: c.slug, payment_id: id }) })
+      .then(function (r) { return r.json(); })
+      .then(function (b) { if (b.correoEnviado) brindis(idioma === "en" ? "We emailed you the confirmation." : "Te enviamos la confirmación por correo."); })
+      .catch(function () { /* el pago ya está en Mercado Pago; esto es solo el registro */ });
+  }
+
   function cablear(c, t, t9, L, iva) {
-    carrusel(); parallax(); atencion(c, t, t9, L, estado.chef || {}); asistente(c, L); asistencia(c);
+    carrusel(); parallax(); atencion(c, t, t9, L, estado.chef || {}); asistente(c, L); asistencia(c); registrarPago(c);
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-editar]"), function (b) {
       b.addEventListener("click", function () { abrirPanel(b.getAttribute("data-editar"), b.getAttribute("data-foto-editar")); });
     });
@@ -1374,6 +1388,7 @@
               campo("Cliente", c.cliente, "cliente") +
               campo("WhatsApp del cliente", c.telCliente, "telCliente") +
             "</div>" +
+            campo("Correo del cliente (recibe la confirmación al pagar)", c.correoCliente, "correoCliente", "email") +
             campo("Enlace (slug)", c.slug, "slug") +
             bi("Fecha de emisión", c.emitida, "emitida") +
             bi("Lugar", c.lugar, "lugar") +
@@ -1451,6 +1466,11 @@
             "</div>" +
             campo("Link de Zelle (el que trae tu QR)", chef.zelleLink, "chef.zelleLink") +
             '<div class="marca">QR de Zelle</div>' + fotoCampo(chef.zelleQr, "chef.zelleQr") +
+            '<div class="marca">Correo de reserva (se manda solo cuando entra el anticipo)</div>' +
+            bi("Asunto", (chef.correoReserva || {}).asunto, "chef.correoReserva.asunto") +
+            bi("Cuerpo · puedes usar {nombre} {evento} {fecha} {horario} {lugar} {anticipo}", (chef.correoReserva || {}).cuerpo, "chef.correoReserva.cuerpo") +
+            '<div class="aviso">Vacío = se usa el texto sugerido ("Recibimos tu anticipo. Tu fecha queda reservada… Nos vemos ahí."). ' +
+              "Sale desde reservas@kpk.associates con tu correo como respuesta.</div>" +
             '<div class="marca">Tu foto</div>' + fotoCampo(chef.foto, "chef.foto") +
             '<div class="aviso">Abajo de cada cotización apareces tú: "Hola, soy Karina Kennedy". Las preguntas que ' +
               "ve el cliente son estas; si las dejas vacías se usan las sugeridas.</div>" +
@@ -1520,7 +1540,13 @@
         var ruta = el.dataset.ruta.split(".");
         var valor = el.type === "number" ? Number(el.value) : el.value;
         var destino = act;
-        if (ruta[0] === "chef") { destino = estado.chef; ruta.shift(); }
+        if (ruta[0] === "chef") { destino = estado.chef = estado.chef || {}; ruta.shift(); }
+        // Rutas largas (correoReserva.asunto.es): se baja nivel a nivel hasta el penúltimo.
+        while (ruta.length > 2) {
+          var k0 = ruta.shift();
+          if (!destino[k0] || typeof destino[k0] !== "object") destino[k0] = {};
+          destino = destino[k0];
+        }
         if (ruta.length === 1) {
           if (ruta[0] === "slug") { act.slug = aSlug(valor); estado.activa = act.slug; }
           else destino[ruta[0]] = valor;

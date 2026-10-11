@@ -38,6 +38,7 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/agent/recipe` | GET · POST | agente — Silver (GPT en ChatGPT) publica una receta |
 | `/api/silver/chat` | GET · POST | admin — Silver dentro de la app, con las llaves de OpenAI y Anthropic de Karina |
 | `/api/payments/stripe` | POST | admin — cobro en dólares con Stripe Checkout (tarjeta, Apple Pay, Klarna/Affirm) |
+| `/api/pagado` | POST público | al volver de Mercado Pago aprobado: verifica el pago con MP, lo registra en la cotización y manda el correo de reserva |
 | `/api/rsvp` | POST público · GET admin | confirmaciones de asistencia desde la invitación, guardadas en `content/rsvp/<slug>.json` |
 | `/api/tickets` | GET · POST | admin — tickets de fallas y mejoras, como issues `bug-off` (ver `docs/BUG-OFF.md`) |
 
@@ -59,6 +60,8 @@ Environment variables. Las marcadas como secreto quedan cifradas.
 | `OPENAI_MODEL` | no | opcional; predeterminado `gpt-4.1` |
 | `ANTHROPIC_API_KEY` | sí | llave de Anthropic de Karina, para Silver en la app |
 | `ANTHROPIC_MODEL` | no | opcional; predeterminado `claude-opus-5-5` |
+| `RESEND_API_KEY` | sí | para el correo de reserva al cliente (Resend, dominio kpk.associates verificado) |
+| `CORREO_REMITENTE` | no | opcional; predeterminado `Karina Paz Kennedy <reservas@kpk.associates>` |
 | `STRIPE_SECRET_KEY` | sí | llave secreta de Stripe de Karina (`sk_live_…`), para el lado en dólares. Sin ella, `/api/payments/stripe` responde 503 |
 
 El asistente de recetas de la app se llama **Silver** cuando contesta OpenAI y **Claudio** cuando contesta Claude; funciona con cualquiera de las dos llaves y, con las dos, Karina elige en la app. Sin ninguna, `/api/silver/chat` responde 503.
