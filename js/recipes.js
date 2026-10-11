@@ -2,7 +2,7 @@
    KPK WELLNESS — RECIPE GALLERY + PAYWALL CLIENT JS
    ============================================================ */
 
-const RECIPE_API = 'https://kpk-recipe-api.hi-7e4.workers.dev';
+const RECIPE_API = '/api';
 const GITHUB_RAW = 'https://raw.githubusercontent.com/OneUPSolar/KPK-Wellness/main';
 const STORAGE_KEY = 'kpk_recipe_access';
 

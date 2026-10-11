@@ -1,7 +1,7 @@
 /* KPK Wellness — June 18 Event Page JS */
 const WA_NUMBER = '526643640788';
 const WA_MSG = encodeURIComponent('Hola, quiero información para reservar mi lugar en el taller de cocina saludable y nutrición del 18 de junio en Playas de Tijuana.');
-const API_URL = 'https://kpk-recipe-api.hi-7e4.workers.dev';
+const API_URL = '/api';
 
 /* ── Navbar scroll ─────────────────── */
 window.addEventListener('scroll', () => {
