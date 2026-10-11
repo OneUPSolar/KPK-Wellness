@@ -411,6 +411,7 @@
   .k-lanzador { position: fixed; right: 20px; bottom: 20px; z-index: 30; display: grid; justify-items: end; gap: 12px; }
   .k-boton { width: 68px; height: 68px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
   .k-boton .halo { width: 68px; height: 68px; display: block; }
+  .k-lanzador .retrato { background-position: center; }
   .k-boton .retrato { display: grid; border-width: 2px; box-shadow: 0 10px 28px rgba(31,32,36,0.28); }
   .k-boton .retrato.vacia { font-size: 1.9rem; }
   .k-boton:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 6px; }
@@ -987,7 +988,7 @@
           '<button type="button" data-idioma="es" aria-pressed="' + (L === "es") + '">Español · MXN</button>' +
           '<button type="button" data-idioma="en" aria-pressed="' + (L === "en") + '">English · USD</button>' +
         "</div>" +
-        (admin ? "" : '<button type="button" class="acceso" id="btn-acceso">' + (AUTH ? "Panel de administrador" : "Entrar") + "</button>") +
+        (admin ? "" : '<button type="button" class="acceso" id="btn-acceso">Entrar</button>') +
         "</div>" +
       "</div>" +
 
@@ -1212,8 +1213,9 @@
     var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
     function tema(q) { return q.tema || (/men[uú]|platill|porci|vegetari|gluten|dish|portion|vegan/i.test(tx(q.nombre, "es") + " " + tx(q.nombre, "en")) ? "menu" : "otras"); }
     var inicial = esc(String(chef.nombre || "K").replace(/^chef\s+/i, "").charAt(0));
-    var retrato = chef.foto
-      ? '<span class="retrato" style="background-image:url(' + "'" + esc(chef.foto) + "'" + ')"></span>'
+    var foto = chef.foto || FOTO_KARINA;
+    var retrato = foto
+      ? '<span class="retrato" style="background-image:url(' + "'" + esc(foto) + "'" + ')"></span>'
       : '<span class="retrato vacia">' + inicial + "</span>";
     var flecha = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
@@ -1316,8 +1318,7 @@
     var acceso = hoja.querySelector("#btn-acceso");
     if (acceso) {
       acceso.addEventListener("click", function () {
-        // Con sesión, el mismo link sin -view; sin sesión, al login de administradores y de regreso aquí.
-        if (AUTH) { vistaCliente(false); return; }
+        // Siempre al login de administradores; con sesión, /app regresa directo al panel de esta cotización.
         location.href = "/app/?volver=" + encodeURIComponent(location.pathname + "?c=" + c.slug);
       });
     }
@@ -1851,6 +1852,8 @@
 
   /* Mientras Karina no suba su propia portada, se usa esta. */
   var PORTADA_PREDETERMINADA = "assets/cotizaciones/portada-rosarito.webp";
+  /* La foto de Karina para el botón del cliente; "Tu foto" en Editar la reemplaza. */
+  var FOTO_KARINA = "assets/cotizaciones/karina-retrato.webp";
   var AUTH = null; // { token, email } cuando hay sesión de admin
   // "Ver como cliente": con sesión, la página se pinta exactamente como la ve el cliente.
   // El link del cliente termina en -view: ahí siempre se ve como cliente, aunque haya sesión.
