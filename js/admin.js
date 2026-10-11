@@ -1,5 +1,5 @@
 /* KPK Wellness — Recipe Admin JS */
-const API_URL = 'https://kpk-recipe-api.hi-7e4.workers.dev';
+const API_URL = '/api';
 let AUTH_TOKEN = '';
 let imageData = null;
 let imageName = '';

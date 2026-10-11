@@ -1,0 +1,163 @@
+{
+  "activa": "surf-lopez",
+  "cotizaciones": [
+    {
+      "slug": "surf-lopez",
+      "idioma": "es",
+      "titulo": {
+        "es": "Evento temática Surf",
+        "en": "Surf-Themed Event"
+      },
+      "cliente": "Pablo López Acle",
+      "telCliente": "",
+      "emitida": {
+        "es": "10 de octubre de 2026",
+        "en": "October 10, 2026"
+      },
+      "lugar": {
+        "es": "Rosarito, B.C.",
+        "en": "Rosarito, B.C."
+      },
+      "fecha": {
+        "es": "Mar 8 dic 2026",
+        "en": "Tue, Dec 8, 2026"
+      },
+      "horario": {
+        "es": "1:00 a 5:00 pm",
+        "en": "1:00 to 5:00 pm"
+      },
+      "invitados": 50,
+      "piezas": {
+        "es": "4 piezas por persona",
+        "en": "4 pieces per guest"
+      },
+      "menu": [
+        {
+          "nombre": {
+            "es": "Burrito de machaca de langosta",
+            "en": "Lobster machaca burrito"
+          },
+          "detalle": {
+            "es": "Con frijoles.",
+            "en": "With beans."
+          }
+        },
+        {
+          "nombre": {
+            "es": "Quesadilla de marlin a las brasas",
+            "en": "Grilled marlin quesadilla"
+          },
+          "detalle": {
+            "es": "Marlín ahumado en tortilla de maíz.",
+            "en": "Smoked marlin in a corn tortilla."
+          }
+        },
+        {
+          "nombre": {
+            "es": "Taco gobernador a las brasas",
+            "en": "Grilled gobernador taco"
+          },
+          "detalle": {
+            "es": "Guiso de camarón estilo Mazatlán.",
+            "en": "Mazatlán-style shrimp."
+          }
+        },
+        {
+          "nombre": {
+            "es": "Tostada de atún estilo Baja",
+            "en": "Baja-style tuna tostada"
+          },
+          "detalle": {
+            "es": "Con mayonesa de chipotle y poro frito.",
+            "en": "With chipotle mayo and fried leek."
+          }
+        }
+      ],
+      "precio": {
+        "mxn": 650,
+        "usd": 0
+      },
+      "ivaPct": 16,
+      "anticipoPct": 50,
+      "incluye": [
+        {
+          "es": "Tiempo de servicio: 2 horas",
+          "en": "Two hours of service"
+        },
+        {
+          "es": "Asador con preparación en vivo",
+          "en": "Grill with live preparation"
+        },
+        {
+          "es": "Carpa y mesa de servicio",
+          "en": "Tent and service table"
+        },
+        {
+          "es": "Servicio en desechables",
+          "en": "Disposable serviceware"
+        },
+        {
+          "es": "Barra de salsas y complementos",
+          "en": "Salsa and condiment bar"
+        },
+        {
+          "es": "Flete",
+          "en": "Delivery"
+        }
+      ],
+      "opcionales": [
+        {
+          "nombre": {
+            "es": "Meseros: $1,500 c/u",
+            "en": "Servers: $1,500 MXN each"
+          },
+          "detalle": {
+            "es": "Sugerimos 2 para 50 personas.",
+            "en": "We suggest 2 for 50 guests."
+          }
+        },
+        {
+          "nombre": {
+            "es": "Decoración temática surf",
+            "en": "Surf-themed décor"
+          },
+          "detalle": {
+            "es": "Con costo adicional, se cotiza aparte.",
+            "en": "Quoted separately."
+          }
+        }
+      ],
+      "condiciones": [
+        {
+          "es": "Precios en pesos mexicanos + IVA.",
+          "en": "Prices in US dollars. Mexican VAT does not apply."
+        },
+        {
+          "es": "Anticipo del 50% para apartar la fecha.",
+          "en": "A 50% deposit holds the date."
+        },
+        {
+          "es": "En caso de cancelación, se reembolsará el 50% del anticipo.",
+          "en": "If cancelled, 50% of the deposit is refunded."
+        }
+      ],
+      "linkMxn": "",
+      "linkUsd": "",
+      "notaPago": {
+        "es": "",
+        "en": ""
+      }
+    }
+  ],
+  "chef": {
+    "nombre": "Chef Karina Paz Kennedy",
+    "zona": {
+      "es": "Eventos Tijuana / San Diego",
+      "en": "Events · Tijuana / San Diego"
+    },
+    "telMx": "+52 664 364 0788",
+    "telUs": "+1 619 259 3284",
+    "correo": "kpazkennedy@gmail.com",
+    "whatsapp": "5216643640788"
+  }
+}

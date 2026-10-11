@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- Enlace privado: se comparte con el cliente, no se indexa. -->
+<meta name="robots" content="noindex, nofollow">
+<title>Cotización · KPK Wellness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: one scrolling quote. The switch at the top flips language AND the
+     money side with it — Spanish in pesos with factura, English in dollars
+     with an invoice. Single committed look: a quote reads the same for every
+     client. */
+  :root {
+    --tinta:      #3A3B3D;
+    --tinta-sueve:#56585B;
+    --arena:      #D9C9AE;
+    --arena-hond: #BFAC8B;
+    --crema:      #F1EBDF;
+    --papel:      #FFFFFF;
+    --linea:      #E2D9C8;
+
+    --display: 'Poppins', 'Trebuchet MS', sans-serif;
+    --texto:   'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--crema); color: var(--tinta);
+    font-family: var(--texto); font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .cifra, .etq { font-family: var(--display); }
+  .etq {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--arena-hond);
+  }
+
+  .hoja { max-width: 860px; margin: 0 auto; background: var(--crema); }
+
+  /* ---------- interruptor de idioma y moneda ---------- */
+  .switch {
+    display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px; background: var(--arena-hond); color: #2C271D;
+  }
+  .switch .leyenda { font-size: 0.82rem; min-width: 0; }
+  .switch .grupo { display: flex; gap: 4px; background: rgba(0,0,0,0.12); border-radius: 999px; padding: 3px; }
+  .switch button {
+    font: inherit; font-family: var(--display); font-weight: 600; font-size: 0.84rem;
+    border: 0; background: transparent; color: #2C271D; cursor: pointer;
+    border-radius: 999px; padding: 6px 16px; white-space: nowrap;
+  }
+  .switch button[aria-pressed="true"] { background: var(--papel); color: var(--tinta); }
+  .switch button:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+
+  /* ---------- encabezado ---------- */
+  .cabeza {
+    background: var(--tinta); color: var(--crema);
+    padding-block: 34px 30px; padding-inline: 24px;
+    display: flex; flex-wrap: wrap; gap: 18px 24px;
+    align-items: flex-end; justify-content: space-between;
+  }
+  .cabeza .etq { color: var(--arena); }
+  .cabeza h1 {
+    margin: 6px 0 10px; font-size: clamp(1.9rem, 6.2vw, 2.9rem);
+    font-weight: 700; line-height: 1.05; letter-spacing: -0.015em;
+    text-wrap: balance; color: #fff;
+  }
+  .para { font-size: 0.98rem; color: var(--arena); }
+  .para b { color: #fff; font-weight: 600; }
+  .firma { text-align: right; min-width: 0; font-size: 0.9rem; color: var(--arena); }
+  .firma .nombre { font-family: var(--display); font-weight: 700; font-size: 1.05rem; color: #fff; }
+
+  /* ---------- banda de datos ---------- */
+  .banda {
+    background: var(--arena); color: var(--tinta);
+    padding-block: 16px; padding-inline: 24px;
+    display: grid; gap: 14px 22px;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  }
+  .banda .dato .etq { color: #6F6349; }
+  .banda .dato .val { font-family: var(--display); font-weight: 600; font-size: 1.02rem; }
+
+  /* ---------- secciones ---------- */
+  .cuerpo { padding-block: 30px 40px; padding-inline: 24px; display: grid; gap: 34px; }
+  section { display: grid; gap: 14px; }
+  .titulo-fila {
+    display: flex; flex-wrap: wrap; gap: 8px 16px;
+    align-items: baseline; justify-content: space-between;
+  }
+  .titulo-fila h2 { margin: 0; font-size: 1.35rem; font-weight: 700; }
+  .nota-fila { font-family: var(--display); font-weight: 600; font-size: 0.86rem; }
+
+  .rejilla-2 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); }
+  .rejilla-menu { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 620px) { .rejilla-menu { grid-template-columns: 1fr 1fr; } }
+
+  .platillo {
+    background: var(--papel); border: 1px solid var(--linea);
+    border-left: 3px solid var(--arena); border-radius: 7px;
+    padding: 14px 16px; min-width: 0;
+  }
+  .platillo .n { font-family: var(--display); font-weight: 600; font-size: 1rem; }
+  .platillo .d { font-size: 0.9rem; color: var(--tinta-sueve); }
+
+  /* ---------- precio ---------- */
+  .precio {
+    background: var(--tinta); border-radius: 9px; color: #fff;
+    padding: 22px 26px; display: flex; flex-wrap: wrap;
+    gap: 18px 26px; align-items: flex-end; justify-content: space-between;
+  }
+  .precio .etq { color: var(--arena); }
+  .cifra {
+    font-size: clamp(1.8rem, 6.6vw, 2.6rem); font-weight: 700;
+    line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  }
+  .cifra.oro { color: var(--arena); }
+  .precio .col-der { text-align: right; min-width: 0; }
+
+  /* ---------- incluye ---------- */
+  .incluye { display: grid; gap: 0 26px; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); }
+  .incluye div {
+    padding: 11px 0; border-bottom: 1px solid var(--linea);
+    font-size: 0.96rem; min-width: 0;
+  }
+
+  /* ---------- cajas ---------- */
+  .caja {
+    border: 1px solid var(--arena-hond); border-radius: 8px;
+    padding: 16px 18px; display: grid; gap: 8px; align-content: start; min-width: 0;
+  }
+  .caja .par b { font-family: var(--display); font-weight: 600; display: block; }
+  .caja .par span { font-size: 0.92rem; color: var(--tinta-sueve); }
+  .caja ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+  .caja li { font-size: 0.92rem; color: var(--tinta-sueve); }
+
+  /* ---------- forma de pago ---------- */
+  .pago { background: var(--papel); border: 1px solid var(--linea); border-radius: 9px; overflow: hidden; }
+  .pago-cabeza {
+    background: var(--arena); padding: 16px 20px;
+    display: flex; flex-wrap: wrap; gap: 10px 20px;
+    align-items: baseline; justify-content: space-between;
+  }
+  .pago-cabeza .etq { color: #6F6349; }
+  .pago-cabeza h2 { margin: 0; font-size: 1.2rem; }
+  .pago-cabeza .monto { font-family: var(--display); font-weight: 700; font-size: 1.4rem; font-variant-numeric: tabular-nums; text-align: right; }
+  .pago-cabeza .monto-nota { font-size: 0.78rem; color: #6F6349; text-align: right; }
+  .pago-cuerpo { padding: 18px 20px; display: grid; gap: 14px; }
+
+  .acciones { display: flex; flex-wrap: wrap; gap: 10px; padding-bottom: 4px; }
+  .boton {
+    font-family: var(--display); font-weight: 600; font-size: 0.95rem;
+    border-radius: 999px; padding: 11px 22px; border: 1px solid var(--tinta);
+    background: var(--tinta); color: #fff; text-decoration: none;
+    display: inline-block; cursor: pointer;
+  }
+  .boton:hover { background: #2B2C2E; }
+  .boton.claro { background: transparent; color: var(--tinta); }
+  .boton.claro:hover { background: var(--arena); border-color: var(--arena); }
+
+  /* Desplegable nativo: funciona con teclado y sin JavaScript. */
+  .formas { border-top: 1px solid var(--linea); padding-top: 14px; }
+  .formas summary {
+    cursor: pointer; list-style: none; display: flex; align-items: center; gap: 9px;
+    font-family: var(--display); font-weight: 600; font-size: 0.95rem; color: var(--tinta);
+  }
+  .formas summary::-webkit-details-marker { display: none; }
+  .formas summary::after {
+    content: ''; width: 7px; height: 7px; margin-left: 2px;
+    border-right: 2px solid var(--arena-hond); border-bottom: 2px solid var(--arena-hond);
+    transform: rotate(45deg) translate(-2px, -2px); transition: transform 0.15s ease;
+  }
+  .formas[open] summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+  .formas summary:focus-visible { outline: 2px solid var(--arena-hond); outline-offset: 3px; border-radius: 4px; }
+  .formas .lista { display: grid; gap: 13px; padding-top: 14px; }
+
+  .metodo {
+    display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center;
+    justify-content: space-between; padding-bottom: 13px; border-bottom: 1px solid var(--linea);
+  }
+  .metodo:last-child { border-bottom: 0; padding-bottom: 0; }
+  .metodo-txt { display: grid; gap: 2px; min-width: 0; flex: 1 1 200px; }
+  .metodo b { font-family: var(--display); font-weight: 600; font-size: 0.97rem; }
+  .metodo span { font-size: 0.9rem; color: var(--tinta-sueve); overflow-wrap: anywhere; }
+  .pagar {
+    font-family: var(--display); font-weight: 600; font-size: 0.88rem;
+    background: var(--tinta); color: #fff; text-decoration: none;
+    border-radius: 999px; padding: 8px 20px; white-space: nowrap;
+  }
+  .pagar:hover { background: #2B2C2E; }
+  .pagar:focus-visible { outline: 2px solid var(--arena-hond); outline-offset: 2px; }
+
+  /* ---------- pie ---------- */
+  .pie {
+    border-top: 2px solid var(--tinta); margin-inline: 24px;
+    padding-block: 16px 34px; display: flex; flex-wrap: wrap;
+    gap: 6px 20px; justify-content: space-between;
+    font-size: 0.92rem; color: var(--tinta-sueve);
+  }
+
+  /* ---------- editor ---------- */
+  .barra-admin {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+    background: var(--tinta); color: #fff;
+    display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+    padding: 9px 24px; font-size: 0.85rem;
+  }
+  .barra-admin select {
+    font: inherit; font-family: var(--texto); background: #4A4B4E; color: #fff;
+    border: 1px solid #5E5F62; border-radius: 6px; padding: 5px 9px; max-width: 220px;
+  }
+  .barra-admin button {
+    font: inherit; font-family: var(--display); font-weight: 600;
+    border-radius: 999px; padding: 6px 15px; cursor: pointer;
+    border: 1px solid var(--arena); background: var(--arena); color: var(--tinta);
+  }
+  .barra-admin button.fantasma { background: transparent; color: var(--arena); }
+  .barra-admin .crece { margin-left: auto; }
+
+  .panel { position: fixed; inset: 0; z-index: 40; background: rgba(32,33,35,0.55); display: grid; justify-items: end; }
+  .panel-caja {
+    background: var(--crema); width: min(620px, 100%); height: 100%;
+    overflow-y: auto; padding-block: 0 40px; display: grid; gap: 0; align-content: start;
+  }
+  .panel-cabeza {
+    position: sticky; top: 0; z-index: 2; background: var(--tinta); color: #fff;
+    padding: 14px 20px; display: flex; gap: 12px; align-items: center; justify-content: space-between;
+  }
+  .panel-cabeza h2 { margin: 0; font-size: 1.05rem; }
+  .panel-cuerpo { padding: 18px 20px; display: grid; gap: 20px; }
+  fieldset { border: 1px solid var(--linea); border-radius: 8px; padding: 14px 16px; margin: 0; display: grid; gap: 12px; }
+  legend { font-family: var(--display); font-weight: 600; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arena-hond); padding-inline: 6px; }
+  label { display: grid; gap: 4px; font-size: 0.82rem; font-weight: 500; color: var(--tinta-sueve); min-width: 0; }
+  input {
+    font: inherit; font-family: var(--texto); font-size: 0.93rem; color: var(--tinta);
+    background: var(--papel); border: 1px solid var(--linea); border-radius: 6px;
+    padding: 8px 10px; width: 100%; min-width: 0;
+  }
+  input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--arena-hond); outline-offset: 2px;
+  }
+  .par-campos { display: grid; gap: 11px; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); }
+  /* Un campo bilingüe muestra los dos idiomas juntos, para que no se olvide uno. */
+  .bi { display: grid; gap: 8px; grid-template-columns: 1fr; }
+  @media (min-width: 440px) { .bi { grid-template-columns: 1fr 1fr; } }
+  .marca { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arena-hond); margin-bottom: 5px; }
+  .fila-rep { display: grid; gap: 10px; padding: 11px; background: var(--papel); border: 1px solid var(--linea); border-radius: 7px; }
+  .fila-rep .quitar {
+    justify-self: end; font-size: 0.78rem; font-family: var(--texto);
+    background: none; border: 0; color: #9A5A4F; cursor: pointer; padding: 2px 4px;
+  }
+  .agregar {
+    font-family: var(--display); font-weight: 600; font-size: 0.85rem; justify-self: start;
+    background: transparent; border: 1px dashed var(--arena-hond); color: var(--tinta-sueve);
+    border-radius: 999px; padding: 6px 14px; cursor: pointer;
+  }
+  .agregar:hover { background: var(--arena); color: var(--tinta); }
+  .aviso { font-size: 0.82rem; color: var(--tinta-sueve); background: var(--papel); border-left: 3px solid var(--arena); padding: 10px 12px; border-radius: 0 6px 6px 0; }
+
+  .brindis {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 50;
+    background: var(--tinta); color: #fff; border-radius: 999px;
+    padding: 9px 20px; font-size: 0.88rem; box-shadow: 0 6px 22px rgba(0,0,0,0.22);
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  @media (max-width: 560px) {
+    .firma { text-align: left; }
+    .precio .col-der { text-align: left; }
+  }
+</style>
+
+<script type="application/json" id="estado">
+{ "activa": "", "cotizaciones": [], "chef": {} }
+</script>
+
+</head>
+<body>
+<div class="hoja" id="hoja"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var $ = function (sel, raiz) { return (raiz || document).querySelector(sel); };
+  var hoja = $("#hoja");
+
+  function leerEstado() {
+    try { return JSON.parse($("#estado").textContent); }
+    catch (e) { return { activa: "", cotizaciones: [], chef: {} }; }
+  }
+  var estado = leerEstado();
+
+  /* ---------- idioma y lado del dinero ---------- */
+
+  // El interruptor cambia cuatro cosas a la vez: idioma, moneda, con qué se
+  // cobra y qué comprobante sale. Son las dos formas de trabajar de Karina:
+  // Tijuana en pesos con factura, San Diego en dólares con invoice.
+  var LADOS = {
+    es: { moneda: "MXN", conIva: true,  link: "linkMxn", precio: "mxn" },
+    en: { moneda: "USD", conIva: false, link: "linkUsd", precio: "usd" }
+  };
+
+  var T = {
+    es: {
+      cotizacion: "Cotización", para: "Para:", lugar: "Lugar", fecha: "Fecha",
+      horario: "Horario", invitados: "Invitados", personas: "personas",
+      menu: "Menú", incluye: "Incluye", opcional: "Opcional", condiciones: "Condiciones",
+      porPersona: "Precio por persona", total: "Total", masIva: "+ IVA",
+      comprobante: "Se emite factura (CFDI)",
+      formaPago: "Forma de pago", anticipo: "Anticipo del {p}% para apartar",
+      pagarAnticipo: "Pagar anticipo", apartarWa: "Apartar mi fecha por WhatsApp",
+      copiarResumen: "Copiar resumen", formasDePago: "Formas de pago", pagar: "Pagar",
+      m1: "Pagar con tarjeta", m1d: "Crédito o débito. El cargo se aplica al momento.",
+      m2: "Pagar por transferencia", m2d: "SPEI desde tu banco.",
+      m3: "Pagar en efectivo", m3d: "En tiendas afiliadas a Mercado Pago.",
+      resumenCopiado: "Resumen copiado", sinCotizaciones: "Todavía no hay cotizaciones",
+      leyenda: "Cotización en pesos mexicanos, con factura."
+    },
+    en: {
+      cotizacion: "Quote", para: "For:", lugar: "Location", fecha: "Date",
+      horario: "Time", invitados: "Guests", personas: "guests",
+      menu: "Menu", incluye: "Included", opcional: "Optional", condiciones: "Terms",
+      porPersona: "Price per guest", total: "Total", masIva: "",
+      comprobante: "An invoice is issued",
+      formaPago: "Payment", anticipo: "{p}% deposit to hold the date",
+      pagarAnticipo: "Pay deposit", apartarWa: "Hold my date on WhatsApp",
+      copiarResumen: "Copy summary", formasDePago: "Payment options", pagar: "Pay",
+      m1: "Pay by card", m1d: "Credit or debit. Charged immediately.",
+      m2: "Pay over time", m2d: "Klarna or Affirm, if you qualify at checkout.",
+      m3: "Apple Pay or Google Pay", m3d: "On a supported device.",
+      resumenCopiado: "Summary copied", sinCotizaciones: "No quotes yet",
+      leyenda: "Quote in US dollars, with an invoice."
+    }
+  };
+
+  /** Un valor puede ser texto suelto o {es,en}. Si falta un idioma cae en el
+      otro: una línea en español dentro de la versión en inglés es mejor que
+      una línea en blanco. */
+  function tx(v, lang) {
+    if (v == null) return "";
+    if (typeof v === "string") return v;
+    return String(v[lang] || v[lang === "es" ? "en" : "es"] || "");
+  }
+
+  var idioma = "es";
+
+  /* ---------- utilidades ---------- */
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  /** Las dos monedas usan $, así que siempre va etiquetada. */
+  function dinero(n, moneda) {
+    var v = Number(n);
+    if (!isFinite(v)) v = 0;
+    return "$" + Math.round(v).toLocaleString(moneda === "USD" ? "en-US" : "es-MX") + " " + moneda;
+  }
+  function aSlug(s) {
+    return String(s || "").toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48) || "cotizacion";
+  }
+  function brindis(texto) {
+    var previo = $(".brindis");
+    if (previo) previo.remove();
+    var d = document.createElement("div");
+    d.className = "brindis";
+    d.setAttribute("role", "status");
+    d.textContent = texto;
+    document.body.appendChild(d);
+    setTimeout(function () { if (d.parentNode) d.remove(); }, 2600);
+  }
+
+  function cotizacionActiva() {
+    var lista = estado.cotizaciones || [];
+    var porHash = (location.hash || "").replace(/^#/, "");
+    return lista.filter(function (c) { return c.slug === porHash; })[0] ||
+           lista.filter(function (c) { return c.slug === estado.activa; })[0] || lista[0] || null;
+  }
+
+  function totales(c, lang) {
+    var lado = LADOS[lang];
+    var invitados = Number(c.invitados) || 0;
+    var porPersona = Number((c.precio || {})[lado.precio]) || 0;
+    var total = invitados * porPersona;
+    var pct = Number(c.anticipoPct);
+    if (!isFinite(pct) || pct < 0 || pct > 100) pct = 50;
+    // El IVA es del lado mexicano. En dólares va invoice, sin IVA.
+    var iva = lado.conIva ? (isFinite(Number(c.ivaPct)) ? Number(c.ivaPct) : 16) : 0;
+    var anticipo = total * pct / 100;
+    return {
+      moneda: lado.moneda, invitados: invitados, porPersona: porPersona, total: total,
+      pct: pct, iva: iva, anticipo: anticipo, anticipoConIva: anticipo * (1 + iva / 100)
+    };
+  }
+
+  /* ---------- vista del cliente ---------- */
+
+  function pintar() {
+    var c = cotizacionActiva();
+    var L = idioma, t9 = T[L], chef = estado.chef || {};
+
+    if (!c) {
+      hoja.innerHTML = '<div class="cuerpo"><section><h2>' + esc(t9.sinCotizaciones) + "</h2></section></div>";
+      return;
+    }
+    var t = totales(c, L);
+    var lado = LADOS[L];
+    var link = /^https:\/\//i.test(c[lado.link] || "") ? c[lado.link] : "";
+    var iva = t9.masIva ? " " + t9.masIva : "";
+
+    var menu = (c.menu || []).map(function (p) {
+      var d = tx(p.detalle, L);
+      return '<div class="platillo"><div class="n">' + esc(tx(p.nombre, L)) + "</div>" +
+             (d ? '<div class="d">' + esc(d) + "</div>" : "") + "</div>";
+    }).join("");
+
+    var incluye = (c.incluye || []).map(function (i) { return "<div>" + esc(tx(i, L)) + "</div>"; }).join("");
+
+    var opcionales = (c.opcionales || []).map(function (o) {
+      var d = tx(o.detalle, L);
+      return '<div class="par"><b>' + esc(tx(o.nombre, L)) + "</b>" + (d ? "<span>" + esc(d) + "</span>" : "") + "</div>";
+    }).join("");
+
+    var condiciones = (c.condiciones || []).map(function (x) { return "<li>" + esc(tx(x, L)) + "</li>"; }).join("");
+
+    // Cada forma de pago es una acción, no una descripción. Las tres llevan al
+    // mismo checkout: el método se elige allá dentro.
+    function fila(nombre, detalle, accion) {
+      return '<div class="metodo"><div class="metodo-txt"><b>' + esc(nombre) + "</b>" +
+             (detalle ? "<span>" + esc(detalle) + "</span>" : "") + "</div>" + (accion || "") + "</div>";
+    }
+    var irAPagar = '<a class="pagar" target="_blank" rel="noopener" href="' + esc(link) + '">' + esc(t9.pagar) + "</a>";
+    var filas = "";
+    if (link) {
+      filas += fila(t9.m1, t9.m1d, irAPagar) + fila(t9.m2, t9.m2d, irAPagar) + fila(t9.m3, t9.m3d, irAPagar);
+    }
+    var nota = tx(c.notaPago, L);
+    if (nota) filas += fila(nota, "", "");
+
+    var cobro = link
+      ? '<a class="boton" target="_blank" rel="noopener" href="' + esc(link) + '">' +
+        esc(t9.pagarAnticipo) + " · " + dinero(t.anticipoConIva, t.moneda) + "</a>"
+      : "";
+    var wa = chef.whatsapp
+      ? '<a class="boton' + (cobro ? " claro" : "") + '" target="_blank" rel="noopener" href="https://wa.me/' +
+        esc(chef.whatsapp) + "?text=" + encodeURIComponent(t9.apartarWa + " — " + tx(c.titulo, L)) + '">' +
+        esc(t9.apartarWa) + "</a>"
+      : "";
+
+    hoja.innerHTML =
+      '<div class="switch">' +
+        '<span class="leyenda">' + esc(t9.leyenda) + "</span>" +
+        '<div class="grupo" role="group" aria-label="Idioma y moneda / Language and currency">' +
+          '<button type="button" data-idioma="es" aria-pressed="' + (L === "es") + '">Español · MXN</button>' +
+          '<button type="button" data-idioma="en" aria-pressed="' + (L === "en") + '">English · USD</button>' +
+        "</div>" +
+      "</div>" +
+
+      '<header class="cabeza">' +
+        '<div style="min-width:0">' +
+          '<div class="etq">' + esc(t9.cotizacion) + "</div>" +
+          "<h1>" + esc(tx(c.titulo, L)) + "</h1>" +
+          '<div class="para">' + esc(t9.para) + " <b>" + esc(c.cliente) + "</b></div>" +
+        "</div>" +
+        '<div class="firma">' +
+          '<div class="nombre">' + esc(chef.nombre) + "</div>" +
+          "<div>" + esc(tx(chef.zona, L)) + "</div>" +
+          "<div>" + esc(tx(c.emitida, L)) + "</div>" +
+        "</div>" +
+      "</header>" +
+
+      '<div class="banda">' +
+        dato(t9.lugar, tx(c.lugar, L)) + dato(t9.fecha, tx(c.fecha, L)) +
+        dato(t9.horario, tx(c.horario, L)) + dato(t9.invitados, t.invitados + " " + t9.personas) +
+      "</div>" +
+
+      '<div class="cuerpo">' +
+        (menu ? '<section><div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
+          (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
+          '</div><div class="rejilla-menu">' + menu + "</div></section>" : "") +
+
+        '<section><div class="precio">' +
+          '<div><div class="etq">' + esc(t9.porPersona + iva) + "</div>" +
+            '<div class="cifra oro">' + dinero(t.porPersona, t.moneda) + "</div></div>" +
+          '<div class="col-der"><div class="etq">' +
+            esc(t9.total + " · " + t.invitados + " " + t9.personas + iva) + "</div>" +
+            '<div class="cifra">' + dinero(t.total, t.moneda) + "</div></div>" +
+        "</div></section>" +
+
+        (incluye ? "<section><h2>" + esc(t9.incluye) + '</h2><div class="incluye">' + incluye + "</div></section>" : "") +
+
+        ((opcionales || condiciones) ? '<section><div class="rejilla-2">' +
+          (opcionales ? '<div class="caja"><div class="etq">' + esc(t9.opcional) + "</div>" + opcionales + "</div>" : "") +
+          (condiciones ? '<div class="caja"><div class="etq">' + esc(t9.condiciones) + "</div><ul>" + condiciones + "</ul></div>" : "") +
+        "</div></section>" : "") +
+
+        '<section><div class="pago">' +
+          '<div class="pago-cabeza">' +
+            '<div><div class="etq">' + esc(t9.formaPago) + "</div>" +
+              "<h2>" + esc(t9.anticipo.replace("{p}", t.pct)) + "</h2></div>" +
+            '<div><div class="monto">' + dinero(t.anticipoConIva, t.moneda) + "</div>" +
+              '<div class="monto-nota">' +
+                esc((t.iva ? dinero(t.anticipo, t.moneda) + " + " + t.iva + "% IVA · " : "") + t9.comprobante) +
+              "</div></div>" +
+          "</div>" +
+          '<div class="pago-cuerpo">' +
+            '<div class="acciones">' + cobro + wa +
+              '<button class="boton claro" type="button" data-copiar-resumen>' + esc(t9.copiarResumen) + "</button>" +
+            "</div>" +
+            (filas ? '<details class="formas"><summary>' + esc(t9.formasDePago) + "</summary>" +
+                     '<div class="lista">' + filas + "</div></details>" : "") +
+          "</div>" +
+        "</div></section>" +
+      "</div>" +
+
+      '<div class="pie">' +
+        "<div>" + [chef.telMx, chef.telUs].filter(Boolean).map(esc).join(" · ") + "</div>" +
+        "<div>" + esc(chef.correo) + "</div>" +
+      "</div>";
+
+    cablear(c, t, t9, L, iva);
+  }
+
+  function dato(etq, val) {
+    return '<div class="dato"><div class="etq">' + esc(etq) + '</div><div class="val">' + esc(val) + "</div></div>";
+  }
+
+  function copiar(texto, listo) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(listo, function () { brindis(texto); });
+    } else {
+      brindis(texto);
+    }
+  }
+
+  function cablear(c, t, t9, L, iva) {
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
+      b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
+    });
+    var resumen = hoja.querySelector("[data-copiar-resumen]");
+    if (resumen) {
+      resumen.addEventListener("click", function () {
+        copiar([
+          tx(c.titulo, L),
+          t9.para + " " + c.cliente,
+          tx(c.fecha, L) + " · " + tx(c.horario, L) + " · " + tx(c.lugar, L),
+          t.invitados + " " + t9.personas + " · " + dinero(t.porPersona, t.moneda) + iva,
+          t9.total + ": " + dinero(t.total, t.moneda) + iva,
+          t9.anticipo.replace("{p}", t.pct) + ": " + dinero(t.anticipoConIva, t.moneda)
+        ].join("\n"), function () { brindis(t9.resumenCopiado); });
+      });
+    }
+  }
+
+  /* ---------- editor ---------- */
+
+  function barraAdmin() {
+    if ($("#barra-admin")) return;
+    var barra = document.createElement("div");
+    barra.className = "barra-admin";
+    barra.id = "barra-admin";
+    barra.innerHTML =
+      '<span class="etq" style="color:var(--arena)">Cotizador</span>' +
+      '<select id="sel-cot" aria-label="Cotización a mostrar"></select>' +
+      '<span class="crece"></span>' +
+      '<button type="button" id="btn-enviar" class="fantasma">Enviar por WhatsApp</button>' +
+      '<button type="button" id="btn-nueva" class="fantasma">Nueva</button>' +
+      '<button type="button" id="btn-editar">Editar</button>';
+    document.body.insertBefore(barra, document.body.firstChild);
+
+    llenarSelector();
+    $("#sel-cot").addEventListener("change", function (e) {
+      estado.activa = e.target.value;
+      if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+      pintar();
+    });
+    $("#btn-editar").addEventListener("click", abrirPanel);
+    $("#btn-enviar").addEventListener("click", enviarAlCliente);
+    $("#btn-nueva").addEventListener("click", function () {
+      var base = cotizacionActiva();
+      var copia = base ? JSON.parse(JSON.stringify(base)) : { invitados: 0, precio: { mxn: 0, usd: 0 } };
+      copia.slug = aSlug("cotizacion " + Date.now().toString(36));
+      copia.titulo = { es: "Nueva cotización", en: "New quote" };
+      copia.cliente = "";
+      copia.linkMxn = "";
+      copia.linkUsd = "";
+      estado.cotizaciones.push(copia);
+      estado.activa = copia.slug;
+      llenarSelector(); pintar(); abrirPanel();
+    });
+  }
+
+  /* ---------- enviar al cliente ---------- */
+
+  /** wa.me solo acepta dígitos: sin +, sin espacios, sin guiones. */
+  function soloDigitos(s) { return String(s || "").replace(/\D/g, ""); }
+
+  /**
+   * El enlace que se le manda al cliente. Dentro del visor, `location` apunta
+   * al marco interno y no al enlace que se comparte, así que si Karina guardó
+   * la URL pública se usa esa; si no, se cae a la actual, que sirve mientras
+   * ella misma lo prueba.
+   */
+  function enlacePublico(slug) {
+    var base = String((estado.chef || {}).urlPublica || "").trim().replace(/#.*$/, "");
+    if (!/^https:\/\//i.test(base)) base = location.origin + location.pathname;
+    return base + "#" + slug;
+  }
+
+  function enviarAlCliente() {
+    var c = cotizacionActiva();
+    if (!c) return;
+    var tel = soloDigitos(c.telCliente);
+    if (!tel) {
+      brindis("Falta el WhatsApp del cliente. Está en Editar → Evento.");
+      abrirPanel();
+      return;
+    }
+    var L = idioma;
+    var nombre = String(c.cliente || "").split(" ")[0];
+    var titulo = tx(c.titulo, L);
+    var enlace = enlacePublico(c.slug);
+    var texto = L === "en"
+      ? "Hi " + nombre + ", here's the quote for " + titulo + ":\n" + enlace
+      : "Hola " + nombre + ", te comparto la cotización para " + titulo + ":\n" + enlace;
+    // Se abre el chat con el mensaje escrito; ella lo revisa y le da enviar.
+    window.open("https://wa.me/" + tel + "?text=" + encodeURIComponent(texto), "_blank", "noopener");
+  }
+
+  function llenarSelector() {
+    var sel = $("#sel-cot");
+    if (!sel) return;
+    var actual = cotizacionActiva();
+    sel.innerHTML = (estado.cotizaciones || []).map(function (c) {
+      var n = tx(c.titulo, "es") + (c.cliente ? " · " + c.cliente : "");
+      return '<option value="' + esc(c.slug) + '"' + (actual && c.slug === actual.slug ? " selected" : "") + ">" + esc(n) + "</option>";
+    }).join("");
+  }
+
+  function campo(etiqueta, valor, ruta, tipo) {
+    return "<label>" + esc(etiqueta) +
+      '<input type="' + (tipo || "text") + '" data-ruta="' + esc(ruta) + '" value="' + esc(valor) + '"></label>';
+  }
+
+  /** Campo bilingüe: los dos idiomas juntos, para que no se olvide uno. */
+  function bi(etiqueta, valor, ruta) {
+    var v = valor && typeof valor === "object" ? valor : { es: valor || "", en: "" };
+    return '<div><div class="marca">' + esc(etiqueta) + '</div><div class="bi">' +
+      '<label>Español<input type="text" data-ruta="' + esc(ruta) + '.es" value="' + esc(v.es || "") + '"></label>' +
+      '<label>English<input type="text" data-ruta="' + esc(ruta) + '.en" value="' + esc(v.en || "") + '"></label>' +
+      "</div></div>";
+  }
+
+  function listaBi(titulo, clave, items, etiqueta) {
+    return "<fieldset><legend>" + esc(titulo) + "</legend>" +
+      (items || []).map(function (v, i) {
+        var o = v && typeof v === "object" ? v : { es: v || "", en: "" };
+        return '<div class="fila-rep"><div class="bi">' +
+          "<label>" + esc(etiqueta) + ' · ES<input type="text" data-lista="' + clave + '" data-i="' + i + '" data-l="es" value="' + esc(o.es || "") + '"></label>' +
+          "<label>" + esc(etiqueta) + ' · EN<input type="text" data-lista="' + clave + '" data-i="' + i + '" data-l="en" value="' + esc(o.en || "") + '"></label>' +
+          '</div><button type="button" class="quitar" data-quitar="' + clave + '" data-i="' + i + '">Quitar</button></div>';
+      }).join("") +
+      '<button type="button" class="agregar" data-agregar="' + clave + '">Agregar</button></fieldset>';
+  }
+
+  function listaPares(titulo, clave, items, l1, l2) {
+    return "<fieldset><legend>" + esc(titulo) + "</legend>" +
+      (items || []).map(function (o, i) {
+        var n = o.nombre && typeof o.nombre === "object" ? o.nombre : { es: o.nombre || "", en: "" };
+        var d = o.detalle && typeof o.detalle === "object" ? o.detalle : { es: o.detalle || "", en: "" };
+        return '<div class="fila-rep"><div class="bi">' +
+            "<label>" + esc(l1) + ' · ES<input type="text" data-par="' + clave + '" data-sub="nombre" data-i="' + i + '" data-l="es" value="' + esc(n.es || "") + '"></label>' +
+            "<label>" + esc(l1) + ' · EN<input type="text" data-par="' + clave + '" data-sub="nombre" data-i="' + i + '" data-l="en" value="' + esc(n.en || "") + '"></label>' +
+          '</div><div class="bi">' +
+            "<label>" + esc(l2) + ' · ES<input type="text" data-par="' + clave + '" data-sub="detalle" data-i="' + i + '" data-l="es" value="' + esc(d.es || "") + '"></label>' +
+            "<label>" + esc(l2) + ' · EN<input type="text" data-par="' + clave + '" data-sub="detalle" data-i="' + i + '" data-l="en" value="' + esc(d.en || "") + '"></label>' +
+          '</div><button type="button" class="quitar" data-quitar="' + clave + '" data-i="' + i + '">Quitar</button></div>';
+      }).join("") +
+      '<button type="button" class="agregar" data-agregar="' + clave + '">Agregar</button></fieldset>';
+  }
+
+  function abrirPanel() {
+    var c = cotizacionActiva();
+    if (!c) return;
+    var chef = estado.chef || {};
+    c.precio = c.precio || { mxn: 0, usd: 0 };
+
+    var panel = document.createElement("div");
+    panel.className = "panel";
+    panel.id = "panel";
+    panel.innerHTML =
+      '<div class="panel-caja" role="dialog" aria-label="Editar cotización">' +
+        '<div class="panel-cabeza"><h2>Editar cotización</h2>' +
+          '<div style="display:flex;gap:8px">' +
+            '<button type="button" id="btn-cerrar" class="boton claro" style="color:#fff;border-color:#6A6B6E">Cerrar</button>' +
+            '<button type="button" id="btn-guardar" class="boton" style="background:var(--arena);color:var(--tinta);border-color:var(--arena)">Guardar</button>' +
+          "</div></div>" +
+        '<div class="panel-cuerpo">' +
+          "<fieldset><legend>Evento</legend>" +
+            bi("Título", c.titulo, "titulo") +
+            '<div class="par-campos">' +
+              campo("Cliente", c.cliente, "cliente") +
+              campo("WhatsApp del cliente", c.telCliente, "telCliente") +
+            "</div>" +
+            campo("Enlace (slug)", c.slug, "slug") +
+            bi("Fecha de emisión", c.emitida, "emitida") +
+            bi("Lugar", c.lugar, "lugar") +
+            bi("Fecha del evento", c.fecha, "fecha") +
+            bi("Horario", c.horario, "horario") +
+            campo("Invitados", c.invitados, "invitados", "number") +
+            bi("Nota del menú", c.piezas, "piezas") +
+          "</fieldset>" +
+
+          listaPares("Menú", "menu", c.menu, "Platillo", "Descripción") +
+
+          "<fieldset><legend>Precio por persona</legend>" +
+            '<div class="par-campos">' +
+              campo("MXN (sin IVA)", c.precio.mxn, "precio.mxn", "number") +
+              campo("USD (sin IVA)", c.precio.usd, "precio.usd", "number") +
+            "</div>" +
+            '<div class="par-campos">' +
+              campo("Anticipo (%)", c.anticipoPct, "anticipoPct", "number") +
+              campo("IVA (%) · solo pesos", c.ivaPct, "ivaPct", "number") +
+            "</div>" +
+            '<div class="aviso">Los dos precios se capturan a mano. El cotizador no convierte monedas: ' +
+              "un tipo de cambio inventado hoy queda mal mañana.</div>" +
+            '<div class="aviso" id="vista-total"></div>' +
+          "</fieldset>" +
+
+          listaBi("Incluye", "incluye", c.incluye, "Concepto") +
+          listaPares("Opcionales", "opcionales", c.opcionales, "Concepto", "Detalle") +
+          listaBi("Condiciones", "condiciones", c.condiciones, "Condición") +
+
+          "<fieldset><legend>Cobro</legend>" +
+            campo("Link en pesos · Mercado Pago", c.linkMxn, "linkMxn") +
+            '<button type="button" class="agregar" id="btn-cobro-es">Generar cobro</button>' +
+            campo("Link en dólares · Stripe", c.linkUsd, "linkUsd") +
+            '<div class="aviso">El lado en español cobra con el link en pesos; el inglés, con el de dólares. ' +
+              "Klarna y Affirm aparecen solos en el checkout de Stripe si los activaste en su panel.</div>" +
+            bi("Nota adicional", c.notaPago, "notaPago") +
+          "</fieldset>" +
+
+          "<fieldset><legend>Contacto</legend>" +
+            campo("Nombre", chef.nombre, "chef.nombre") +
+            bi("Zona", chef.zona, "chef.zona") +
+            '<div class="par-campos">' +
+              campo("Teléfono MX", chef.telMx, "chef.telMx") +
+              campo("Teléfono US", chef.telUs, "chef.telUs") +
+            "</div>" +
+            '<div class="par-campos">' +
+              campo("Correo", chef.correo, "chef.correo") +
+              campo("Tu WhatsApp (solo dígitos)", chef.whatsapp, "chef.whatsapp") +
+            "</div>" +
+            campo("Enlace público del cotizador", chef.urlPublica, "chef.urlPublica") +
+            '<div class="aviso">Es la dirección que ves en el navegador al abrir este cotizador. ' +
+              "Se usa para armar el mensaje de WhatsApp; sin ella el enlace puede salir mal.</div>" +
+          "</fieldset>" +
+
+          '<button type="button" class="agregar" id="btn-borrar" style="border-color:#C79A91;color:#9A5A4F">Eliminar esta cotización</button>' +
+        "</div></div>";
+
+    document.body.appendChild(panel);
+    refrescarTotal();
+
+    panel.addEventListener("click", function (e) { if (e.target === panel) cerrarPanel(); });
+    $("#btn-cerrar").addEventListener("click", cerrarPanel);
+    $("#btn-guardar").addEventListener("click", guardar);
+    var bc = $("#btn-cobro-es");
+    if (bc) bc.addEventListener("click", function () { generarCobro("es"); });
+    $("#btn-borrar").addEventListener("click", function () {
+      estado.cotizaciones = estado.cotizaciones.filter(function (x) { return x.slug !== c.slug; });
+      estado.activa = (estado.cotizaciones[0] || {}).slug || "";
+      cerrarPanel(); llenarSelector(); pintar();
+      brindis("Eliminada. Guarda para publicar el cambio.");
+    });
+
+    panel.addEventListener("input", function (e) {
+      var el = e.target, act = cotizacionActiva();
+      if (el.dataset.ruta) {
+        var ruta = el.dataset.ruta.split(".");
+        var valor = el.type === "number" ? Number(el.value) : el.value;
+        var destino = act;
+        if (ruta[0] === "chef") { destino = estado.chef; ruta.shift(); }
+        if (ruta.length === 1) {
+          if (ruta[0] === "slug") { act.slug = aSlug(valor); estado.activa = act.slug; }
+          else destino[ruta[0]] = valor;
+        } else {
+          if (!destino[ruta[0]] || typeof destino[ruta[0]] !== "object") destino[ruta[0]] = {};
+          destino[ruta[0]][ruta[1]] = valor;
+        }
+        refrescarTotal(); llenarSelector();
+      } else if (el.dataset.lista) {
+        var arr = act[el.dataset.lista], i = Number(el.dataset.i);
+        if (!arr[i] || typeof arr[i] !== "object") arr[i] = { es: String(arr[i] || ""), en: "" };
+        arr[i][el.dataset.l] = el.value;
+      } else if (el.dataset.par) {
+        var f = act[el.dataset.par][Number(el.dataset.i)], sub = el.dataset.sub;
+        if (!f[sub] || typeof f[sub] !== "object") f[sub] = { es: String(f[sub] || ""), en: "" };
+        f[sub][el.dataset.l] = el.value;
+      }
+    });
+
+    panel.addEventListener("click", function (e) {
+      var act = cotizacionActiva();
+      var agregar = e.target.getAttribute && e.target.getAttribute("data-agregar");
+      var quitar = e.target.getAttribute && e.target.getAttribute("data-quitar");
+      if (agregar) {
+        act[agregar] = act[agregar] || [];
+        act[agregar].push(agregar === "incluye" || agregar === "condiciones"
+          ? { es: "", en: "" }
+          : { nombre: { es: "", en: "" }, detalle: { es: "", en: "" } });
+        cerrarPanel(); abrirPanel();
+      } else if (quitar) {
+        act[quitar].splice(Number(e.target.getAttribute("data-i")), 1);
+        cerrarPanel(); abrirPanel();
+      }
+    });
+  }
+
+  function refrescarTotal() {
+    var caja = $("#vista-total");
+    if (!caja) return;
+    var c = cotizacionActiva() || {};
+    var mx = totales(c, "es"), us = totales(c, "en");
+    caja.textContent =
+      "Español · " + mx.invitados + " × " + dinero(mx.porPersona, "MXN") + " = " + dinero(mx.total, "MXN") +
+      " · anticipo " + dinero(mx.anticipoConIva, "MXN") + " con IVA" +
+      "   |   English · " + us.invitados + " × " + dinero(us.porPersona, "USD") + " = " + dinero(us.total, "USD") +
+      " · deposit " + dinero(us.anticipo, "USD");
+  }
+
+  function cerrarPanel() {
+    var p = $("#panel");
+    if (p) p.remove();
+    pintar();
+  }
+
+  /* ---------- guardar y cobrar ---------- */
+
+  var RUTA_DATOS = "content/cotizaciones.json";
+  var AUTH = null; // { token, email } cuando hay sesión de admin
+
+  function api(ruta, opciones) {
+    var o = opciones || {};
+    o.headers = Object.assign({ "content-type": "application/json" }, o.headers || {});
+    if (AUTH) o.headers.authorization = "Bearer " + AUTH.token;
+    return fetch("/api" + ruta, o).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (b) {
+        if (!r.ok) throw new Error(b.error || "Error " + r.status);
+        return b;
+      });
+    });
+  }
+
+  function guardar() {
+    var boton = $("#btn-guardar");
+    if (boton) { boton.disabled = true; boton.textContent = "Guardando…"; }
+    api("/commit", {
+      method: "POST",
+      body: JSON.stringify({
+        path: RUTA_DATOS,
+        content: JSON.stringify(estado, null, 2) + "\n",
+        message: "cotizaciones: " + (cotizacionActiva() || {}).slug,
+      }),
+    })
+      .then(function () {
+        // El sitio se reconstruye con el commit; el cambio tarda un momento
+        // en verse en la dirección pública.
+        brindis("Guardado. El sitio se actualiza en un minuto.");
+      })
+      .catch(function (e) { brindis(e.message); })
+      .finally(function () {
+        if (boton && boton.isConnected) { boton.disabled = false; boton.textContent = "Guardar"; }
+      });
+  }
+
+  /** Pide el cobro a Mercado Pago y guarda la URL en la cotización. */
+  function generarCobro(lado) {
+    var c = cotizacionActiva();
+    if (!c) return;
+    var t = totales(c, lado);
+    if (!t.porPersona) { brindis("Falta el precio por persona de ese lado."); return; }
+
+    var monto = lado === "es" ? t.anticipoConIva : t.anticipo;
+    var concepto = "Anticipo " + t.pct + "% - " + tx(c.titulo, lado) + (c.cliente ? " - " + c.cliente : "");
+    var boton = $("#btn-cobro-" + lado);
+    if (boton) { boton.disabled = true; boton.textContent = "Creando…"; }
+
+    api("/payments/charge", {
+      method: "POST",
+      body: JSON.stringify({
+        concept: concepto.slice(0, 240),
+        // En centavos enteros, redondeados aquí y no en el servidor.
+        amount_cents: Math.round(monto * 100),
+        currency: t.moneda,
+        reference: c.slug,
+        back_url: location.origin + location.pathname + "#" + c.slug,
+      }),
+    })
+      .then(function (r) {
+        c[LADOS[lado].link] = r.pay_url || "";
+        if (!r.live_mode) brindis("Ojo: se creó con credencial de PRUEBA. No cobra.");
+        else brindis("Cobro creado por " + dinero(monto, t.moneda) + ". Falta Guardar.");
+        cerrarPanel(); abrirPanel();
+      })
+      .catch(function (e) { brindis(e.message); })
+      .finally(function () {
+        if (boton && boton.isConnected) { boton.disabled = false; boton.textContent = "Generar cobro"; }
+      });
+  }
+
+  /* ---------- arranque ---------- */
+
+  function cargarDatos() {
+    return fetch(RUTA_DATOS + "?t=" + Date.now())
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (d && Array.isArray(d.cotizaciones)) estado = d;
+      })
+      .catch(function () { /* todavía no existe el archivo */ });
+  }
+
+  function sesionGuardada() {
+    try {
+      var s = JSON.parse(localStorage.getItem("kpk_auth") || "null");
+      return s && s.token ? s : null;
+    } catch (e) { return null; }
+  }
+
+  cargarDatos().then(function () {
+    var inicial = cotizacionActiva();
+    if (inicial && (inicial.idioma === "en" || inicial.idioma === "es")) idioma = inicial.idioma;
+    pintar();
+
+    // La barra de admin solo aparece con una sesión que el servidor confirme.
+    // Un token viejo en el navegador no alcanza.
+    var s = sesionGuardada();
+    if (!s) return;
+    AUTH = s;
+    api("/session").then(function () { barraAdmin(); }).catch(function () {
+      AUTH = null;
+      localStorage.removeItem("kpk_auth");
+    });
+  });
+
+  window.addEventListener("hashchange", function () { pintar(); llenarSelector(); });
+}());
+</script>
+</body>
+</html>
