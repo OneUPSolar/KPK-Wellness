@@ -326,7 +326,8 @@
   .lapiz:hover { background: var(--eucalipto); color: #fff; }
   .cabeza .lapiz { top: 14px; right: 14px; }
   .platillo .foto .lapiz { top: 10px; right: 10px; }
-  .precio .lapiz, .pago .lapiz { top: 10px; right: 10px; }
+  /* Sobre las tarjetas con cifras, el lápiz monta el borde para no tapar números. */
+  .lapiz[data-editar="precio"], .lapiz[data-editar="cobro"] { top: -14px; right: 14px; }
   .caja { position: relative; }
   .caja .lapiz { top: 10px; right: 10px; }
   .karina.asistente .retrato.vacia { background: linear-gradient(135deg, #2B3A5C 0%, #1F2024 100%); }
@@ -893,7 +894,7 @@
           (platillos.length > 1 ? '<div class="puntos">' + puntos + "</div>" : "") +
           "</div></section>" : "") +
 
-        '<section><div class="precio">' + lapiz("precio", "Editar precios") +
+        '<section>' + lapiz("precio", "Editar precios") + '<div class="precio">' +
           '<div><div class="etq">' + esc(t9.porPersona + iva) + "</div>" +
             '<div class="cifra oro" data-count="' + t.porPersona + '" data-format="moneda:' + esc(t.moneda) + '">' + dinero(t.porPersona, t.moneda) + "</div></div>" +
           '<div class="col-der"><div class="etq">' +
@@ -908,7 +909,7 @@
           (condiciones ? '<div class="caja">' + lapiz("condiciones", "Editar") + '<div class="etq">' + esc(t9.condiciones) + "</div><ul>" + condiciones + "</ul></div>" : "") +
         "</div></section>" : "") +
 
-        '<section><div class="pago">' + lapiz("cobro", "Editar cobro") +
+        '<section>' + lapiz("cobro", "Editar cobro") + '<div class="pago">' +
           '<div class="pago-cabeza">' +
             '<div><div class="etq">' + esc(t9.formaPago) + "</div>" +
               "<h2>" + esc(t9.anticipo.replace("{p}", t.pct)) + "</h2></div>" +
