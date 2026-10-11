@@ -313,6 +313,25 @@
   .boton.wa:hover { background: #1EBE5B; }
   .boton.primario { background: var(--eucalipto-h); border-color: var(--eucalipto-h); color: #fff; font-size: 0.98rem; padding: 13px 24px; }
   .boton.primario:hover { background: #42665A; }
+  /* ---------- modo administrador ----------
+     Con sesión, cada sección y cada foto llevan su lápiz: la misma página
+     sirve para armar y para editar. */
+  .cuerpo section { position: relative; }
+  .lapiz {
+    position: absolute; top: 0; right: 0; z-index: 2;
+    font-family: var(--texto); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.04em;
+    background: rgba(255,255,255,0.94); color: var(--eucalipto-h); border: 1px solid var(--eucalipto);
+    border-radius: 999px; padding: 5px 11px; cursor: pointer; box-shadow: 0 4px 12px rgba(31,32,36,0.12);
+  }
+  .lapiz:hover { background: var(--eucalipto); color: #fff; }
+  .cabeza .lapiz { top: 14px; right: 14px; }
+  .platillo .foto .lapiz { top: 10px; right: 10px; }
+  .precio .lapiz, .pago .lapiz { top: 10px; right: 10px; }
+  .caja { position: relative; }
+  .caja .lapiz { top: 10px; right: 10px; }
+  .karina.asistente .retrato.vacia { background: linear-gradient(135deg, #2B3A5C 0%, #1F2024 100%); }
+  .karina.asistente .respuesta { background: var(--crema); border-left-color: #2B3A5C; white-space: pre-wrap; }
+
   /* En angosto el retrato queda arriba de la burbuja; la colita ya no apunta a nada. */
   @media (max-width: 560px) { .burbuja::before { display: none; } }
   @media (prefers-reduced-motion: reduce) { .halo::before, .halo::after { animation: none; } }
@@ -493,7 +512,9 @@
       reservarWa: "Hola Karina, quiero pagar el anticipo y reservar la fecha para",
       holaSoy: "Hola, soy Karina Kennedy.", ayudar: "¿En qué te puedo ayudar? Elige una pregunta o escríbeme.",
       sobreCot: "Hola Karina, sobre la cotización", preguntarWa: "Preguntar por WhatsApp",
-      tuPregunta: "Escribe tu pregunta…", enviarWa: "Enviar por WhatsApp"
+      tuPregunta: "Escribe tu pregunta…", enviarWa: "Enviar por WhatsApp",
+      descuento: "{d}% de descuento", conDescuento: "Transferencia o efectivo: {m} ({d}% de descuento)",
+      m4: "", m4d: "", m4wa: ""
     },
     en: {
       cotizacion: "Quote", para: "For:", lugar: "Location", fecha: "Date",
@@ -517,7 +538,9 @@
       reservarWa: "Hi Karina, I'd like to pay the deposit and reserve the date for",
       holaSoy: "Hi, I'm Karina Kennedy.", ayudar: "How can I help? Pick a question or write to me.",
       sobreCot: "Hi Karina, about the quote for", preguntarWa: "Ask on WhatsApp",
-      tuPregunta: "Type your question…", enviarWa: "Send on WhatsApp"
+      tuPregunta: "Type your question…", enviarWa: "Send on WhatsApp",
+      descuento: "{d}% off", conDescuento: "Zelle or cash dollars: {m} ({d}% off)",
+      m4: "Zelle or cash dollars", m4d: "Send it to {z} and confirm on WhatsApp.", m4wa: "I'll pay the deposit by Zelle"
     }
   };
 
@@ -656,19 +679,40 @@
     abrirPanel();
   }
 
+  /**
+   * Redondeo de mostrador: sin centavos, a múltiplos de 5, y los números
+   * "redondos" (50, 100, 500…) bajan uno: $99 se ve mejor que $100.
+   */
+  function redondear(x) {
+    var r = Math.round(x / 5) * 5;
+    if (r > 0 && r % 50 === 0) r -= 1;
+    return r;
+  }
+
+  var TIPO_CAMBIO = 16.5;          // pesos por dólar; no se muestra al cliente
+  var DESCUENTO_EFECTIVO = 5;      // % por transferencia o efectivo, solo en pesos
+
   function totales(c, lang) {
     var lado = LADOS[lang];
     var invitados = Number(c.invitados) || 0;
-    var porPersona = Number((c.precio || {})[lado.precio]) || 0;
+    var precio = c.precio || {};
+    var mxn = Number(precio.mxn) || 0;
+    var tc = Number(c.tipoCambio) > 0 ? Number(c.tipoCambio) : TIPO_CAMBIO;
+    // El dólar sale del precio en pesos, salvo que Karina capture uno a mano.
+    var porPersona = lang === "en" ? (Number(precio.usd) || redondear(mxn / tc)) : mxn;
     var total = invitados * porPersona;
     var pct = Number(c.anticipoPct);
     if (!isFinite(pct) || pct < 0 || pct > 100) pct = 50;
     // El IVA es del lado mexicano. En dólares va invoice, sin IVA.
     var iva = lado.conIva ? (isFinite(Number(c.ivaPct)) ? Number(c.ivaPct) : 16) : 0;
     var anticipo = total * pct / 100;
+    var anticipoConIva = anticipo * (1 + iva / 100);
+    // En pesos: transferencia o efectivo. En dólares: Zelle o efectivo.
+    var dPct = isFinite(Number(c.descuentoEfectivoPct)) ? Number(c.descuentoEfectivoPct) : DESCUENTO_EFECTIVO;
     return {
       moneda: lado.moneda, invitados: invitados, porPersona: porPersona, total: total,
-      pct: pct, iva: iva, anticipo: anticipo, anticipoConIva: anticipo * (1 + iva / 100)
+      pct: pct, iva: iva, anticipo: anticipo, anticipoConIva: anticipoConIva,
+      descuentoPct: dPct, anticipoEfectivo: dPct ? redondear(anticipoConIva * (1 - dPct / 100)) : anticipoConIva
     };
   }
 
@@ -677,6 +721,7 @@
   function pintar() {
     var c = cotizacionActiva();
     var L = idioma, t9 = T[L], chef = estado.chef || {};
+    var admin = Boolean(AUTH);
 
     if (!c) {
       hoja.innerHTML = '<div class="cuerpo"><section><h2>' + esc(t9.sinCotizaciones) + "</h2></section></div>";
@@ -688,18 +733,25 @@
     var iva = t9.masIva ? " " + t9.masIva : "";
 
     var platillos = c.menu || [];
-    var menu = platillos.map(function (p) {
+    var menu = platillos.map(function (p, i) {
       var d = tx(p.detalle, L), n = tx(p.nombre, L);
+      var lp = lapiz("menu", "Cambiar foto", "menu." + i + ".imagen");
       var foto = p.imagen
         ? '<div class="foto"><div class="img" style="background-image:url(' + "'" + esc(p.imagen) + "'" + ')"></div>' +
-          '<div class="n">' + esc(n) + "</div></div>"
-        : '<div class="foto vacia"><div class="inicial">' + esc((n || "·").charAt(0)) + '</div><div class="n">' + esc(n) + "</div></div>";
+          lp + '<div class="n">' + esc(n) + "</div></div>"
+        : '<div class="foto vacia"><div class="inicial">' + esc((n || "·").charAt(0)) + "</div>" + lp + '<div class="n">' + esc(n) + "</div></div>";
       return '<div class="platillo">' + foto + '<div class="txt">' + (d ? '<div class="d">' + esc(d) + "</div>" : "") + "</div></div>";
     }).join("");
     var puntos = platillos.map(function (_, i) {
       return '<button type="button" class="punto" data-ir="' + i + '" aria-label="' + (i + 1) + '"' + (i === 0 ? ' aria-current="true"' : "") + "></button>";
     }).join("");
     var portada = c.portada || PORTADA_PREDETERMINADA;
+    // Un lápiz abre el editor en esa sección; con `foto`, abre directo el selector de archivo.
+    function lapiz(seccion, etiqueta, foto) {
+      if (!admin) return "";
+      return '<button type="button" class="lapiz" data-editar="' + esc(seccion) + '"' +
+        (foto ? ' data-foto-editar="' + esc(foto) + '"' : "") + ">" + esc(etiqueta || "Editar") + "</button>";
+    }
 
     var incluye = (c.incluye || []).map(function (i) { return "<div>" + esc(tx(i, L)) + "</div>"; }).join("");
 
@@ -717,9 +769,30 @@
              (detalle ? "<span>" + esc(detalle) + "</span>" : "") + "</div>" + (accion || "") + "</div>";
     }
     var irAPagar = '<a class="pagar" target="_blank" rel="noopener" href="' + esc(link) + '">' + esc(t9.pagar) + "</a>";
+    // El link con descuento cierra la tarjeta en Mercado Pago; si no existe,
+    // transferencia y efectivo van al mismo checkout sin descuento.
+    var linkEf = L === "es" && /^https:\/\//i.test(c.linkMxnEfectivo || "") ? c.linkMxnEfectivo : "";
+    var irAPagarEf = linkEf
+      ? '<a class="pagar" target="_blank" rel="noopener" href="' + esc(linkEf) + '">' + esc(t9.pagar) + " · " + dinero(t.anticipoEfectivo, t.moneda) + "</a>"
+      : irAPagar;
+    var etqDesc = t.descuentoPct ? " · " + t9.descuento.replace("{d}", t.descuentoPct) : "";
     var filas = "";
-    if (link) {
+    if (link && L === "es") {
+      filas += fila(t9.m1, t9.m1d, irAPagar) +
+               fila(t9.m2 + etqDesc, t9.m2d, irAPagarEf) +
+               fila(t9.m3 + etqDesc, t9.m3d, irAPagarEf);
+    } else if (link) {
+      // Dólares: Stripe cobra tarjeta, Klarna/Affirm y Apple/Google Pay en el mismo checkout.
       filas += fila(t9.m1, t9.m1d, irAPagar) + fila(t9.m2, t9.m2d, irAPagar) + fila(t9.m3, t9.m3d, irAPagar);
+    }
+    // Zelle o dólares en efectivo: no hay link, se confirma por WhatsApp.
+    if (L === "en" && t9.m4 && (chef.zelle || chef.whatsapp)) {
+      var waZelle = chef.whatsapp
+        ? '<a class="pagar" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
+          encodeURIComponent(t9.m4wa + " — " + tx(c.titulo, L) + " — " + dinero(t.anticipoEfectivo, t.moneda)) + '">' +
+          esc(t9.m4wa) + " · " + dinero(t.anticipoEfectivo, t.moneda) + "</a>"
+        : "";
+      filas += fila(t9.m4 + etqDesc, chef.zelle ? t9.m4d.replace("{z}", chef.zelle) : "", waZelle);
     }
     var nota = tx(c.notaPago, L);
     if (nota) filas += fila(nota, "", "");
@@ -747,7 +820,25 @@
     var chips = preguntas.map(function (q, i) {
       return '<button type="button" class="chip" data-faq="' + i + '" aria-expanded="false">' + esc(tx(q.nombre, L)) + "</button>";
     }).join("");
-    var pregunta = chef.whatsapp
+    var chipsAdmin = [
+      "Haz la comanda de cocina",
+      "Sugiere un cambio de menú",
+      "Redacta el WhatsApp para el cliente",
+      "Revisa precios y anticipo"
+    ].map(function (q) { return '<button type="button" class="chip" data-pedir="' + esc(q) + '">' + esc(q) + "</button>"; }).join("");
+    var pregunta = admin
+      ? '<section><div class="karina asistente">' +
+          '<div class="k-cab"><div class="halo"><div class="retrato vacia" id="asis-inicial">' + esc((asisNombre || "Silver").charAt(0)) + "</div></div>" +
+          '<div class="burbuja"><b id="asis-nombre">' + esc(asisNombre || "Silver") + "</b>" +
+            "<span>Para esta cotización: la comanda de cocina, cambios de menú o precio, el mensaje al cliente. " +
+            "Lo que cambie se aplica en pantalla; tú decides si guardas.</span></div></div>" +
+          '<div class="chips">' + chipsAdmin + "</div>" +
+          '<div class="respuesta" id="asis-respuesta"' + (ultimaAdmin ? "" : " hidden") + '><p id="asis-texto">' + esc(ultimaAdmin) + "</p></div>" +
+          '<form class="pregunta-libre" id="asis-forma">' +
+            '<input type="text" id="asis-entrada" placeholder="Pídele algo: cambia la tostada por aguachile, sube a 60 invitados…" maxlength="600" required>' +
+            '<button type="submit" class="boton primario" id="asis-enviar">Pedir</button></form>' +
+        "</div></section>"
+      : chef.whatsapp
       ? '<section><div class="karina">' +
           '<div class="k-cab"><div class="halo">' +
             (chef.foto
@@ -774,6 +865,7 @@
 
       '<header class="cabeza">' +
         '<div class="foto" style="background-image:url(' + "'" + esc(portada) + "'" + ')"></div>' +
+        lapiz("evento", "Editar evento y portada", "portada") +
         '<div style="min-width:0">' +
           '<div class="filo"></div>' +
           '<div class="etq">' + esc(t9.cotizacion) + "</div>" +
@@ -793,7 +885,7 @@
       "</div>" +
 
       '<div class="cuerpo">' + aprobado +
-        (menu ? '<section><div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
+        (menu ? '<section>' + lapiz("menu", "Editar menú") + '<div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
           (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
           '</div><div class="carrusel"><div class="pista" id="pista" data-lenis-prevent>' + menu + "</div>" +
           '<div class="flechas"><button type="button" class="flecha prev" data-paso="-1">Anterior</button>' +
@@ -801,7 +893,7 @@
           (platillos.length > 1 ? '<div class="puntos">' + puntos + "</div>" : "") +
           "</div></section>" : "") +
 
-        '<section><div class="precio">' +
+        '<section><div class="precio">' + lapiz("precio", "Editar precios") +
           '<div><div class="etq">' + esc(t9.porPersona + iva) + "</div>" +
             '<div class="cifra oro" data-count="' + t.porPersona + '" data-format="moneda:' + esc(t.moneda) + '">' + dinero(t.porPersona, t.moneda) + "</div></div>" +
           '<div class="col-der"><div class="etq">' +
@@ -809,21 +901,25 @@
             '<div class="cifra" data-count="' + t.total + '" data-format="moneda:' + esc(t.moneda) + '">' + dinero(t.total, t.moneda) + "</div></div>" +
         "</div></section>" +
 
-        (incluye ? '<section><h2>' + esc(t9.incluye) + '</h2><div class="incluye">' + incluye + "</div></section>" : "") +
+        (incluye ? '<section>' + lapiz("incluye", "Editar") + '<h2>' + esc(t9.incluye) + '</h2><div class="incluye">' + incluye + "</div></section>" : "") +
 
         ((opcionales || condiciones) ? '<section><div class="rejilla-2">' +
-          (opcionales ? '<div class="caja"><div class="etq">' + esc(t9.opcional) + "</div>" + opcionales + "</div>" : "") +
-          (condiciones ? '<div class="caja"><div class="etq">' + esc(t9.condiciones) + "</div><ul>" + condiciones + "</ul></div>" : "") +
+          (opcionales ? '<div class="caja">' + lapiz("opcionales", "Editar") + '<div class="etq">' + esc(t9.opcional) + "</div>" + opcionales + "</div>" : "") +
+          (condiciones ? '<div class="caja">' + lapiz("condiciones", "Editar") + '<div class="etq">' + esc(t9.condiciones) + "</div><ul>" + condiciones + "</ul></div>" : "") +
         "</div></section>" : "") +
 
-        '<section><div class="pago">' +
+        '<section><div class="pago">' + lapiz("cobro", "Editar cobro") +
           '<div class="pago-cabeza">' +
             '<div><div class="etq">' + esc(t9.formaPago) + "</div>" +
               "<h2>" + esc(t9.anticipo.replace("{p}", t.pct)) + "</h2></div>" +
             '<div><div class="monto">' + dinero(t.anticipoConIva, t.moneda) + "</div>" +
               '<div class="monto-nota">' +
                 esc((t.iva ? dinero(t.anticipo, t.moneda) + " + " + t.iva + "% IVA · " : "") + t9.comprobante) +
-              "</div></div>" +
+              "</div>" +
+              (t.descuentoPct && t9.conDescuento
+                ? '<div class="monto-nota">' + esc(t9.conDescuento.replace("{m}", dinero(t.anticipoEfectivo, t.moneda)).replace("{d}", t.descuentoPct)) + "</div>"
+                : "") +
+              "</div>" +
           "</div>" +
           '<div class="pago-cuerpo">' +
             '<div class="acciones">' + reservar + (pagoAprobado() ? "" : calendario) +
@@ -915,6 +1011,63 @@
     mover();
   }
 
+  /* ---------- el asistente del administrador ---------- */
+  var hiloAdmin = [], ultimaAdmin = "", asisNombre = "", asisMotor = null;
+
+  function asistente(c, L) {
+    var forma = $("#asis-forma");
+    if (!forma) return;
+    if (!asisNombre) {
+      api("/silver/chat").then(function (st) {
+        var p = st.proveedores && st.proveedores[st.predeterminado];
+        if (!p) return;
+        asisNombre = p.nombre; asisMotor = st.predeterminado;
+        var n = $("#asis-nombre"), i = $("#asis-inicial");
+        if (n) n.textContent = asisNombre;
+        if (i) i.textContent = asisNombre.charAt(0);
+      }).catch(function () { /* sin llave: el primer pedido lo dirá */ });
+    }
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-pedir]"), function (b) {
+      b.addEventListener("click", function () { pedir(c, L, b.getAttribute("data-pedir")); });
+    });
+    forma.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = $("#asis-entrada").value.trim();
+      if (v) { $("#asis-entrada").value = ""; pedir(c, L, v); }
+    });
+  }
+
+  /** Un pedido al asistente. Si vuelve con cambios, se aplican en pantalla y Karina decide si guarda. */
+  function pedir(c, L, texto) {
+    var caja = $("#asis-respuesta"), p = $("#asis-texto"), boton = $("#asis-enviar");
+    hiloAdmin.push({ role: "user", content: texto });
+    hiloAdmin = hiloAdmin.slice(-20);
+    if (caja) { caja.hidden = false; p.textContent = (asisNombre || "Silver") + " está pensando…"; }
+    if (boton) boton.disabled = true;
+    api("/silver/chat", {
+      method: "POST",
+      body: JSON.stringify({ messages: hiloAdmin, proveedor: asisMotor || undefined,
+        contexto: { cotizacion: c, chef: estado.chef || {}, idioma: L } }),
+    })
+      .then(function (out) {
+        hiloAdmin.push({ role: "assistant", content: out.reply || "" });
+        ultimaAdmin = [out.reply].concat(out.notas || []).filter(Boolean).join("\n");
+        if (out.cambios && typeof out.cambios === "object") {
+          Object.keys(out.cambios).forEach(function (k) {
+            var v = out.cambios[k];
+            if (k === "precio" && v && typeof v === "object") c.precio = Object.assign(c.precio || {}, v);
+            else c[k] = v;
+          });
+          brindis("Cambios aplicados en pantalla. Revisa y pulsa Guardar.");
+          llenarSelector(); pintar();
+        } else if (p) {
+          p.textContent = ultimaAdmin;
+        }
+      })
+      .catch(function (e) { if (p) p.textContent = e.message; })
+      .then(function () { var b = $("#asis-enviar"); if (b) b.disabled = false; });
+  }
+
   /** Karina te atiende: cada pregunta muestra su respuesta y ofrece seguir por WhatsApp. */
   function atencion(c, t, t9, L, chef) {
     var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
@@ -947,7 +1100,10 @@
   }
 
   function cablear(c, t, t9, L, iva) {
-    carrusel(); parallax(); atencion(c, t, t9, L, estado.chef || {});
+    carrusel(); parallax(); atencion(c, t, t9, L, estado.chef || {}); asistente(c, L);
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-editar]"), function (b) {
+      b.addEventListener("click", function () { abrirPanel(b.getAttribute("data-editar"), b.getAttribute("data-foto-editar")); });
+    });
     if (window.Motion) { window.Motion.dinero = dinero; window.Motion.init(hoja); }
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
       b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
@@ -1110,9 +1266,14 @@
       '<button type="button" class="agregar" data-agregar="' + clave + '">Agregar</button></fieldset>';
   }
 
-  function abrirPanel() {
+  /** Qué fieldset corresponde a cada lápiz de la página. */
+  var ANCLAS = { evento: "Evento", portada: "Evento", menu: "Menú", precio: "Precio por persona", incluye: "Incluye",
+                 opcionales: "Opcionales", condiciones: "Condiciones", cobro: "Cobro", contacto: "Contacto", preguntas: "Preguntas" };
+
+  function abrirPanel(ancla, foto) {
     var c = cotizacionActiva();
     if (!c) return;
+    if ($("#panel")) cerrarPanel();
     var chef = estado.chef || {};
     c.precio = c.precio || { mxn: 0, usd: 0 };
 
@@ -1154,14 +1315,19 @@
           "<fieldset><legend>Precio por persona</legend>" +
             '<div class="par-campos">' +
               campo("MXN (sin IVA)", c.precio.mxn, "precio.mxn", "number") +
-              campo("USD (sin IVA)", c.precio.usd, "precio.usd", "number") +
+              campo("USD · vacío = se calcula", c.precio.usd, "precio.usd", "number") +
             "</div>" +
             '<div class="par-campos">' +
               campo("Anticipo (%)", c.anticipoPct, "anticipoPct", "number") +
               campo("IVA (%) · solo pesos", c.ivaPct, "ivaPct", "number") +
             "</div>" +
-            '<div class="aviso">Los dos precios se capturan a mano. El cotizador no convierte monedas: ' +
-              "un tipo de cambio inventado hoy queda mal mañana.</div>" +
+            '<div class="par-campos">' +
+              campo("Tipo de cambio (MXN por USD)", c.tipoCambio || TIPO_CAMBIO, "tipoCambio", "number") +
+              campo("Descuento transferencia/efectivo (%)", isFinite(Number(c.descuentoEfectivoPct)) ? c.descuentoEfectivoPct : DESCUENTO_EFECTIVO, "descuentoEfectivoPct", "number") +
+            "</div>" +
+            '<div class="aviso">El precio en dólares sale del de pesos entre el tipo de cambio, redondeado a múltiplos de 5 ' +
+              "(y 100 se vuelve 99). El tipo de cambio no se le muestra al cliente. El descuento aplica solo en pesos, " +
+              "pagando por transferencia o en efectivo.</div>" +
             '<div class="aviso" id="vista-total"></div>' +
           "</fieldset>" +
 
@@ -1170,9 +1336,11 @@
           listaBi("Condiciones", "condiciones", c.condiciones, "Condición") +
 
           "<fieldset><legend>Cobro</legend>" +
-            campo("Link en pesos · Mercado Pago", c.linkMxn, "linkMxn") +
-            '<button type="button" class="agregar" id="btn-cobro-es">Generar cobro</button>' +
-            campo("Link en dólares · Stripe", c.linkUsd, "linkUsd") +
+            campo("Link en pesos · tarjeta (Mercado Pago)", c.linkMxn, "linkMxn") +
+            campo("Link en pesos · transferencia o efectivo, con descuento", c.linkMxnEfectivo, "linkMxnEfectivo") +
+            '<button type="button" class="agregar" id="btn-cobro-es">Generar cobros</button>' +
+            campo("Link en dólares · tarjeta, Apple Pay, Klarna/Affirm (Stripe)", c.linkUsd, "linkUsd") +
+            '<button type="button" class="agregar" id="btn-cobro-en">Generar cobro en dólares</button>' +
             '<div class="aviso">El lado en español cobra con el link en pesos; el inglés, con el de dólares. ' +
               "Klarna y Affirm aparecen solos en el checkout de Stripe si los activaste en su panel.</div>" +
             bi("Nota adicional", c.notaPago, "notaPago") +
@@ -1191,6 +1359,7 @@
               campo("Correo", chef.correo, "chef.correo") +
               campo("Tu WhatsApp (solo dígitos)", chef.whatsapp, "chef.whatsapp") +
             "</div>" +
+            campo("Zelle (correo o teléfono) · dólares con descuento", chef.zelle, "chef.zelle") +
             '<div class="marca">Tu foto</div>' + fotoCampo(chef.foto, "chef.foto") +
             '<div class="aviso">Abajo de cada cotización apareces tú: "Hola, soy Karina Kennedy". Las preguntas que ' +
               "ve el cliente son estas; si las dejas vacías se usan las sugeridas.</div>" +
@@ -1205,11 +1374,26 @@
     document.body.appendChild(panel);
     refrescarTotal();
 
+    // Llegó por un lápiz: el editor abre en esa sección; con foto, directo al selector.
+    if (ancla && ANCLAS[ancla]) {
+      Array.prototype.some.call(panel.querySelectorAll("legend"), function (lg) {
+        if (lg.textContent.indexOf(ANCLAS[ancla]) !== 0) return false;
+        lg.parentNode.scrollIntoView({ block: "start" });
+        return true;
+      });
+    }
+    if (foto) {
+      var entrada = panel.querySelector('[data-foto="' + foto + '"]');
+      if (entrada) entrada.click();
+    }
+
     panel.addEventListener("click", function (e) { if (e.target === panel) cerrarPanel(); });
     $("#btn-cerrar").addEventListener("click", cerrarPanel);
     $("#btn-guardar").addEventListener("click", guardar);
     var bc = $("#btn-cobro-es");
     if (bc) bc.addEventListener("click", function () { generarCobro("es"); });
+    var bu = $("#btn-cobro-en");
+    if (bu) bu.addEventListener("click", function () { generarCobro("en"); });
     $("#btn-borrar").addEventListener("click", function () {
       estado.cotizaciones = estado.cotizaciones.filter(function (x) { return x.slug !== c.slug; });
       estado.activa = (estado.cotizaciones[0] || {}).slug || "";
@@ -1297,6 +1481,7 @@
     caja.textContent =
       "Español · " + mx.invitados + " × " + dinero(mx.porPersona, "MXN") + " = " + dinero(mx.total, "MXN") +
       " · anticipo " + dinero(mx.anticipoConIva, "MXN") + " con IVA" +
+      (mx.descuentoPct ? " · transferencia/efectivo " + dinero(mx.anticipoEfectivo, "MXN") : "") +
       "   |   English · " + us.invitados + " × " + dinero(us.porPersona, "USD") + " = " + dinero(us.total, "USD") +
       " · deposit " + dinero(us.anticipo, "USD");
   }
@@ -1414,27 +1599,43 @@
     var concepto = "Anticipo " + t.pct + "% - " + tx(c.titulo, lado) + (c.cliente ? " - " + c.cliente : "");
     var boton = $("#btn-cobro-" + lado);
     if (boton) { boton.disabled = true; boton.textContent = "Creando…"; }
+    var back = location.origin + location.pathname + "?c=" + encodeURIComponent(c.slug);
 
-    api("/payments/charge", {
-      method: "POST",
-      body: JSON.stringify({
-        concept: concepto.slice(0, 240),
-        // En centavos enteros, redondeados aquí y no en el servidor.
-        amount_cents: Math.round(monto * 100),
-        currency: t.moneda,
-        reference: c.slug,
-        back_url: location.origin + location.pathname + "?c=" + encodeURIComponent(c.slug),
-      }),
-    })
+    function cobro(importe, extra) {
+      return api(lado === "es" ? "/payments/charge" : "/payments/stripe", {
+        method: "POST",
+        body: JSON.stringify(Object.assign({
+          concept: concepto.slice(0, 240),
+          // En centavos enteros, redondeados aquí y no en el servidor.
+          amount_cents: Math.round(importe * 100),
+          currency: t.moneda,
+          reference: c.slug,
+          back_url: back,
+        }, extra || {})),
+      });
+    }
+
+    // En pesos salen dos links: tarjeta al precio completo, y transferencia o
+    // efectivo con el descuento, con la tarjeta cerrada para ese link.
+    var conDescuento = lado === "es" && t.descuentoPct > 0;
+    cobro(monto)
       .then(function (r) {
         c[LADOS[lado].link] = r.pay_url || "";
         if (!r.live_mode) brindis("Ojo: se creó con credencial de PRUEBA. No cobra.");
-        else brindis("Cobro creado por " + dinero(monto, t.moneda) + ". Falta Guardar.");
+        if (!conDescuento) return null;
+        return cobro(t.anticipoEfectivo, {
+          concept: (concepto + " - transferencia/efectivo").slice(0, 240),
+          excluded_payment_types: ["credit_card", "debit_card", "prepaid_card"],
+        }).then(function (r2) { c.linkMxnEfectivo = r2.pay_url || ""; });
+      })
+      .then(function () {
+        brindis("Cobro creado por " + dinero(monto, t.moneda) +
+          (conDescuento ? " y " + dinero(t.anticipoEfectivo, t.moneda) + " con descuento" : "") + ". Falta Guardar.");
         cerrarPanel(); abrirPanel();
       })
       .catch(function (e) { brindis(e.message); })
       .finally(function () {
-        if (boton && boton.isConnected) { boton.disabled = false; boton.textContent = "Generar cobro"; }
+        if (boton && boton.isConnected) { boton.disabled = false; boton.textContent = lado === "es" ? "Generar cobros" : "Generar cobro en dólares"; }
       });
   }
 
@@ -1471,7 +1672,7 @@
     var s = sesionGuardada();
     if (!s) return;
     AUTH = s;
-    api("/session").then(function () { barraAdmin(); if (!enCotizacion()) pintarLanding(true); }).catch(function () {
+    api("/session").then(function () { barraAdmin(); if (enCotizacion()) pintar(); else pintarLanding(true); }).catch(function () {
       AUTH = null;
       localStorage.removeItem("kpk_auth");
     });
