@@ -1858,7 +1858,13 @@
         brindis(e.message);
         // El aviso de 3 segundos se pierde; esto se queda escrito hasta que se cierre el panel.
         var est = $("#cobro-estado");
-        if (est) { est.textContent = "No se pudo generar el cobro: " + e.message; est.style.borderLeftColor = "#C79A91"; est.style.color = "#9A5A4F"; }
+        if (est) { est.textContent = "No se pudo generar el cobro: " + e.message + " (ya quedó reportado como ticket)"; est.style.borderLeftColor = "#C79A91"; est.style.color = "#9A5A4F"; }
+        // Y se reporta solo: así el motivo llega aunque nadie lo copie.
+        api("/tickets", { method: "POST", body: JSON.stringify({
+          tipo: "falla", titulo: "Generar cobros falló: " + String(e.message).slice(0, 80),
+          detalle: "Cotización: " + c.slug + "\nLado: " + lado + "\nMonto: " + monto + " " + t.moneda + "\nError: " + e.message + "\nNavegador: " + navigator.userAgent,
+          pagina: location.href, dispositivo: navigator.userAgent,
+        }) }).catch(function () { /* si tampoco se puede, el texto ya quedó en pantalla */ });
       })
       .finally(function () {
         if (boton && boton.isConnected) { boton.disabled = false; boton.textContent = lado === "es" ? "Generar cobros" : "Generar cobro en dólares"; }

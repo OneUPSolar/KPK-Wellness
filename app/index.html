@@ -56,10 +56,19 @@
                       rgba(20,20,32,0.74) 68%, rgba(20,20,32,0.97) 100%),
       linear-gradient(90deg, rgba(20,20,32,0.55) 0%, rgba(20,20,32,0) 62%);
   }
-  .portada-arriba { padding: 46px 26px 0; }
-  .portada-abajo { padding: 0 26px 52px; max-width: 460px; }
+  .portada-arriba { padding: 40px 26px 0; }
+  /* El acceso vive en una tarjeta de vidrio centrada sobre la foto, no suelto
+     en una esquina: en escritorio la pantalla es enorme y el ojo necesita un
+     lugar a dónde ir. */
+  .portada-abajo {
+    align-self: center; width: min(440px, 100% - 32px); margin-block: auto 56px;
+    background: rgba(30,30,46,0.52); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.14); border-radius: 22px; padding: 30px 28px 28px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+  }
+  @media (min-width: 720px) { .portada-abajo { margin-block: auto; } }
   /* En pantalla alta el bloque no debe quedar pegado hasta abajo. */
-  @media (min-height: 760px) { .portada-abajo { padding-bottom: 12vh; } }
+  .portada { display: flex; flex-direction: column; }
 
   /* El filo de eucalipto es el mismo detalle que lleva la marca en el sitio. */
   .filo { width: 44px; height: 2px; background: var(--eucalyptus); margin-bottom: 20px; }
@@ -78,7 +87,9 @@
     text-shadow: 0 2px 24px rgba(0,0,0,0.5);
   }
   .sub { color: var(--concrete); font-size: 0.95rem; margin: 0 0 28px; max-width: 34ch; }
-  #gbtn { min-height: 44px; }
+  #gbtn { min-height: 44px; display: flex; justify-content: flex-start; }
+  #gbtn > div { width: 100% !important; }
+  #gbtn iframe { width: 100% !important; }
   .error { color: #E8B4B4; font-size: 0.9rem; margin-top: 16px; }
   .nota { color: var(--muted); font-size: 0.82rem; margin-top: 18px; }
 
@@ -498,7 +509,8 @@
         },
       });
       window.google.accounts.id.renderButton($('gbtn'), {
-        theme: 'filled_black', size: 'large', text: 'signin_with', shape: 'pill', locale: 'es',
+        theme: 'filled_black', size: 'large', text: 'continue_with', shape: 'pill', locale: 'es',
+        width: Math.min(360, $('gbtn').clientWidth || 360),
       });
     };
     s.onerror = function () { mostrarError('No se pudo cargar el acceso de Google.'); };
