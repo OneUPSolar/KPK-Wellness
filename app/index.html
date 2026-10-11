@@ -309,6 +309,8 @@
   }
 
   function entrar(sesion) {
+    var volver = new URLSearchParams(location.search).get('volver') || '';
+    if (/^\/(?!\/)/.test(volver) && !/[\\]/.test(volver)) { location.replace(volver); return; }
     $('portada').hidden = true;
     $('panel').hidden = false;
     $('correo').textContent = sesion.email || '';

@@ -14,7 +14,8 @@ export function ogDe(datos, slug, origin) {
   const chef = datos?.chef || {};
   const nombreChef = String(chef.nombre || 'Chef Karina Paz Kennedy');
   const base = { url: `${origin}/cotizacion`, image: origin + PORTADA_OG, title: `Cotizaciones · ${nombreChef}`, description: 'Catering y experiencias culinarias · Tijuana / San Diego' };
-  const c = (datos?.cotizaciones || []).find((x) => x.slug === slug);
+  const lista = datos?.cotizaciones || [];
+  const c = lista.find((x) => x.slug === slug) || lista.find((x) => x.slug === String(slug || '').replace(/-view$/, ''));
   if (!c) return base;
 
   const L = c.idioma === 'en' ? 'en' : 'es';
