@@ -27,7 +27,6 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | ruta | método | quién |
 |---|---|---|
 | `/cotizacion` | GET | pública — sirve la página estática con meta Open Graph por cotización (`?c=slug`), para el preview en WhatsApp |
-| `/invitacion` | GET | pública — invitación para los invitados del cliente (`?c=slug`), sin precios, con preview |
 | `/api/auth/config` | GET · POST | pública — qué métodos de entrada hay |
 | `/api/auth/google` | POST | pública — cambia el ID token de Google por sesión |
 | `/api/login` | POST | pública — solo si `ADMIN_PASSWORD` sigue puesta |
@@ -39,7 +38,6 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/silver/chat` | GET · POST | admin — Silver dentro de la app, con las llaves de OpenAI y Anthropic de Karina |
 | `/api/payments/stripe` | POST | admin — cobro en dólares con Stripe Checkout (tarjeta, Apple Pay, Klarna/Affirm) |
 | `/api/pagado` | POST público | al volver de Mercado Pago aprobado: verifica el pago con MP, lo registra en la cotización y manda el correo de reserva |
-| `/api/rsvp` | POST público · GET admin | confirmaciones de asistencia desde la invitación, guardadas en `content/rsvp/<slug>.json` |
 | `/api/silver/imagen` | POST | admin — Silver edita o genera una foto (OpenAI gpt-image-1) y la commitea en assets/cotizaciones/ |
 | `/api/tickets` | GET · POST | admin — tickets de fallas y mejoras, como issues `bug-off` (ver `docs/BUG-OFF.md`) |
 
