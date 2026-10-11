@@ -196,7 +196,7 @@
       </a>
       <a class="tarjeta" href="#silver" id="abrir-silver">
         <span class="punto"></span>
-        <span><b>Silver</b><small>Dicta un platillo y publícalo como receta</small></span>
+        <span><b>Silver y Claudio</b><small>Dicta un platillo y publícalo como receta</small></span>
       </a>
       <a class="tarjeta" href="/card/">
         <span class="punto"></span>
@@ -217,7 +217,7 @@
 <!-- Silver: el chat con su asistente de recetas -->
 <div class="envoltura" id="silver" hidden>
   <div class="cabeza-panel">
-    <div class="marca-chica">Silver<span>Recetas</span></div>
+    <div class="marca-chica"><span id="silver-titulo" style="display:inline;font:inherit;color:inherit;letter-spacing:0;text-transform:none;margin:0">Silver</span><span>Recetas</span></div>
     <button type="button" class="boton" id="volver">← Panel</button>
   </div>
   <div class="motores" id="motores" hidden></div>
@@ -269,19 +269,24 @@
   var MOTOR = 'kpk_silver_motor';
   var hilo = [];
   var motor = null;
+  var nombres = {};
+  function nombreActivo() { return nombres[motor] || 'Silver'; }
+  function ponerTitulo() { $('silver-titulo').textContent = nombreActivo(); }
   function pintarMotores(st) {
     var caja = $('motores'); caja.innerHTML = '';
     var claves = Object.keys(st.proveedores || {}).filter(function (k) { return st.proveedores[k].habilitado; });
     var guardado = null;
     try { guardado = localStorage.getItem(MOTOR); } catch (e) { /* sin memoria */ }
     motor = claves.indexOf(guardado) >= 0 ? guardado : st.predeterminado;
+    claves.forEach(function (k) { nombres[k] = st.proveedores[k].nombre; });
+    ponerTitulo(); pintarHilo();
     caja.hidden = claves.length < 2;
     claves.forEach(function (k) {
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'motor' + (k === motor ? ' activo' : '');
-      b.textContent = st.proveedores[k].nombre; b.title = st.proveedores[k].modelo;
+      b.textContent = st.proveedores[k].nombre; b.title = st.proveedores[k].motor + ' · ' + st.proveedores[k].modelo;
       b.addEventListener('click', function () {
-        motor = k;
+        motor = k; ponerTitulo(); pintarHilo();
         try { localStorage.setItem(MOTOR, k); } catch (e) { /* sin memoria */ }
         Array.prototype.forEach.call(caja.children, function (x) { x.classList.toggle('activo', x === b); });
       });
@@ -298,7 +303,7 @@
   }
   function pintarHilo() {
     $('hilo').innerHTML = '';
-    if (!hilo.length) burbuja('silver', 'Hola, Karina. Descríbeme un platillo y lo convierto en receta. Te la enseño antes de publicarla.');
+    if (!hilo.length) burbuja('silver', 'Hola, Karina, soy ' + nombreActivo() + '. Descríbeme un platillo y lo convierto en receta. Te la enseño antes de publicarla.');
     hilo.forEach(function (m) { burbuja(m.role === 'user' ? 'yo' : 'silver', m.content); });
   }
   function abrirSilver() {
@@ -325,7 +330,7 @@
     hilo.push({ role: 'user', content: texto }); guardarHilo();
     burbuja('yo', texto); $('texto').value = '';
     $('enviar').disabled = true;
-    var espera = burbuja('silver espera', 'Silver está escribiendo…');
+    var espera = burbuja('silver espera', nombreActivo() + ' está escribiendo…');
     fetch('/api/silver/chat', {
       method: 'POST',
       headers: { authorization: 'Bearer ' + (sesion && sesion.token), 'content-type': 'application/json' },
@@ -334,7 +339,7 @@
       .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
       .then(function (out) {
         espera.remove();
-        if (!out.ok) { burbuja('silver error', out.b.error || 'Silver no pudo responder.'); return; }
+        if (!out.ok) { burbuja('silver error', out.b.error || (nombreActivo() + ' no pudo responder.')); return; }
         hilo.push({ role: 'assistant', content: out.b.reply }); guardarHilo();
         var d = burbuja('silver', out.b.reply);
         (out.b.publicadas || []).forEach(function (p) {

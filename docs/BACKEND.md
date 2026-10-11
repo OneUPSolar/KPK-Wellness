@@ -55,7 +55,7 @@ Environment variables. Las marcadas como secreto quedan cifradas.
 | `ANTHROPIC_API_KEY` | sí | llave de Anthropic de Karina, para Silver en la app |
 | `ANTHROPIC_MODEL` | no | opcional; predeterminado `claude-opus-5-5` |
 
-Silver en la app funciona con cualquiera de las dos llaves; con las dos, Karina elige el motor en la app. Sin ninguna, `/api/silver/chat` responde 503.
+El asistente de recetas de la app se llama **Silver** cuando contesta OpenAI y **Claudio** cuando contesta Claude; funciona con cualquiera de las dos llaves y, con las dos, Karina elige en la app. Sin ninguna, `/api/silver/chat` responde 503.
 
 Sin `SESSION_SECRET` nadie puede entrar: las rutas responden 503 en vez de
 dejar pasar. Es a propósito — una configuración incompleta no debe abrir el

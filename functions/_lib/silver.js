@@ -7,9 +7,10 @@
  * sección de publicar: aquí no hay Action, hay una herramienta del modelo que
  * el servidor ejecuta con la misma publicarReceta que usa el GPT.
  *
- * Dos proveedores, las dos llaves de Karina: OpenAI y Anthropic. Cada uno
- * habla su protocolo, pero la herramienta, el prompt y el commit son los
- * mismos; Silver es una, el motor es intercambiable.
+ * Dos proveedores, las dos llaves de Karina, y cada uno con nombre propio
+ * para que ella sepa quién le contesta: Silver habla con OpenAI, Claudio con
+ * Claude. Cada uno habla su protocolo, pero la herramienta, el prompt y el
+ * commit son los mismos.
  */
 import { ghRead, json } from './responder.js';
 import { CATEGORIAS, publicarReceta } from './recetas.js';
@@ -99,7 +100,8 @@ async function ejecutar(nombre, args, env, publicadas) {
 
 const openai = {
   clave: 'openai',
-  nombre: 'OpenAI',
+  nombre: 'Silver',
+  motor: 'OpenAI',
   habilitado: (env) => Boolean(env.OPENAI_API_KEY),
   modelo: (env) => env.OPENAI_MODEL || 'gpt-4.1',
 
@@ -146,7 +148,8 @@ const openai = {
 
 const anthropic = {
   clave: 'anthropic',
-  nombre: 'Claude',
+  nombre: 'Claudio',
+  motor: 'Claude',
   habilitado: (env) => Boolean(env.ANTHROPIC_API_KEY),
   modelo: (env) => env.ANTHROPIC_MODEL || 'claude-opus-5-5',
 
@@ -212,14 +215,19 @@ const PROVEEDORES = { openai, anthropic };
 export function estado(env) {
   const proveedores = {};
   for (const p of Object.values(PROVEEDORES)) {
-    proveedores[p.clave] = { habilitado: p.habilitado(env), nombre: p.nombre, modelo: p.modelo(env) };
+    proveedores[p.clave] = { habilitado: p.habilitado(env), nombre: p.nombre, motor: p.motor, modelo: p.modelo(env) };
   }
   const predeterminado = Object.values(PROVEEDORES).find((p) => p.habilitado(env))?.clave || null;
   return { habilitada: Boolean(predeterminado), predeterminado, proveedores };
 }
 
+/** Las instrucciones están escritas para Silver; Claudio las recibe a su nombre. */
+export function conNombre(sistema, nombre) {
+  return nombre === 'Silver' ? sistema : sistema.replace(/\bSilver\b/g, nombre);
+}
+
 /**
- * Una vuelta de conversación. Devuelve { reply, publicadas, proveedor }.
+ * Una vuelta de conversación. Devuelve { reply, publicadas, proveedor, nombre }.
  * El modelo puede pedir publicar; el servidor lo hace y le devuelve el
  * resultado para que redacte la confirmación con lo que de verdad pasó.
  */
@@ -229,7 +237,7 @@ export async function conversar(env, historial, proveedor) {
   const p = PROVEEDORES[clave];
   if (!p) throw json({ error: `Proveedor desconocido: ${clave}.` }, 400);
   if (!p.habilitado(env)) {
-    throw json({ error: `Silver con ${p.nombre} no está habilitada: falta la llave en Cloudflare.` }, 503);
+    throw json({ error: `${p.nombre} no está habilitado: falta la llave de ${p.motor} en Cloudflare.` }, 503);
   }
 
   const limpio = limpiarHistorial(historial);
@@ -238,6 +246,6 @@ export async function conversar(env, historial, proveedor) {
   }
 
   const publicadas = [];
-  const reply = await p.conversar(env, await instrucciones(env), limpio, publicadas);
-  return { reply, publicadas, proveedor: p.clave };
+  const reply = await p.conversar(env, conNombre(await instrucciones(env), p.nombre), limpio, publicadas);
+  return { reply, publicadas, proveedor: p.clave, nombre: p.nombre };
 }
