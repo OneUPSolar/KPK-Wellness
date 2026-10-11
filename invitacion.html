@@ -47,7 +47,9 @@
   .boton.primario { background: var(--eucalipto-h); border-color: var(--eucalipto-h); }
   .wa-ico { width: 18px; height: 18px; fill: currentColor; flex: none; }
   .pie { border-top: 1px solid var(--linea); margin: 0 26px; padding: 18px 0 34px; font-size: 0.85rem; color: var(--tinta-sueve); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .pie b { font-family: var(--display); font-size: 1.05rem; color: var(--tinta); }
+  /* El nombre de la chef lleva a su tarjeta de presentación. */
+  .pie .chef { font-family: var(--display); font-size: 1.05rem; color: var(--tinta); text-decoration: none; border-bottom: 1px solid var(--eucalipto); }
+  .pie .chef:hover { color: var(--eucalipto-h); }
   .switch { display: flex; justify-content: flex-end; padding: 10px 14px; }
   .switch button { font: inherit; font-family: var(--texto); font-weight: 600; font-size: 0.76rem; border: 1px solid var(--linea); background: transparent; color: var(--tinta-sueve); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
   .switch button[aria-pressed="true"] { background: var(--tinta); color: #fff; border-color: var(--tinta); }
@@ -112,7 +114,7 @@
         (rsvp || cal ? '<div class="acciones">' + rsvp + cal + "</div>" : "") +
         (menu ? "<section><h2>" + esc(t.menu) + '</h2><div class="menu">' + menu + "</div></section>" : "") +
       "</div>" +
-      '<div class="pie"><div>' + esc(t.chef) + " <b>" + esc(chef.nombre || "Chef Karina Paz Kennedy") + "</b></div><div>kpk.associates</div></div>";
+      '<div class="pie"><div>' + esc(t.chef) + ' <a class="chef" href="/card/">' + esc(chef.nombre || "Chef Karina Paz Kennedy") + "</a></div><div>kpk.associates</div></div>";
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-l]"), function (b) {
       b.addEventListener("click", function () { L = b.getAttribute("data-l"); pintar(); });
     });

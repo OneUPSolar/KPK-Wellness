@@ -370,6 +370,9 @@
   .zelle .acciones { padding-bottom: 0; }
 
   /* ---------- pie ---------- */
+  /* El nombre de la chef lleva a su tarjeta de presentación. */
+  .pie .chef { font-family: var(--display); font-size: 1.15rem; font-weight: 600; color: var(--tinta); text-decoration: none; border-bottom: 1px solid var(--eucalipto); }
+  .pie .chef:hover { color: var(--eucalipto-h); }
   .pie {
     border-top: 1px solid var(--linea); margin-inline: 26px;
     padding-block: 16px 34px; display: flex; flex-wrap: wrap;
@@ -971,7 +974,8 @@
       "</div>" +
 
       '<div class="pie">' +
-        "<div>" + [chef.telMx, chef.telUs].filter(Boolean).map(esc).join(" · ") + "</div>" +
+        '<div><a class="chef" href="/card/">' + esc(chef.nombre || "Chef Karina Paz Kennedy") + "</a><br>" +
+          [chef.telMx, chef.telUs].filter(Boolean).map(esc).join(" · ") + "</div>" +
         "<div>" + esc(chef.correo) + "</div>" +
       "</div>";
 
