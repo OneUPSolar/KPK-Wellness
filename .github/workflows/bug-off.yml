@@ -2,11 +2,9 @@
 # y Claude investiga y propone un PR. Nunca escribe en main; Manny revisa y
 # fusiona.
 #
-# Sin llave estática: la Action cambia el token OIDC de GitHub por un token
-# corto de Anthropic (identity federation). Los tres valores de abajo son
-# identificadores, no credenciales; viven en Settings → Secrets and variables
-# → Actions → Variables. Este bot hace mejoras al sitio, no recetas: va contra
-# el workspace de desarrollo, no contra el de la app.
+# La llave es la de desarrollo (secreto ANTHROPIC_API_KEY del repo), no la de
+# la app: este bot hace mejoras al sitio, no recetas. Para quitar la llave
+# estática: identity federation, ver docs/BUG-OFF.md.
 name: Bug-off
 on:
   issues:
@@ -28,9 +26,12 @@ jobs:
 
       - uses: anthropics/claude-code-action@v1
         with:
-          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
-          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
-          anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Sin llave estática (opcional): borra la línea de arriba y usa
+          #   anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          #   anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          #   anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          # La Action usa la llave si está presente; no se mezclan.
           branch_prefix: bugoff/
           use_sticky_comment: true
           prompt: |

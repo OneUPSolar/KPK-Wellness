@@ -15,15 +15,20 @@ Manny revisa el PR → merge → Pages despliega → el issue se cierra → la a
 
 | Dónde | Qué | Para |
 |---|---|---|
-| Console de Anthropic → Settings → **Workload identity** | issuer `https://token.actions.githubusercontent.com` (JWKS: discovery) | que Anthropic confíe en GitHub Actions |
-| Console → Settings → **Service accounts** | una cuenta de servicio en el workspace de desarrollo (`svac_…`) | quién actúa el bot |
-| Console → Workload identity → **Federation rule** | regla hacia esa cuenta, sujeto `repo:OneUPSolar/KPK-Wellness:`, audiencia `https://api.anthropic.com` (`fdrl_…`) | solo este repo puede pedir tokens |
-| GitHub → Settings → Secrets and variables → Actions → **Variables** | `ANTHROPIC_FEDERATION_RULE_ID`, `ANTHROPIC_ORGANIZATION_ID`, `ANTHROPIC_SERVICE_ACCOUNT_ID` | son identificadores, no secretos |
+| GitHub → Settings → Secrets and variables → Actions → **Secrets** | `ANTHROPIC_API_KEY` | la llave **de desarrollo** (no la de la app) |
 | github.com/apps/claude | instalar en `KPK-Wellness` | que la Action pueda commitear y abrir PRs |
 | El PAT de Pages (`GITHUB_TOKEN`) | agregar **Issues: read & write** | que la app cree y lea tickets |
 
-No hay `ANTHROPIC_API_KEY` en GitHub: la Action cambia el token OIDC del
-workflow por un token de Anthropic que expira en minutos. Nada que rotar.
+## Opcional: sin llave estática (identity federation)
+
+La Action puede cambiar el token OIDC del workflow por un token de Anthropic
+que expira en minutos, y entonces no hay nada que guardar ni rotar en GitHub:
+
+1. Console → Settings → **Workload identity** → issuer `https://token.actions.githubusercontent.com` (JWKS: discovery).
+2. Settings → **Service accounts** → una cuenta en el workspace de desarrollo (`svac_…`).
+3. **Federation rule** hacia esa cuenta: sujeto `repo:OneUPSolar/KPK-Wellness:`, audiencia `https://api.anthropic.com` (`fdrl_…`).
+4. GitHub → Actions → **Variables**: `ANTHROPIC_FEDERATION_RULE_ID`, `ANTHROPIC_ORGANIZATION_ID`, `ANTHROPIC_SERVICE_ACCOUNT_ID`.
+5. En `bug-off.yml`, cambiar `anthropic_api_key` por las tres líneas comentadas, y borrar el secreto.
 
 ## Límites del bot, a propósito
 
