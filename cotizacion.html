@@ -474,6 +474,10 @@
   .agregar:hover { background: var(--arena); color: var(--tinta); }
   .aviso { font-size: 0.82rem; color: var(--tinta-sueve); background: var(--papel); border-left: 3px solid var(--arena); padding: 10px 12px; border-radius: 0 6px 6px 0; }
 
+  .brindis button {
+    margin-left: 12px; font: inherit; font-family: var(--texto); font-weight: 600; font-size: 0.85rem;
+    background: transparent; color: var(--arena); border: 1px solid var(--arena); border-radius: 999px; padding: 4px 12px; cursor: pointer;
+  }
   .brindis {
     position: fixed; left: 50%; transform: translateX(-50%);
     bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 50;
@@ -1341,6 +1345,7 @@
       '<img alt="" src="' + esc(valor || "") + '" data-foto-img="' + esc(ruta) + '"' + (valor ? "" : ' hidden') + ">" +
       '<label class="agregar">Subir foto<input type="file" accept="image/*" data-foto="' + esc(ruta) + '"></label>' +
       '<input type="text" placeholder="o pega la URL de una foto" value="' + esc(valor || "") + '" data-foto-url="' + esc(ruta) + '">' +
+      '<button type="button" class="quitar" data-foto-quitar="' + esc(ruta) + '"' + (valor ? "" : " hidden") + ">Quitar foto</button>" +
       "</div>";
   }
 
@@ -1355,9 +1360,46 @@
           '</div><div class="bi">' +
             "<label>" + esc(l2) + ' · ES<input type="text" data-par="' + clave + '" data-sub="detalle" data-i="' + i + '" data-l="es" value="' + esc(d.es || "") + '"></label>' +
             "<label>" + esc(l2) + ' · EN<input type="text" data-par="' + clave + '" data-sub="detalle" data-i="' + i + '" data-l="en" value="' + esc(d.en || "") + '"></label>' +
-          '</div><button type="button" class="quitar" data-quitar="' + clave + '" data-i="' + i + '">Quitar</button></div>';
+          '</div><button type="button" class="quitar" data-quitar="' + clave + '" data-i="' + i + '">' + (clave === "menu" ? "Quitar platillo" : "Quitar") + "</button></div>";
       }).join("") +
-      '<button type="button" class="agregar" data-agregar="' + clave + '">Agregar</button></fieldset>';
+      '<button type="button" class="agregar" data-agregar="' + clave + '">Agregar</button>' +
+      (clave === "menu" ? historialMenu(items) : "") + "</fieldset>";
+  }
+
+  /* ---------- historial de platillos ----------
+     Todo platillo que ha estado en una cotización se queda en el historial:
+     quitarlo de un menú no lo borra, y desde aquí se vuelve a elegir. */
+  function idPlatillo(p) { return aSlug(tx(p && p.nombre, "es") || tx(p && p.nombre, "en") || ""); }
+  function guardarEnCatalogo(p) {
+    var id = idPlatillo(p);
+    if (!id) return;
+    estado.catalogo = estado.catalogo || [];
+    var copia = { id: id, nombre: JSON.parse(JSON.stringify(p.nombre || { es: "", en: "" })), detalle: JSON.parse(JSON.stringify(p.detalle || { es: "", en: "" })), imagen: p.imagen || "" };
+    var i = estado.catalogo.findIndex(function (x) { return x.id === id; });
+    if (i >= 0) estado.catalogo[i] = copia; else estado.catalogo.push(copia);
+  }
+  function actualizarCatalogo() {
+    (estado.cotizaciones || []).forEach(function (c) { (c.menu || []).forEach(guardarEnCatalogo); });
+  }
+  function historialMenu(items) {
+    var enMenu = (items || []).map(idPlatillo);
+    var fuera = (estado.catalogo || []).filter(function (x) { return enMenu.indexOf(x.id) < 0; });
+    if (!fuera.length) return '<div class="aviso">Historial: todos los platillos guardados ya están en este menú.</div>';
+    return '<div class="par-campos"><label>Del historial<select id="sel-historial">' +
+      fuera.map(function (x) { return '<option value="' + esc(x.id) + '">' + esc(tx(x.nombre, "es")) + "</option>"; }).join("") +
+      '</select></label><button type="button" class="agregar" id="btn-historial" style="align-self:end">Agregar del historial</button></div>';
+  }
+
+  /** Un aviso con botón, para deshacer. Dura más que el brindis normal. */
+  function brindisAccion(texto, etiqueta, fn) {
+    var previo = $(".brindis");
+    if (previo) previo.remove();
+    var d = document.createElement("div");
+    d.className = "brindis"; d.setAttribute("role", "status"); d.textContent = texto;
+    var b = document.createElement("button"); b.type = "button"; b.textContent = etiqueta;
+    b.addEventListener("click", function () { d.remove(); fn(); });
+    d.appendChild(b); document.body.appendChild(d);
+    setTimeout(function () { if (d.parentNode) d.remove(); }, 9000);
   }
 
   /** Qué fieldset corresponde a cada lápiz de la página. */
@@ -1570,14 +1612,32 @@
       var act = cotizacionActiva();
       var agregar = e.target.getAttribute && e.target.getAttribute("data-agregar");
       var quitar = e.target.getAttribute && e.target.getAttribute("data-quitar");
+      var fotoQuitar = e.target.getAttribute && e.target.getAttribute("data-foto-quitar");
+      if (fotoQuitar) { ponerFoto(fotoQuitar, ""); e.target.hidden = true; brindis("Foto quitada. El platillo se queda."); return; }
+      if (e.target.id === "btn-historial") {
+        var sel = $("#sel-historial"), item = (estado.catalogo || []).filter(function (x) { return x.id === (sel && sel.value); })[0];
+        if (!item) return;
+        act.menu = act.menu || [];
+        act.menu.push({ nombre: JSON.parse(JSON.stringify(item.nombre)), detalle: JSON.parse(JSON.stringify(item.detalle)), imagen: item.imagen || "" });
+        cerrarPanel(); abrirPanel("menu");
+        return;
+      }
       if (agregar) {
         listaDe(act, agregar).push(agregar === "incluye" || agregar === "condiciones"
           ? { es: "", en: "" }
           : { nombre: { es: "", en: "" }, detalle: { es: "", en: "" } });
-        cerrarPanel(); abrirPanel();
+        cerrarPanel(); abrirPanel(agregar === "menu" ? "menu" : undefined);
       } else if (quitar) {
-        listaDe(act, quitar).splice(Number(e.target.getAttribute("data-i")), 1);
-        cerrarPanel(); abrirPanel();
+        var li = listaDe(act, quitar), idx = Number(e.target.getAttribute("data-i")), quitado = li[idx];
+        if (quitar === "menu" && quitado) guardarEnCatalogo(quitado);
+        li.splice(idx, 1);
+        cerrarPanel(); abrirPanel(quitar === "menu" ? "menu" : undefined);
+        if (quitar === "menu" && quitado) {
+          brindisAccion("Platillo quitado. Queda en el historial.", "Deshacer", function () {
+            li.splice(Math.min(idx, li.length), 0, quitado);
+            cerrarPanel(); abrirPanel("menu");
+          });
+        }
       }
     });
   }
@@ -1648,6 +1708,7 @@
   function guardar() {
     var boton = $("#btn-guardar");
     if (boton) { boton.disabled = true; boton.textContent = "Guardando…"; }
+    actualizarCatalogo();
     api("/commit", {
       method: "POST",
       body: JSON.stringify({
