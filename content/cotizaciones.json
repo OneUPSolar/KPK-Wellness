@@ -31,7 +31,52 @@
         "es": "4 piezas por persona",
         "en": "4 pieces per guest"
       },
-      "menu": [],
+      "menu": [
+        {
+          "nombre": {
+            "es": "Burrito de machaca de langosta",
+            "en": "Lobster machaca burrito"
+          },
+          "detalle": {
+            "es": "Con frijoles.",
+            "en": "With beans."
+          },
+          "imagen": "assets/cotizaciones/burrito-machaca-langosta.webp"
+        },
+        {
+          "nombre": {
+            "es": "Quesadilla de marlin a las brasas",
+            "en": "Grilled marlin quesadilla"
+          },
+          "detalle": {
+            "es": "Marlín ahumado en tortilla de maíz.",
+            "en": "Smoked marlin in a corn tortilla."
+          },
+          "imagen": "assets/cotizaciones/quesadilla-marlin.webp"
+        },
+        {
+          "nombre": {
+            "es": "Taco gobernador a las brasas",
+            "en": "Grilled gobernador taco"
+          },
+          "detalle": {
+            "es": "Guiso de camarón estilo Mazatlán.",
+            "en": "Mazatlán-style shrimp."
+          },
+          "imagen": "assets/cotizaciones/taco-gobernador.webp"
+        },
+        {
+          "nombre": {
+            "es": "Tostada de atún estilo Baja",
+            "en": "Baja-style tuna tostada"
+          },
+          "detalle": {
+            "es": "Con mayonesa de chipotle y poro frito.",
+            "en": "With chipotle mayo and fried leek."
+          },
+          "imagen": "assets/cotizaciones/tostada-atun-baja.webp"
+        }
+      ],
       "precio": {
         "mxn": 650,
         "usd": 0
@@ -125,5 +170,55 @@
     "zelleNombre": "Karina Paz Kennedy",
     "zelleLink": "https://enroll.zellepay.com/qr-codes?data=eyJ0b2tlbiI6IjYxOTI1OTMyODQiLCJuYW1lIjoiS0FSSU5BIn0=",
     "zelleQr": "assets/cotizaciones/zelle-karina.png"
-  }
+  },
+  "catalogo": [
+    {
+      "id": "burrito-de-machaca-de-langosta",
+      "nombre": {
+        "es": "Burrito de machaca de langosta",
+        "en": "Lobster machaca burrito"
+      },
+      "detalle": {
+        "es": "Con frijoles.",
+        "en": "With beans."
+      },
+      "imagen": "assets/cotizaciones/burrito-machaca-langosta.webp"
+    },
+    {
+      "id": "quesadilla-de-marlin-a-las-brasas",
+      "nombre": {
+        "es": "Quesadilla de marlin a las brasas",
+        "en": "Grilled marlin quesadilla"
+      },
+      "detalle": {
+        "es": "Marlín ahumado en tortilla de maíz.",
+        "en": "Smoked marlin in a corn tortilla."
+      },
+      "imagen": "assets/cotizaciones/quesadilla-marlin.webp"
+    },
+    {
+      "id": "taco-gobernador-a-las-brasas",
+      "nombre": {
+        "es": "Taco gobernador a las brasas",
+        "en": "Grilled gobernador taco"
+      },
+      "detalle": {
+        "es": "Guiso de camarón estilo Mazatlán.",
+        "en": "Mazatlán-style shrimp."
+      },
+      "imagen": "assets/cotizaciones/taco-gobernador.webp"
+    },
+    {
+      "id": "tostada-de-atun-estilo-baja",
+      "nombre": {
+        "es": "Tostada de atún estilo Baja",
+        "en": "Baja-style tuna tostada"
+      },
+      "detalle": {
+        "es": "Con mayonesa de chipotle y poro frito.",
+        "en": "With chipotle mayo and fried leek."
+      },
+      "imagen": "assets/cotizaciones/tostada-atun-baja.webp"
+    }
+  ]
 }
