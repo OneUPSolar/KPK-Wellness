@@ -165,6 +165,10 @@
     "telMx": "+52 664 364 0788",
     "telUs": "+1 619 259 3284",
     "correo": "kpazkennedy@gmail.com",
-    "whatsapp": "5216643640788"
+    "whatsapp": "5216643640788",
+    "zelle": "619-259-3284",
+    "zelleNombre": "Karina Paz Kennedy",
+    "zelleLink": "https://enroll.zellepay.com/qr-codes?data=eyJ0b2tlbiI6IjYxOTI1OTMyODQiLCJuYW1lIjoiS0FSSU5BIn0=",
+    "zelleQr": "assets/cotizaciones/zelle-karina.png"
   }
 }
