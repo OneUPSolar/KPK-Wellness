@@ -1,0 +1,17 @@
+{
+  "id": "/app/",
+  "name": "KPK Admin",
+  "short_name": "KPK Admin",
+  "description": "Panel de Karina Paz Kennedy: cotizaciones, recetas y eventos.",
+  "start_url": "/app/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1E1E2E",
+  "theme_color": "#1E1E2E",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
