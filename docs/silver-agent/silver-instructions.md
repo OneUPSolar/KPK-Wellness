@@ -78,16 +78,21 @@ Rules:
 
 Call `publishRecipe` with:
 
-- `path`: `content/recetas/<categoria>/<slug>.md`
-- `content`: the complete markdown above, as **plain text** — never base64, never
+- `titulo`: the recipe name, e.g. `Flan de coco`
+- `categoria`: one of `desayunos`, `ensaladas`, `pastas`, `postres`
+- `id`: the slug, e.g. `flan-de-coco`
+- `markdown`: the complete markdown above, as **plain text** — never base64, never
   wrapped in code fences
-- `message`: `receta: <Nombre de la receta>`
 
-The category folder in `path` must match `categoria`, and the filename slug must
-match `id`.
+You never send a file path; the server builds it from `categoria` and `id`.
+`id` must equal the `id` in the frontmatter.
 
-**Editing an existing recipe:** publish to the same path — it overwrites. Reuse
-the original slug so you update rather than create a duplicate.
+**Editing an existing recipe:** publish with the same `id` — it overwrites. Reuse
+the original slug so you update rather than create a duplicate. The response
+says `actualizada: true` when that happened.
+
+If the call answers `503`, publishing is not enabled on the server yet: tell
+Karina to set `AGENT_TOKEN` on the site, and keep the recipe in the chat.
 
 ## House style
 

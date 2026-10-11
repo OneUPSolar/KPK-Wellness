@@ -2,38 +2,60 @@
   "openapi": "3.1.0",
   "info": {
     "title": "KPK Wellness recipe publishing",
-    "description": "Publishes a recipe markdown file to the KPK Wellness repository. The recipes page reads from that repository at page load, so a successful call puts the recipe live immediately.",
-    "version": "1.0.0"
+    "description": "Publishes a recipe to kpk.associates. The recipes page reads the repository at page load, so a successful call puts the recipe live immediately.",
+    "version": "2.0.0"
   },
   "servers": [
-    { "url": "https://kpk-recipe-api.hi-7e4.workers.dev" }
+    { "url": "https://kpk.associates" }
   ],
   "paths": {
-    "/commit": {
+    "/api/agent/recipe": {
+      "get": {
+        "operationId": "listCategories",
+        "summary": "List the valid recipe categories",
+        "responses": {
+          "200": {
+            "description": "The category folders the site displays",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "categorias": { "type": "array", "items": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "operationId": "publishRecipe",
         "summary": "Create or update a recipe on the live site",
-        "description": "Commits a recipe markdown file to content/recetas/<categoria>/<slug>.md on the main branch. Committing to a path that already exists updates that recipe, so this handles both creating and editing.",
+        "description": "Writes the recipe to content/recetas/<categoria>/<id>.md on the main branch. The server derives the file path from categoria and id (or from the title when id is omitted); you never send a path. Publishing an id that already exists updates that recipe.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["path", "content", "message"],
+                "required": ["titulo", "categoria", "markdown"],
                 "properties": {
-                  "path": {
+                  "titulo": {
                     "type": "string",
-                    "description": "Repository path for the recipe, e.g. content/recetas/postres/flan-de-coco.md. The category folder must be one of desayunos, ensaladas, pastas, postres, and the filename slug must match the recipe's id.",
-                    "pattern": "^content/recetas/(desayunos|ensaladas|pastas|postres)/[a-z0-9-]+\\.md$"
+                    "description": "Recipe title in Spanish, e.g. 'Flan de coco'. Max 120 characters."
                   },
-                  "content": {
+                  "categoria": {
                     "type": "string",
-                    "description": "The complete recipe markdown as PLAIN TEXT (not base64). Must follow the documented recipe format exactly, including the frontmatter block and the unaccented headings Titulo, Utensilios, Ingredientes, Preparacion, Macros por persona (estimado) and Costeo aproximado."
+                    "enum": ["desayunos", "ensaladas", "pastas", "postres"],
+                    "description": "Category folder. Only these four are displayed by the site."
                   },
-                  "message": {
+                  "id": {
                     "type": "string",
-                    "description": "Commit message, e.g. 'receta: Flan de coco'."
+                    "description": "Optional slug, lowercase letters, digits and hyphens, e.g. 'flan-de-coco'. Derived from the title when omitted. Reuse an existing id to update that recipe.",
+                    "pattern": "^[a-z0-9-]+$"
+                  },
+                  "markdown": {
+                    "type": "string",
+                    "description": "The complete recipe markdown as PLAIN TEXT (not base64), following the documented recipe format: frontmatter block, then a '# Title' heading, then the unaccented headings Titulo, Utensilios, Ingredientes, Preparacion, Macros por persona (estimado) and Costeo aproximado. If the frontmatter is missing, the server adds id and categoria."
                   }
                 }
               }
@@ -41,54 +63,36 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Recipe published",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean" },
-                    "sha": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid bearer token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": { "error": { "type": "string" } }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Missing path, content or message",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": { "error": { "type": "string" } }
-                }
-              }
-            }
-          }
+          "201": { "description": "Recipe created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Published" } } } },
+          "200": { "description": "Existing recipe updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Published" } } } },
+          "400": { "description": "Missing or invalid field; the error says which", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "401": { "description": "Missing or invalid bearer token", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "503": { "description": "Agent publishing is not enabled on the server", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
         }
       }
     }
   },
   "components": {
+    "schemas": {
+      "Published": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "id": { "type": "string" },
+          "categoria": { "type": "string" },
+          "actualizada": { "type": "boolean", "description": "true when an existing recipe was overwritten" },
+          "url": { "type": "string", "description": "Where the recipe is now visible" }
+        }
+      },
+      "Error": { "type": "object", "properties": { "error": { "type": "string" } } }
+    },
     "securitySchemes": {
-      "adminToken": {
+      "agentToken": {
         "type": "http",
         "scheme": "bearer",
-        "description": "The admin token: SHA256(allowed_email_lowercased + ':' + admin_password), hex-encoded. Configure it as the Action's authentication value; never hardcode it in the schema."
+        "description": "The agent token (AGENT_TOKEN on the server). Configure it as the Action's authentication value: Authentication type 'API Key', Auth Type 'Bearer'. Never paste it into the schema or the GPT instructions."
       }
     }
   },
-  "security": [{ "adminToken": [] }]
+  "security": [{ "agentToken": [] }]
 }

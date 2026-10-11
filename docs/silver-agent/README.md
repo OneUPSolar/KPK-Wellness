@@ -19,58 +19,62 @@ site rebuild, no deploy, no admin login.
 ```
 Karina ⇄ Silver (ChatGPT)
         └─ writes recipe markdown
-             └─ POST /commit  →  kpk-recipe-api Worker
-                  └─ commits file to GitHub main (repo: OneUPSolar/KPK-Wellness)
+             └─ POST https://kpk.associates/api/agent/recipe
+                  └─ commits content/recetas/<categoria>/<id>.md to GitHub main
                        └─ kpk.associates/recipes.html shows it
 ```
 
-`POST https://kpk-recipe-api.hi-7e4.workers.dev/commit` already exists and already
-does what Silver needs — it accepts **plain markdown** and base64-encodes and
-commits it for you. Nothing on the Worker needs to change.
+The route lives in this repo (`functions/api/agent/recipe.js`) and runs on the
+same domain as the site. It replaced the old `kpk-recipe-api` Worker, whose
+`/commit` route accepted any repository path; this one accepts **a recipe**, and
+builds the path itself, so a confused prompt cannot write outside
+`content/recetas/`.
 
 ### Request
 
 ```
-POST https://kpk-recipe-api.hi-7e4.workers.dev/commit
-Authorization: Bearer <ADMIN_TOKEN>
+POST https://kpk.associates/api/agent/recipe
+Authorization: Bearer <AGENT_TOKEN>
 Content-Type: application/json
 
 {
-  "path":    "content/recetas/postres/flan-de-coco.md",
-  "content": "---\nid: flan-de-coco\n...",
-  "message": "receta: Flan de coco"
+  "titulo":    "Flan de coco",
+  "categoria": "postres",
+  "id":        "flan-de-coco",
+  "markdown":  "---\nid: flan-de-coco\ncategoria: postres\n...\n---\n\n# Flan de coco\n..."
 }
 ```
 
-Response: `{ "success": true, "sha": "..." }`
+- `categoria` must be one of `desayunos`, `ensaladas`, `pastas`, `postres` —
+  the four folders `js/recipes.js` reads. Anything else is rejected rather than
+  committed invisibly.
+- `id` is optional; it is derived from the title when omitted. Publishing an
+  existing `id` **updates** that recipe (response `200`); a new one returns `201`.
+- If the frontmatter is missing, the server adds `id` and `categoria` so the
+  file and the recipe agree.
 
-Committing to a `path` that already exists **updates** that recipe, so the same
-call handles both create and edit.
+Response: `{ "success": true, "id": "flan-de-coco", "categoria": "postres", "actualizada": false, "url": "https://kpk.associates/recipes.html" }`
 
 ### Auth
 
-`ADMIN_TOKEN` is `SHA256(<ALLOWED_EMAIL lowercased> + ":" + <ADMIN_PASSWORD>)`,
-hex-encoded — the same token the admin panel gets when it logs in. It does not
-expire; it only changes if `ADMIN_PASSWORD` changes.
+Silver uses its own long-lived credential, `AGENT_TOKEN`, set as an
+environment variable on the Cloudflare Pages project. It is deliberately not an
+admin session: sessions expire after 12 hours and a GPT has no one to renew
+them. Without `AGENT_TOKEN` configured, the route answers `503`.
 
-To generate it once the admin password is known:
+Generate it on your own machine — never in a chat — and set it in two places:
 
 ```bash
-printf '%s' "kpazkennedy@gmail.com:THE_PASSWORD" | shasum -a 256
+openssl rand -hex 32
 ```
 
-Store that hex string as the Action's Bearer token. **Never commit it to this repo.**
+1. Cloudflare Pages → kpk-wellness → Settings → Variables and Secrets →
+   `AGENT_TOKEN` (Secret, Production). Redeploy afterwards: variable changes
+   only take effect on the next deploy.
+2. The Custom GPT → Actions → Authentication → **API Key**, Auth Type
+   **Bearer** → paste the same value.
 
-> Requests from a GPT Action are server-side, so the Worker's `ALLOWED_ORIGINS`
-> CORS list does not apply — only the Bearer token matters.
-
-### Fallback: commit with a GitHub token instead
-
-If you'd rather not depend on the Worker, Silver can call the GitHub contents API
-directly (`PUT /repos/OneUPSolar/KPK-Wellness/contents/{path}`) with a fine-grained
-PAT scoped to this repo with **Contents: read and write**. The tradeoff: that API
-requires the file body base64-encoded, which an LLM does unreliably for accented
-Spanish text. Prefer `/commit`, which takes plain text.
+To revoke Silver, rotate `AGENT_TOKEN`. Nothing else uses it.
 
 ## Visibility
 
