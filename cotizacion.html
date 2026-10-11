@@ -864,9 +864,7 @@
     var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
     var chips = preguntas.map(function (q, i) {
       return '<button type="button" class="chip" data-faq="' + i + '" aria-expanded="false">' + esc(tx(q.nombre, L)) + "</button>";
-    }).join("") +
-      // La invitación para sus invitados sale de aquí mismo: misma portada, sin precios.
-      '<a class="chip chip-enlace" href="invitacion?c=' + encodeURIComponent(c.slug) + '">' + esc(t9.invitacion) + " ↗</a>";
+    }).join("");
     var chipsAdmin = [
       "Haz la comanda de cocina",
       "Sugiere un cambio de menú",
@@ -934,7 +932,9 @@
       '<div class="cuerpo">' + aprobado +
         (admin ? '<section><div class="asistencia" id="asistencia"><div class="etq">Asistencia</div>' +
           '<div class="asis-cifras" id="asis-cifras">Cargando…</div><div class="asis-lista" id="asis-lista"></div>' +
-          '<div class="aviso">Los invitados confirman desde la invitación (<a href="invitacion?c=' + encodeURIComponent(c.slug) + '">invitacion?c=' + esc(c.slug) + '</a>). ' +
+          '<div class="acciones"><a class="boton claro" href="invitacion?c=' + encodeURIComponent(c.slug) + '" target="_blank" rel="noopener">Abrir la invitación para los invitados</a>' +
+            '<button type="button" class="boton claro" data-copiar-invitacion>Copiar enlace de la invitación</button></div>' +
+          '<div class="aviso">La invitación es para que el cliente la comparta con sus invitados: misma portada, sin precios. ' +
           "Cada confirmación queda registrada aquí aunque no manden el WhatsApp.</div></div></section>" : "") +
         (menu ? '<section>' + lapiz("menu", "Editar menú") + '<div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
           (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
@@ -1176,6 +1176,12 @@
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
       b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
     });
+    var inv = hoja.querySelector("[data-copiar-invitacion]");
+    if (inv) {
+      inv.addEventListener("click", function () {
+        copiar(enlacePublico(c.slug).replace("/cotizacion?c=", "/invitacion?c="), function () { brindis("Enlace de la invitación copiado."); });
+      });
+    }
     var resumen = hoja.querySelector("[data-copiar-resumen]");
     if (resumen) {
       resumen.addEventListener("click", function () {
