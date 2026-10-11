@@ -22,3 +22,7 @@
 # Propuesta para Casa de la Cultura Playas (enlace privado, noindex)
 /playas/ayuntamiento-cultural   /playas/ayuntamiento-cultural/index.html  200
 /playas                         /playas/ayuntamiento-cultural/index.html  302
+
+# Cotizaciones (enlace privado por cliente, noindex)
+/cotizacion        /cotizacion.html  200
+/app               /app/index.html   200
