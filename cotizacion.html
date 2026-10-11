@@ -345,6 +345,13 @@
   .lapiz[data-editar="precio"], .lapiz[data-editar="cobro"] { top: -14px; right: 14px; }
   .caja { position: relative; }
   .caja .lapiz { top: 10px; right: 10px; }
+  .asistencia { background: var(--papel); border: 1px solid var(--linea); border-radius: 14px; padding: 18px 20px; display: grid; gap: 10px; }
+  .asis-cifras { font-family: var(--display); font-size: 1.6rem; font-weight: 600; line-height: 1.1; }
+  .asis-cifras small { font-family: var(--texto); font-size: 0.85rem; font-weight: 500; color: var(--tinta-sueve); margin-left: 8px; }
+  .asis-lista { display: grid; gap: 4px; font-size: 0.92rem; }
+  .asis-lista div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--linea); }
+  .asis-lista .no { color: var(--tinta-sueve); text-decoration: line-through; }
+  .asis-lista small { color: var(--tinta-sueve); }
   .karina.asistente .retrato.vacia { background: linear-gradient(135deg, #2B3A5C 0%, #1F2024 100%); }
   .karina.asistente .respuesta { background: var(--crema); border-left-color: #2B3A5C; white-space: pre-wrap; }
 
@@ -370,6 +377,9 @@
   .zelle .acciones { padding-bottom: 0; }
 
   /* ---------- pie ---------- */
+  /* El nombre de la chef lleva a su tarjeta de presentación. */
+  .pie .chef { font-family: var(--display); font-size: 1.15rem; font-weight: 600; color: var(--tinta); text-decoration: none; border-bottom: 1px solid var(--eucalipto); }
+  .pie .chef:hover { color: var(--eucalipto-h); }
   .pie {
     border-top: 1px solid var(--linea); margin-inline: 26px;
     padding-block: 16px 34px; display: flex; flex-wrap: wrap;
@@ -922,6 +932,10 @@
       "</div>" +
 
       '<div class="cuerpo">' + aprobado +
+        (admin ? '<section><div class="asistencia" id="asistencia"><div class="etq">Asistencia</div>' +
+          '<div class="asis-cifras" id="asis-cifras">Cargando…</div><div class="asis-lista" id="asis-lista"></div>' +
+          '<div class="aviso">Los invitados confirman desde la invitación (<a href="invitacion?c=' + encodeURIComponent(c.slug) + '">invitacion?c=' + esc(c.slug) + '</a>). ' +
+          "Cada confirmación queda registrada aquí aunque no manden el WhatsApp.</div></div></section>" : "") +
         (menu ? '<section>' + lapiz("menu", "Editar menú") + '<div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
           (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
           '</div><div class="carrusel"><div class="pista" id="pista" data-lenis-prevent>' + menu + "</div>" +
@@ -971,7 +985,8 @@
       "</div>" +
 
       '<div class="pie">' +
-        "<div>" + [chef.telMx, chef.telUs].filter(Boolean).map(esc).join(" · ") + "</div>" +
+        '<div><a class="chef" href="/card/">' + esc(chef.nombre || "Chef Karina Paz Kennedy") + "</a><br>" +
+          [chef.telMx, chef.telUs].filter(Boolean).map(esc).join(" · ") + "</div>" +
         "<div>" + esc(chef.correo) + "</div>" +
       "</div>";
 
@@ -1137,8 +1152,23 @@
     }
   }
 
+  /** Con sesión: cuántos han confirmado desde la invitación. */
+  function asistencia(c) {
+    var cifras = $("#asis-cifras"), lista = $("#asis-lista");
+    if (!cifras) return;
+    api("/rsvp?c=" + encodeURIComponent(c.slug)).then(function (r) {
+      cifras.innerHTML = esc(r.confirmados) + " confirmados" + "<small>" + esc(r.respuestas) + " respuestas · " + esc(Number(c.invitados) || 0) + " cotizados" +
+        (r.noVienen ? " · " + esc(r.noVienen) + " no vienen" : "") + "</small>";
+      lista.innerHTML = (r.lista || []).map(function (x) {
+        var f = x.cuando ? new Date(x.cuando).toLocaleDateString("es-MX") : "";
+        return '<div class="' + (x.asiste === false ? "no" : "") + '"><span>' + esc(x.nombre) + (x.nota ? " <small>· " + esc(x.nota) + "</small>" : "") + "</span>" +
+          "<span>" + (x.asiste === false ? "no viene" : "+" + esc(x.personas)) + (f ? " <small>" + esc(f) + "</small>" : "") + "</span></div>";
+      }).join("") || '<div><small>Todavía nadie confirma.</small></div>';
+    }).catch(function (e) { cifras.textContent = e.message; });
+  }
+
   function cablear(c, t, t9, L, iva) {
-    carrusel(); parallax(); atencion(c, t, t9, L, estado.chef || {}); asistente(c, L);
+    carrusel(); parallax(); atencion(c, t, t9, L, estado.chef || {}); asistente(c, L); asistencia(c);
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-editar]"), function (b) {
       b.addEventListener("click", function () { abrirPanel(b.getAttribute("data-editar"), b.getAttribute("data-foto-editar")); });
     });
