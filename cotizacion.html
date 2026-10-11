@@ -269,24 +269,53 @@
   .pagar:hover { background: #2B2C2E; }
   .pagar:focus-visible { outline: 2px solid var(--arena-hond); outline-offset: 2px; }
 
-  /* ---------- contacto directo ---------- */
-  .contacto {
-    display: flex; flex-wrap: wrap; gap: 18px 24px; align-items: center;
-    background: var(--papel); border: 1px solid var(--linea); border-radius: 14px; padding: 22px 24px;
+  /* ---------- Karina te atiende ----------
+     Lo único que brilla en la página es ella: un halo que gira y un pulso
+     suave. El cliente pregunta aquí y termina en su WhatsApp. */
+  @keyframes gira { to { transform: rotate(360deg); } }
+  @keyframes pulso { 0% { box-shadow: 0 0 0 0 rgba(122,158,142,0.45); } 100% { box-shadow: 0 0 0 22px rgba(122,158,142,0); } }
+  .karina { background: var(--papel); border: 1px solid var(--linea); border-radius: 16px; padding: 24px; display: grid; gap: 18px; }
+  .k-cab { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .halo { position: relative; width: 112px; height: 112px; border-radius: 50%; flex: none; isolation: isolate; }
+  .halo::before {
+    content: ''; position: absolute; inset: -5px; border-radius: 50%; z-index: -1;
+    background: conic-gradient(from 0deg, var(--eucalipto), var(--arena), #fff, var(--eucalipto));
+    animation: gira 7s linear infinite;
   }
-  .contacto .retrato {
-    width: 92px; height: 92px; border-radius: 50%; flex: none;
-    background: var(--arena) center 20% / cover no-repeat; box-shadow: 0 0 0 3px var(--papel), 0 0 0 4px var(--eucalipto);
+  .halo::after { content: ''; position: absolute; inset: 0; border-radius: 50%; animation: pulso 2.6s ease-out infinite; }
+  .retrato {
+    width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--papel);
+    background: var(--arena) center 20% / cover no-repeat;
   }
-  .contacto .retrato.vacia {
-    display: grid; place-items: center; font-family: var(--display); font-size: 2.4rem; color: #fff;
+  .retrato.vacia {
+    display: grid; place-items: center; font-family: var(--display); font-size: 2.8rem; color: #fff;
     background: linear-gradient(135deg, var(--eucalipto) 0%, var(--eucalipto-h) 100%);
   }
-  .contacto .txt { flex: 1 1 240px; min-width: 0; }
-  .contacto h2 { margin: 0 0 4px; font-size: 1.7rem; }
-  .contacto p { margin: 0 0 14px; color: var(--tinta-sueve); font-size: 0.93rem; }
+  .burbuja {
+    position: relative; flex: 1 1 240px; min-width: 0; background: var(--crema); border-radius: 16px; padding: 14px 18px;
+  }
+  .burbuja::before { content: ''; position: absolute; left: -8px; top: 26px; border: 8px solid transparent; border-left: 0; border-right-color: var(--crema); }
+  .burbuja b { font-family: var(--display); font-weight: 600; font-size: 1.5rem; display: block; line-height: 1.1; margin-bottom: 4px; }
+  .burbuja span { color: var(--tinta-sueve); font-size: 0.94rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: var(--texto); font-size: 0.88rem; font-weight: 500; color: var(--tinta);
+    background: transparent; border: 1px solid var(--linea); border-radius: 999px; padding: 8px 14px; cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .chip:hover, .chip[aria-expanded="true"] { border-color: var(--eucalipto); background: #EAF1ED; }
+  .respuesta { background: #EAF1ED; border-left: 3px solid var(--eucalipto); border-radius: 0 12px 12px 0; padding: 14px 16px; display: grid; gap: 10px; justify-items: start; }
+  .respuesta p { margin: 0; font-size: 0.95rem; }
+  .pregunta-libre { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pregunta-libre input { flex: 1 1 220px; font: inherit; font-size: 16px; padding: 11px 14px; border: 1px solid var(--linea); border-radius: 999px; background: var(--papel); color: var(--tinta); min-width: 0; }
+  .pregunta-libre input:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 2px; }
   .boton.wa { background: #25D366; border-color: #25D366; color: #0B2E1A; }
   .boton.wa:hover { background: #1EBE5B; }
+  .boton.primario { background: var(--eucalipto-h); border-color: var(--eucalipto-h); color: #fff; font-size: 0.98rem; padding: 13px 24px; }
+  .boton.primario:hover { background: #42665A; }
+  /* En angosto el retrato queda arriba de la burbuja; la colita ya no apunta a nada. */
+  @media (max-width: 560px) { .burbuja::before { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .halo::before, .halo::after { animation: none; } }
 
   .aprobado {
     display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between;
@@ -459,7 +488,12 @@
       preguntas: "¿Tienes preguntas?", escribe: "Escríbele directo a Karina por WhatsApp",
       respondo: "Te contesta ella misma, en su horario.", waPregunta: "Hola Karina, tengo una pregunta sobre la cotización",
       pagoRecibido: "Pago recibido", fechaApartada: "Tu fecha queda apartada",
-      calendario: "Agregar a mi calendario"
+      calendario: "Agregar a mi calendario",
+      reservar: "Pagar anticipo y reservar fecha",
+      reservarWa: "Hola Karina, quiero pagar el anticipo y reservar la fecha para",
+      holaSoy: "Hola, soy Karina Kennedy.", ayudar: "¿En qué te puedo ayudar? Elige una pregunta o escríbeme.",
+      sobreCot: "Hola Karina, sobre la cotización", preguntarWa: "Preguntar por WhatsApp",
+      tuPregunta: "Escribe tu pregunta…", enviarWa: "Enviar por WhatsApp"
     },
     en: {
       cotizacion: "Quote", para: "For:", lugar: "Location", fecha: "Date",
@@ -478,7 +512,12 @@
       preguntas: "Questions?", escribe: "Message Karina directly on WhatsApp",
       respondo: "She answers personally, during her hours.", waPregunta: "Hi Karina, I have a question about the quote for",
       pagoRecibido: "Payment received", fechaApartada: "Your date is held",
-      calendario: "Add to my calendar"
+      calendario: "Add to my calendar",
+      reservar: "Pay the deposit and reserve the date",
+      reservarWa: "Hi Karina, I'd like to pay the deposit and reserve the date for",
+      holaSoy: "Hi, I'm Karina Kennedy.", ayudar: "How can I help? Pick a question or write to me.",
+      sobreCot: "Hi Karina, about the quote for", preguntarWa: "Ask on WhatsApp",
+      tuPregunta: "Type your question…", enviarWa: "Send on WhatsApp"
     }
   };
 
@@ -685,15 +724,16 @@
     var nota = tx(c.notaPago, L);
     if (nota) filas += fila(nota, "", "");
 
-    var cobro = link
-      ? '<a class="boton" target="_blank" rel="noopener" href="' + esc(link) + '">' +
-        esc(t9.pagarAnticipo) + " · " + dinero(t.anticipoConIva, t.moneda) + "</a>"
-      : "";
-    var wa = chef.whatsapp
-      ? '<a class="boton' + (cobro ? " claro" : "") + '" target="_blank" rel="noopener" href="https://wa.me/' +
-        esc(chef.whatsapp) + "?text=" + encodeURIComponent(t9.apartarWa + " — " + tx(c.titulo, L)) + '">' +
-        esc(t9.apartarWa) + "</a>"
-      : "";
+    // El botón principal siempre está. Con link de cobro va al checkout; sin él,
+    // va al WhatsApp de Karina con la intención ya escrita.
+    var textoReservar = t9.reservar + " · " + dinero(t.anticipoConIva, t.moneda);
+    var reservar = link
+      ? '<a class="boton primario" target="_blank" rel="noopener" href="' + esc(link) + '">' + esc(textoReservar) + "</a>"
+      : chef.whatsapp
+        ? '<a class="boton primario" target="_blank" rel="noopener" href="https://wa.me/' + esc(chef.whatsapp) + "?text=" +
+          encodeURIComponent(t9.reservarWa + " " + tx(c.titulo, L) + " (" + tx(c.fecha, L) + ") — " + dinero(t.anticipoConIva, t.moneda)) + '">' +
+          esc(textoReservar) + "</a>"
+        : "";
     var ics = icsUrl(c, L);
     var calendario = ics
       ? '<a class="boton claro" download="' + esc(c.slug) + '.ics" href="' + ics + '">' + esc(t9.calendario) + "</a>"
@@ -703,15 +743,24 @@
         esc(t9.fechaApartada + ": " + tx(c.fecha, L) + (tx(c.horario, L) ? " · " + tx(c.horario, L) : "")) + "</span></div>" +
         calendario + "</div></section>"
       : "";
+    var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
+    var chips = preguntas.map(function (q, i) {
+      return '<button type="button" class="chip" data-faq="' + i + '" aria-expanded="false">' + esc(tx(q.nombre, L)) + "</button>";
+    }).join("");
     var pregunta = chef.whatsapp
-      ? '<section><div class="contacto">' +
-          (chef.foto
-            ? '<div class="retrato" style="background-image:url(' + "'" + esc(chef.foto) + "'" + ')"></div>'
-            : '<div class="retrato vacia">' + esc(String(chef.nombre || "K").replace(/^chef\s+/i, "").charAt(0)) + "</div>") +
-          '<div class="txt"><h2>' + esc(t9.preguntas) + "</h2><p>" + esc(t9.respondo) + "</p>" +
-            '<a class="boton wa" target="_blank" rel="noopener" href="https://wa.me/' + esc(chef.whatsapp) +
-              "?text=" + encodeURIComponent(t9.waPregunta + " " + tx(c.titulo, L)) + '">' + esc(t9.escribe) + "</a>" +
-          "</div></div></section>"
+      ? '<section><div class="karina">' +
+          '<div class="k-cab"><div class="halo">' +
+            (chef.foto
+              ? '<div class="retrato" style="background-image:url(' + "'" + esc(chef.foto) + "'" + ')"></div>'
+              : '<div class="retrato vacia">' + esc(String(chef.nombre || "K").replace(/^chef\s+/i, "").charAt(0)) + "</div>") +
+          '</div><div class="burbuja"><b>' + esc(t9.holaSoy) + "</b><span>" + esc(t9.ayudar) + "</span></div></div>" +
+          '<div class="chips">' + chips + "</div>" +
+          '<div class="respuesta" id="faq-respuesta" hidden><p id="faq-texto"></p>' +
+            '<a class="boton wa" id="faq-wa" target="_blank" rel="noopener" href="#">' + esc(t9.preguntarWa) + "</a></div>" +
+          '<form class="pregunta-libre" id="pregunta-libre">' +
+            '<input type="text" id="pregunta-texto" placeholder="' + esc(t9.tuPregunta) + '" maxlength="300" required>' +
+            '<button type="submit" class="boton wa">' + esc(t9.enviarWa) + "</button></form>" +
+        "</div></section>"
       : "";
 
     hoja.innerHTML =
@@ -777,7 +826,7 @@
               "</div></div>" +
           "</div>" +
           '<div class="pago-cuerpo">' +
-            '<div class="acciones">' + cobro + wa + (pagoAprobado() ? "" : calendario) +
+            '<div class="acciones">' + reservar + (pagoAprobado() ? "" : calendario) +
               '<button class="boton claro" type="button" data-copiar-resumen>' + esc(t9.copiarResumen) + "</button>" +
             "</div>" +
             (filas ? '<details class="formas"><summary>' + esc(t9.formasDePago) + "</summary>" +
@@ -866,8 +915,39 @@
     mover();
   }
 
+  /** Karina te atiende: cada pregunta muestra su respuesta y ofrece seguir por WhatsApp. */
+  function atencion(c, t, t9, L, chef) {
+    var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
+    var caja = $("#faq-respuesta"), texto = $("#faq-texto"), wa = $("#faq-wa");
+    if (!caja) return;
+    function enlaceWa(mensaje) {
+      return "https://wa.me/" + soloDigitos(chef.whatsapp) + "?text=" + encodeURIComponent(t9.sobreCot + " " + tx(c.titulo, L) + ": " + mensaje);
+    }
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-faq]"), function (b) {
+      b.addEventListener("click", function () {
+        var q = preguntas[Number(b.getAttribute("data-faq"))];
+        if (!q) return;
+        var abierto = b.getAttribute("aria-expanded") === "true";
+        Array.prototype.forEach.call(hoja.querySelectorAll("[data-faq]"), function (x) { x.setAttribute("aria-expanded", "false"); });
+        if (abierto) { caja.hidden = true; return; }
+        b.setAttribute("aria-expanded", "true");
+        texto.textContent = tx(q.detalle, L).replace("{p}", t.pct);
+        wa.href = enlaceWa(tx(q.nombre, L));
+        caja.hidden = false;
+      });
+    });
+    var forma = $("#pregunta-libre");
+    if (forma) {
+      forma.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var v = $("#pregunta-texto").value.trim();
+        if (v) window.open(enlaceWa(v), "_blank", "noopener");
+      });
+    }
+  }
+
   function cablear(c, t, t9, L, iva) {
-    carrusel(); parallax();
+    carrusel(); parallax(); atencion(c, t, t9, L, estado.chef || {});
     if (window.Motion) { window.Motion.dinero = dinero; window.Motion.init(hoja); }
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
       b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
@@ -1098,6 +1178,8 @@
             bi("Nota adicional", c.notaPago, "notaPago") +
           "</fieldset>" +
 
+          listaPares("Preguntas frecuentes (las contesta Karina)", "chef.preguntas", chef.preguntas, "Pregunta", "Respuesta") +
+
           "<fieldset><legend>Contacto</legend>" +
             campo("Nombre", chef.nombre, "chef.nombre") +
             bi("Zona", chef.zona, "chef.zona") +
@@ -1110,6 +1192,8 @@
               campo("Tu WhatsApp (solo dígitos)", chef.whatsapp, "chef.whatsapp") +
             "</div>" +
             '<div class="marca">Tu foto</div>' + fotoCampo(chef.foto, "chef.foto") +
+            '<div class="aviso">Abajo de cada cotización apareces tú: "Hola, soy Karina Kennedy". Las preguntas que ' +
+              "ve el cliente son estas; si las dejas vacías se usan las sugeridas.</div>" +
             campo("Enlace público del cotizador", chef.urlPublica, "chef.urlPublica") +
             '<div class="aviso">Es la dirección que ves en el navegador al abrir este cotizador. ' +
               "Se usa para armar el mensaje de WhatsApp; sin ella el enlace puede salir mal.</div>" +
@@ -1175,7 +1259,7 @@
         if (!arr[i] || typeof arr[i] !== "object") arr[i] = { es: String(arr[i] || ""), en: "" };
         arr[i][el.dataset.l] = el.value;
       } else if (el.dataset.par) {
-        var f = act[el.dataset.par][Number(el.dataset.i)], sub = el.dataset.sub;
+        var lp = listaDe(act, el.dataset.par), f = lp[Number(el.dataset.i)], sub = el.dataset.sub;
         if (!f[sub] || typeof f[sub] !== "object") f[sub] = { es: String(f[sub] || ""), en: "" };
         f[sub][el.dataset.l] = el.value;
       }
@@ -1186,16 +1270,23 @@
       var agregar = e.target.getAttribute && e.target.getAttribute("data-agregar");
       var quitar = e.target.getAttribute && e.target.getAttribute("data-quitar");
       if (agregar) {
-        act[agregar] = act[agregar] || [];
-        act[agregar].push(agregar === "incluye" || agregar === "condiciones"
+        listaDe(act, agregar).push(agregar === "incluye" || agregar === "condiciones"
           ? { es: "", en: "" }
           : { nombre: { es: "", en: "" }, detalle: { es: "", en: "" } });
         cerrarPanel(); abrirPanel();
       } else if (quitar) {
-        act[quitar].splice(Number(e.target.getAttribute("data-i")), 1);
+        listaDe(act, quitar).splice(Number(e.target.getAttribute("data-i")), 1);
         cerrarPanel(); abrirPanel();
       }
     });
+  }
+
+  /** Una lista editable: de la cotización, o de Karina si la clave empieza con "chef.". */
+  function listaDe(act, clave) {
+    var o = act, k = clave;
+    if (k.indexOf("chef.") === 0) { o = estado.chef = estado.chef || {}; k = k.slice(5); }
+    o[k] = o[k] || [];
+    return o[k];
   }
 
   function refrescarTotal() {
@@ -1219,6 +1310,20 @@
   /* ---------- guardar y cobrar ---------- */
 
   var RUTA_DATOS = "content/cotizaciones.json";
+  /* Preguntas que ve el cliente mientras Karina no escribe las suyas (Editar → Contacto). */
+  var PREGUNTAS_BASE = [
+    { nombre: { es: "¿Cómo aparto la fecha?", en: "How do I hold the date?" },
+      detalle: { es: "Con el anticipo del {p}%. El resto se liquida el día del evento.", en: "With the {p}% deposit. The balance is due on the day of the event." } },
+    { nombre: { es: "¿Puedo cambiar el menú?", en: "Can I change the menu?" },
+      detalle: { es: "Sí. Dime qué te gustaría y te propongo opciones al mismo precio, o te cotizo el cambio.", en: "Yes. Tell me what you'd like and I'll suggest options at the same price, or quote the change." } },
+    { nombre: { es: "¿Hay opción vegetariana o sin gluten?", en: "Vegetarian or gluten-free options?" },
+      detalle: { es: "Sí. Dime cuántas personas y adapto el menú.", en: "Yes. Tell me how many guests and I'll adapt the menu." } },
+    { nombre: { es: "¿Incluye meseros?", en: "Are servers included?" },
+      detalle: { es: "Se cotizan aparte. Te recomiendo cuántos según tu grupo.", en: "They're quoted separately. I'll recommend how many for your group." } },
+    { nombre: { es: "¿Y si cambio la fecha?", en: "What if I change the date?" },
+      detalle: { es: "Avísame cuanto antes. Si hay disponibilidad, el anticipo se mueve a la nueva fecha.", en: "Let me know as soon as you can. If the new date is open, the deposit moves with it." } }
+  ];
+
   /* Mientras Karina no suba su propia portada, se usa esta. */
   var PORTADA_PREDETERMINADA = "assets/cotizaciones/portada-rosarito.webp";
   var AUTH = null; // { token, email } cuando hay sesión de admin
