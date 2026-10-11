@@ -779,7 +779,10 @@
     }
     var t = totales(c, L);
     var lado = LADOS[L];
-    var link = /^https:\/\//i.test(c[lado.link] || "") ? c[lado.link] : "";
+    // Sin link guardado, en pesos el cobro se crea al pulsar (/pagar): el botón
+    // nunca depende de que alguien haya generado el link antes.
+    var link = /^https:\/\//i.test(c[lado.link] || "") ? c[lado.link]
+      : L === "es" ? "/pagar?c=" + encodeURIComponent(c.slug) : "";
     var iva = t9.masIva ? " " + t9.masIva : "";
 
     var platillos = c.menu || [];
@@ -821,7 +824,8 @@
     var irAPagar = '<a class="pagar" target="_blank" rel="noopener" href="' + esc(link) + '">' + esc(t9.pagar) + "</a>";
     // El link con descuento cierra la tarjeta en Mercado Pago; si no existe,
     // transferencia y efectivo van al mismo checkout sin descuento.
-    var linkEf = L === "es" && /^https:\/\//i.test(c.linkMxnEfectivo || "") ? c.linkMxnEfectivo : "";
+    var linkEf = L !== "es" ? "" : /^https:\/\//i.test(c.linkMxnEfectivo || "") ? c.linkMxnEfectivo
+      : t.descuentoPct ? "/pagar?c=" + encodeURIComponent(c.slug) + "&m=efectivo" : "";
     var irAPagarEf = linkEf
       ? '<a class="pagar" target="_blank" rel="noopener" href="' + esc(linkEf) + '">' + esc(t9.pagar) + " · " + dinero(t.anticipoEfectivo, t.moneda) + "</a>"
       : irAPagar;
