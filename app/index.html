@@ -156,6 +156,25 @@
   .enviar:hover { color: var(--charcoal); }
   .enviar:disabled { opacity: 0.5; cursor: default; }
 
+  /* ---------- Reportar ---------- */
+  .campo { width: 100%; font-family: var(--sans); font-size: 16px; line-height: 1.4;
+    background: var(--charcoal-2); color: var(--white); border: 1px solid #343447; border-radius: 13px;
+    padding: 12px 14px; margin-bottom: 10px; }
+  .campo:focus { outline: none; border-color: var(--eucalyptus); }
+  textarea.campo { resize: vertical; min-height: 110px; }
+  .tickets { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 9px; }
+  .ticket { display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+    background: var(--charcoal-2); border: 1px solid #343447; border-radius: 13px; padding: 13px 16px; }
+  .ticket b { font-weight: 600; font-size: 0.95rem; }
+  .ticket small { color: var(--muted); font-size: 0.8rem; display: block; margin-top: 2px; }
+  .estado { flex: none; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    border-radius: 999px; padding: 4px 10px; border: 1px solid #4A4A5C; color: var(--muted); }
+  .estado.resuelto { border-color: var(--eucalyptus); color: var(--eucalyptus); }
+  .sub-seccion { font-family: var(--serif); font-size: 1.3rem; font-weight: 600; margin: 28px 0 10px; }
+  .aviso { margin: 12px 0 0; font-size: 0.9rem; }
+  .aviso.ok { color: var(--eucalyptus); }
+  .aviso.error { color: #E8B4B4; }
+
   [hidden] { display: none !important; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -198,6 +217,10 @@
         <span class="punto"></span>
         <span><b>Silver y Claudio</b><small>Dicta un platillo y publícalo como receta</small></span>
       </a>
+      <a class="tarjeta" href="#reportar" id="abrir-reportar">
+        <span class="punto"></span>
+        <span><b>Reportar</b><small>Una falla o una mejora; Bug-off la atiende</small></span>
+      </a>
       <a class="tarjeta" href="/card/">
         <span class="punto"></span>
         <span><b>Tarjeta digital</b><small>Tu tarjeta de presentación</small></span>
@@ -229,6 +252,29 @@
     <textarea id="texto" rows="2" placeholder="Describe el platillo…" required></textarea>
     <button type="submit" class="boton enviar" id="enviar">Enviar</button>
   </form>
+</div>
+
+<!-- Reportar: una falla o una mejora, que Bug-off atiende -->
+<div class="envoltura" id="reportar" hidden>
+  <div class="cabeza-panel">
+    <div class="marca-chica">Reportar<span>Bug-off</span></div>
+    <button type="button" class="boton" id="volver-reportar">← Panel</button>
+  </div>
+  <main>
+    <form id="forma-ticket">
+      <div class="motores" id="tipos">
+        <button type="button" class="motor activo" data-tipo="falla">Falla</button>
+        <button type="button" class="motor" data-tipo="mejora">Mejora</button>
+      </div>
+      <input class="campo" id="t-titulo" placeholder="En una línea: ¿qué pasa?" maxlength="120" required>
+      <textarea class="campo" id="t-detalle" placeholder="Cuenta más: dónde estabas, qué esperabas, qué pasó…"></textarea>
+      <button type="submit" class="boton enviar" id="t-enviar">Enviar ticket</button>
+      <p class="aviso" id="t-aviso" hidden></p>
+    </form>
+    <h2 class="sub-seccion">Tus tickets</h2>
+    <ul class="tickets" id="lista-tickets"><li class="nota">Cargando…</li></ul>
+  </main>
+  <footer><span></span></footer>
 </div>
 
 <script>
@@ -353,6 +399,61 @@
       .then(function () { $('enviar').disabled = false; $('texto').focus(); });
   }
 
+  /* ---------- Reportar ---------- */
+  var tipoTicket = 'falla';
+  function abrirReportar() {
+    $('panel').hidden = true; $('reportar').hidden = false;
+    cargarTickets(); $('t-titulo').focus();
+  }
+  function cerrarReportar() { $('reportar').hidden = true; $('panel').hidden = false; }
+  function pintarTickets(lista) {
+    var ul = $('lista-tickets'); ul.innerHTML = '';
+    if (!lista.length) { ul.innerHTML = '<li class="nota">Todavía no hay tickets.</li>'; return; }
+    lista.forEach(function (t) {
+      var li = document.createElement('li'); li.className = 'ticket';
+      var a = document.createElement('a'); a.href = t.url; a.target = '_blank'; a.rel = 'noopener';
+      a.style.color = 'inherit'; a.style.textDecoration = 'none';
+      var b = document.createElement('b'); b.textContent = '#' + t.numero + ' · ' + t.titulo;
+      var sm = document.createElement('small'); sm.textContent = (t.tipo === 'mejora' ? 'Mejora' : 'Falla') + ' · ' + new Date(t.creado).toLocaleDateString('es-MX');
+      a.appendChild(b); a.appendChild(sm);
+      var e = document.createElement('span'); e.className = 'estado ' + t.estado; e.textContent = t.estado;
+      li.appendChild(a); li.appendChild(e); ul.appendChild(li);
+    });
+  }
+  function cargarTickets() {
+    var sesion = leerSesion();
+    fetch('/api/tickets', { headers: { authorization: 'Bearer ' + (sesion && sesion.token) } })
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
+      .then(function (out) {
+        if (!out.ok) { $('lista-tickets').innerHTML = '<li class="nota">' + (out.b.error || 'No se pudieron leer los tickets.') + '</li>'; return; }
+        pintarTickets(out.b.tickets || []);
+      })
+      .catch(function () { $('lista-tickets').innerHTML = '<li class="nota">No se pudo contactar al servidor.</li>'; });
+  }
+  function aviso(clase, texto) { var p = $('t-aviso'); p.className = 'aviso ' + clase; p.textContent = texto; p.hidden = false; }
+  function enviarTicket(ev) {
+    ev.preventDefault();
+    var sesion = leerSesion();
+    $('t-enviar').disabled = true; $('t-aviso').hidden = true;
+    fetch('/api/tickets', {
+      method: 'POST',
+      headers: { authorization: 'Bearer ' + (sesion && sesion.token), 'content-type': 'application/json' },
+      body: JSON.stringify({
+        tipo: tipoTicket, titulo: $('t-titulo').value, detalle: $('t-detalle').value,
+        pagina: document.referrer || '/app', dispositivo: navigator.userAgent
+      })
+    })
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
+      .then(function (out) {
+        if (!out.ok) { aviso('error', out.b.error || 'No se pudo crear el ticket.'); return; }
+        aviso('ok', 'Ticket #' + out.b.ticket.numero + ' creado. Bug-off ya lo tiene.');
+        $('t-titulo').value = ''; $('t-detalle').value = '';
+        cargarTickets();
+      })
+      .catch(function () { aviso('error', 'No se pudo contactar al servidor.'); })
+      .then(function () { $('t-enviar').disabled = false; });
+  }
+
   function salir() {
     localStorage.removeItem(LLAVE);
     location.reload();
@@ -435,6 +536,15 @@
   // Enter manda; Shift+Enter hace salto de línea.
   $('texto').addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('redactar').requestSubmit(); }
+  });
+  $('abrir-reportar').addEventListener('click', function (e) { e.preventDefault(); abrirReportar(); });
+  $('volver-reportar').addEventListener('click', cerrarReportar);
+  $('forma-ticket').addEventListener('submit', enviarTicket);
+  Array.prototype.forEach.call($('tipos').children, function (b) {
+    b.addEventListener('click', function () {
+      tipoTicket = b.getAttribute('data-tipo');
+      Array.prototype.forEach.call($('tipos').children, function (x) { x.classList.toggle('activo', x === b); });
+    });
   });
 }());
 </script>

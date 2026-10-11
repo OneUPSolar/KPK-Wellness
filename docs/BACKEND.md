@@ -35,6 +35,7 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/register` | POST | pública — registro a eventos |
 | `/api/agent/recipe` | GET · POST | agente — Silver (GPT en ChatGPT) publica una receta |
 | `/api/silver/chat` | GET · POST | admin — Silver dentro de la app, con las llaves de OpenAI y Anthropic de Karina |
+| `/api/tickets` | GET · POST | admin — tickets de fallas y mejoras, como issues `bug-off` (ver `docs/BUG-OFF.md`) |
 
 ## Variables del proyecto
 
@@ -44,7 +45,7 @@ Environment variables. Las marcadas como secreto quedan cifradas.
 | variable | secreto | para qué |
 |---|---|---|
 | `SESSION_SECRET` | sí | firma las sesiones de admin. `openssl rand -base64 48` |
-| `GITHUB_TOKEN` | sí | PAT de alcance fino, Contents: read & write en este repo |
+| `GITHUB_TOKEN` | sí | PAT de alcance fino: Contents: read & write, **Issues: read & write** (para los tickets) |
 | `ADMIN_PASSWORD` | sí | opcional. Si no está, `/api/login` responde 404 |
 | `GOOGLE_CLIENT_ID` | no | cliente OAuth de Google |
 | `ALLOWED_EMAILS` | no | lista separada por comas de quién puede entrar |
