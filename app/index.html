@@ -134,6 +134,14 @@
     display: inline-block; margin-top: 8px; font-size: 0.8rem; color: var(--eucalyptus);
     text-decoration: none; border: 1px solid var(--eucalyptus); border-radius: 999px; padding: 4px 10px;
   }
+  /* Karina elige con qué motor habla Silver; solo aparece si hay más de uno con llave. */
+  .motores { display: flex; gap: 6px; margin: -8px 0 18px; }
+  .motor {
+    font-family: var(--sans); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em;
+    border: 1px solid #4A4A5C; border-radius: 999px; padding: 6px 13px;
+    background: transparent; color: var(--muted); cursor: pointer;
+  }
+  .motor.activo { border-color: var(--eucalyptus); color: var(--white); background: #2E2E3E; }
   .redactar {
     position: sticky; bottom: 0; background: var(--charcoal); padding: 12px 0 26px;
     display: flex; gap: 10px; align-items: flex-end; border-top: 1px solid var(--linea);
@@ -212,6 +220,7 @@
     <div class="marca-chica">Silver<span>Recetas</span></div>
     <button type="button" class="boton" id="volver">← Panel</button>
   </div>
+  <div class="motores" id="motores" hidden></div>
   <main class="chat">
     <p class="nota" id="silver-estado" hidden></p>
     <div class="hilo" id="hilo" aria-live="polite"></div>
@@ -257,7 +266,28 @@
   /* ---------- Silver ---------- */
   // El hilo vive en esta pestaña nada más; la llave de OpenAI nunca llega aquí.
   var HILO = 'kpk_silver';
+  var MOTOR = 'kpk_silver_motor';
   var hilo = [];
+  var motor = null;
+  function pintarMotores(st) {
+    var caja = $('motores'); caja.innerHTML = '';
+    var claves = Object.keys(st.proveedores || {}).filter(function (k) { return st.proveedores[k].habilitado; });
+    var guardado = null;
+    try { guardado = localStorage.getItem(MOTOR); } catch (e) { /* sin memoria */ }
+    motor = claves.indexOf(guardado) >= 0 ? guardado : st.predeterminado;
+    caja.hidden = claves.length < 2;
+    claves.forEach(function (k) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'motor' + (k === motor ? ' activo' : '');
+      b.textContent = st.proveedores[k].nombre; b.title = st.proveedores[k].modelo;
+      b.addEventListener('click', function () {
+        motor = k;
+        try { localStorage.setItem(MOTOR, k); } catch (e) { /* sin memoria */ }
+        Array.prototype.forEach.call(caja.children, function (x) { x.classList.toggle('activo', x === b); });
+      });
+      caja.appendChild(b);
+    });
+  }
   function cargarHilo() { try { hilo = JSON.parse(sessionStorage.getItem(HILO) || '[]'); } catch (e) { hilo = []; } }
   function guardarHilo() { try { sessionStorage.setItem(HILO, JSON.stringify(hilo.slice(-24))); } catch (e) { /* sin memoria, sin drama */ } }
   function burbuja(clase, texto) {
@@ -278,8 +308,8 @@
     fetch('/api/silver/chat', { headers: { authorization: 'Bearer ' + (sesion && sesion.token) } })
       .then(function (r) { return r.json(); })
       .then(function (st) {
-        if (st.habilitada) return;
-        $('silver-estado').textContent = 'Silver aún no está conectada: falta OPENAI_API_KEY en Cloudflare.';
+        if (st.habilitada) { pintarMotores(st); return; }
+        $('silver-estado').textContent = 'Silver aún no está conectada: falta OPENAI_API_KEY o ANTHROPIC_API_KEY en Cloudflare.';
         $('silver-estado').hidden = false;
         $('enviar').disabled = true;
       })
@@ -299,7 +329,7 @@
     fetch('/api/silver/chat', {
       method: 'POST',
       headers: { authorization: 'Bearer ' + (sesion && sesion.token), 'content-type': 'application/json' },
-      body: JSON.stringify({ messages: hilo })
+      body: JSON.stringify({ messages: hilo, proveedor: motor })
     })
       .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
       .then(function (out) {

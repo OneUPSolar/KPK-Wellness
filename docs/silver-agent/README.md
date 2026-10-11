@@ -79,8 +79,9 @@ To revoke Silver, rotate `AGENT_TOKEN`. Nothing else uses it.
 ## Silver inside the app
 
 The same Silver also lives at kpk.associates/app → **Silver**, talking to OpenAI
-with Karina's own API key (`OPENAI_API_KEY`, a Pages secret; the browser never
-sees it). It reads `silver-instructions.md` from this repo at runtime, so editing
+or Anthropic with Karina's own API keys (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`;
+Pages secrets the browser never sees). With both set, she picks the engine in
+the app; the prompt, the tool and the commit are identical either way. It reads `silver-instructions.md` from this repo at runtime, so editing
 that file changes both the GPT and the in-app assistant — one Silver, not two.
 Publishing goes through the same `publicarReceta` as the GPT route.
 
