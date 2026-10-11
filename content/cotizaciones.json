@@ -40,7 +40,8 @@
           "detalle": {
             "es": "Con frijoles.",
             "en": "With beans."
-          }
+          },
+          "imagen": "assets/cotizaciones/burrito-machaca-langosta.webp"
         },
         {
           "nombre": {
@@ -50,7 +51,8 @@
           "detalle": {
             "es": "Marlín ahumado en tortilla de maíz.",
             "en": "Smoked marlin in a corn tortilla."
-          }
+          },
+          "imagen": "assets/cotizaciones/quesadilla-marlin.webp"
         },
         {
           "nombre": {
@@ -60,7 +62,8 @@
           "detalle": {
             "es": "Guiso de camarón estilo Mazatlán.",
             "en": "Mazatlán-style shrimp."
-          }
+          },
+          "imagen": "assets/cotizaciones/taco-gobernador.webp"
         },
         {
           "nombre": {
@@ -70,7 +73,8 @@
           "detalle": {
             "es": "Con mayonesa de chipotle y poro frito.",
             "en": "With chipotle mayo and fried leek."
-          }
+          },
+          "imagen": "assets/cotizaciones/tostada-atun-baja.webp"
         }
       ],
       "precio": {
@@ -146,7 +150,10 @@
       "notaPago": {
         "es": "",
         "en": ""
-      }
+      },
+      "portada": "assets/cotizaciones/portada-rosarito.webp",
+      "inicio": "2026-12-08T13:00",
+      "fin": "2026-12-08T17:00"
     }
   ],
   "chef": {

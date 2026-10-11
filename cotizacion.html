@@ -8,23 +8,26 @@
 <title>Cotización · KPK Wellness</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* Layout: one scrolling quote. The switch at the top flips language AND the
      money side with it — Spanish in pesos with factura, English in dollars
      with an invoice. Single committed look: a quote reads the same for every
      client. */
   :root {
-    --tinta:      #3A3B3D;
-    --tinta-sueve:#56585B;
+    /* La misma marca que el sitio y la app: papel, tinta, eucalipto y arena. */
+    --tinta:      #1F2024;
+    --tinta-sueve:#5C5E66;
     --arena:      #D9C9AE;
-    --arena-hond: #BFAC8B;
-    --crema:      #F1EBDF;
+    --arena-hond: #B9A47F;
+    --eucalipto:  #7A9E8E;
+    --eucalipto-h:#4F7566;
+    --crema:      #F7F5F1;
     --papel:      #FFFFFF;
-    --linea:      #E2D9C8;
+    --linea:      #E6E1D8;
 
-    --display: 'Poppins', 'Trebuchet MS', sans-serif;
-    --texto:   'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --texto:   'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
     color-scheme: light;
   }
@@ -35,57 +38,70 @@
     font-family: var(--texto); font-size: 15px; line-height: 1.55;
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, .cifra, .etq { font-family: var(--display); }
+  h1, h2, h3, .cifra { font-family: var(--display); font-weight: 600; letter-spacing: -0.005em; }
   .etq {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
-    text-transform: uppercase; color: var(--arena-hond);
+    font-family: var(--texto); font-size: 10.5px; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--eucalipto-h);
   }
 
-  .hoja { max-width: 860px; margin: 0 auto; background: var(--crema); }
+  .hoja { max-width: 900px; margin: 0 auto; background: var(--crema); box-shadow: 0 0 0 1px var(--linea); }
 
   /* ---------- interruptor de idioma y moneda ---------- */
   .switch {
     display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
     justify-content: space-between;
-    padding: 12px 24px; background: var(--arena-hond); color: #2C271D;
+    padding: 12px 26px; background: var(--papel); color: var(--tinta-sueve);
+    border-bottom: 1px solid var(--linea);
   }
-  .switch .leyenda { font-size: 0.82rem; min-width: 0; }
-  .switch .grupo { display: flex; gap: 4px; background: rgba(0,0,0,0.12); border-radius: 999px; padding: 3px; }
+  .switch .leyenda { font-size: 0.8rem; min-width: 0; }
+  .switch .grupo { display: flex; gap: 2px; background: var(--crema); border: 1px solid var(--linea); border-radius: 999px; padding: 3px; }
   .switch button {
-    font: inherit; font-family: var(--display); font-weight: 600; font-size: 0.84rem;
-    border: 0; background: transparent; color: #2C271D; cursor: pointer;
-    border-radius: 999px; padding: 6px 16px; white-space: nowrap;
+    font: inherit; font-family: var(--texto); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.02em;
+    border: 0; background: transparent; color: var(--tinta-sueve); cursor: pointer;
+    border-radius: 999px; padding: 6px 15px; white-space: nowrap;
   }
-  .switch button[aria-pressed="true"] { background: var(--papel); color: var(--tinta); }
-  .switch button:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+  .switch button[aria-pressed="true"] { background: var(--tinta); color: #fff; }
+  .switch button:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 2px; }
 
-  /* ---------- encabezado ---------- */
+  /* ---------- portada ---------- */
+  /* La foto manda. Dos capas de degradado: una para que el título se lea,
+     otra para que la foto no se apague. */
   .cabeza {
-    background: var(--tinta); color: var(--crema);
-    padding-block: 34px 30px; padding-inline: 24px;
-    display: flex; flex-wrap: wrap; gap: 18px 24px;
-    align-items: flex-end; justify-content: space-between;
+    position: relative; isolation: isolate; color: #fff;
+    min-height: clamp(360px, 56vw, 520px);
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+    gap: 18px 24px; padding: 34px 26px 30px; overflow: hidden; background: var(--tinta);
+  }
+  .cabeza .foto {
+    position: absolute; inset: 0; z-index: -2; background-size: cover; background-position: center;
+    transform: scale(1.02);
+  }
+  .cabeza::before {
+    content: ''; position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(20,21,26,0.28) 0%, rgba(20,21,26,0) 35%, rgba(20,21,26,0.72) 100%),
+      linear-gradient(90deg, rgba(20,21,26,0.35) 0%, rgba(20,21,26,0) 60%);
   }
   .cabeza .etq { color: var(--arena); }
   .cabeza h1 {
-    margin: 6px 0 10px; font-size: clamp(1.9rem, 6.2vw, 2.9rem);
-    font-weight: 700; line-height: 1.05; letter-spacing: -0.015em;
-    text-wrap: balance; color: #fff;
+    margin: 8px 0 10px; font-size: clamp(2.3rem, 7.4vw, 4rem);
+    font-weight: 600; line-height: 0.98; letter-spacing: -0.012em;
+    text-wrap: balance; color: #fff; text-shadow: 0 2px 22px rgba(0,0,0,0.35);
   }
-  .para { font-size: 0.98rem; color: var(--arena); }
+  .para { font-size: 1rem; color: #EDE7DB; }
   .para b { color: #fff; font-weight: 600; }
-  .firma { text-align: right; min-width: 0; font-size: 0.9rem; color: var(--arena); }
-  .firma .nombre { font-family: var(--display); font-weight: 700; font-size: 1.05rem; color: #fff; }
+  .firma { text-align: right; min-width: 0; font-size: 0.86rem; color: #DDD6C8; }
+  .firma .nombre { font-family: var(--display); font-weight: 600; font-size: 1.35rem; color: #fff; line-height: 1.1; }
+  .filo { width: 40px; height: 2px; background: var(--eucalipto); margin-bottom: 14px; }
 
   /* ---------- banda de datos ---------- */
   .banda {
-    background: var(--arena); color: var(--tinta);
-    padding-block: 16px; padding-inline: 24px;
+    background: var(--papel); color: var(--tinta); border-bottom: 1px solid var(--linea);
+    padding-block: 18px; padding-inline: 26px;
     display: grid; gap: 14px 22px;
-    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
-  .banda .dato .etq { color: #6F6349; }
-  .banda .dato .val { font-family: var(--display); font-weight: 600; font-size: 1.02rem; }
+  .banda .dato .val { font-family: var(--display); font-weight: 600; font-size: 1.25rem; line-height: 1.15; }
 
   /* ---------- secciones ---------- */
   .cuerpo { padding-block: 30px 40px; padding-inline: 24px; display: grid; gap: 34px; }
@@ -95,29 +111,37 @@
     align-items: baseline; justify-content: space-between;
   }
   .titulo-fila h2 { margin: 0; font-size: 1.35rem; font-weight: 700; }
-  .nota-fila { font-family: var(--display); font-weight: 600; font-size: 0.86rem; }
+  .nota-fila { font-family: var(--texto); font-weight: 500; font-size: 0.84rem; color: var(--tinta-sueve); }
 
   .rejilla-2 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); }
   .rejilla-menu { display: grid; gap: 12px; grid-template-columns: 1fr; }
   @media (min-width: 620px) { .rejilla-menu { grid-template-columns: 1fr 1fr; } }
 
+  .titulo-fila h2 { font-size: 1.75rem; }
   .platillo {
-    background: var(--papel); border: 1px solid var(--linea);
-    border-left: 3px solid var(--arena); border-radius: 7px;
-    padding: 14px 16px; min-width: 0;
+    background: var(--papel); border: 1px solid var(--linea); border-radius: 12px;
+    overflow: hidden; min-width: 0; display: grid;
   }
-  .platillo .n { font-family: var(--display); font-weight: 600; font-size: 1rem; }
-  .platillo .d { font-size: 0.9rem; color: var(--tinta-sueve); }
+  .platillo .foto { aspect-ratio: 16 / 10; background: var(--arena) center / cover no-repeat; }
+  /* Sin foto todavía: un lienzo de arena con la inicial, no un hueco. */
+  .platillo .foto.vacia {
+    display: grid; place-items: center; font-family: var(--display); font-size: 3rem; color: #fff;
+    background: linear-gradient(135deg, var(--arena) 0%, var(--arena-hond) 100%);
+  }
+  .platillo .txt { padding: 14px 16px 16px; }
+  .platillo .n { font-family: var(--display); font-weight: 600; font-size: 1.3rem; line-height: 1.15; }
+  .platillo .d { font-size: 0.88rem; color: var(--tinta-sueve); margin-top: 3px; }
 
   /* ---------- precio ---------- */
   .precio {
-    background: var(--tinta); border-radius: 9px; color: #fff;
-    padding: 22px 26px; display: flex; flex-wrap: wrap;
+    background: var(--tinta); border-radius: 14px; color: #fff;
+    padding: 26px 28px; display: flex; flex-wrap: wrap;
     gap: 18px 26px; align-items: flex-end; justify-content: space-between;
+    background-image: radial-gradient(120% 140% at 100% 0%, rgba(122,158,142,0.28) 0%, rgba(122,158,142,0) 55%);
   }
   .precio .etq { color: var(--arena); }
   .cifra {
-    font-size: clamp(1.8rem, 6.6vw, 2.6rem); font-weight: 700;
+    font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 600;
     line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
   }
   .cifra.oro { color: var(--arena); }
@@ -132,7 +156,7 @@
 
   /* ---------- cajas ---------- */
   .caja {
-    border: 1px solid var(--arena-hond); border-radius: 8px;
+    border: 1px solid var(--linea); background: var(--papel); border-radius: 12px;
     padding: 16px 18px; display: grid; gap: 8px; align-content: start; min-width: 0;
   }
   .caja .par b { font-family: var(--display); font-weight: 600; display: block; }
@@ -141,34 +165,34 @@
   .caja li { font-size: 0.92rem; color: var(--tinta-sueve); }
 
   /* ---------- forma de pago ---------- */
-  .pago { background: var(--papel); border: 1px solid var(--linea); border-radius: 9px; overflow: hidden; }
+  .pago { background: var(--papel); border: 1px solid var(--linea); border-radius: 14px; overflow: hidden; }
   .pago-cabeza {
-    background: var(--arena); padding: 16px 20px;
+    background: var(--eucalipto); color: #fff; padding: 18px 22px;
     display: flex; flex-wrap: wrap; gap: 10px 20px;
     align-items: baseline; justify-content: space-between;
   }
-  .pago-cabeza .etq { color: #6F6349; }
-  .pago-cabeza h2 { margin: 0; font-size: 1.2rem; }
-  .pago-cabeza .monto { font-family: var(--display); font-weight: 700; font-size: 1.4rem; font-variant-numeric: tabular-nums; text-align: right; }
-  .pago-cabeza .monto-nota { font-size: 0.78rem; color: #6F6349; text-align: right; }
+  .pago-cabeza .etq { color: #EAF1ED; }
+  .pago-cabeza h2 { margin: 0; font-size: 1.55rem; color: #fff; }
+  .pago-cabeza .monto { font-family: var(--display); font-weight: 600; font-size: 1.9rem; line-height: 1; font-variant-numeric: tabular-nums; text-align: right; }
+  .pago-cabeza .monto-nota { font-size: 0.76rem; color: #EAF1ED; text-align: right; margin-top: 4px; }
   .pago-cuerpo { padding: 18px 20px; display: grid; gap: 14px; }
 
   .acciones { display: flex; flex-wrap: wrap; gap: 10px; padding-bottom: 4px; }
   .boton {
-    font-family: var(--display); font-weight: 600; font-size: 0.95rem;
+    font-family: var(--texto); font-weight: 600; font-size: 0.9rem;
     border-radius: 999px; padding: 11px 22px; border: 1px solid var(--tinta);
     background: var(--tinta); color: #fff; text-decoration: none;
     display: inline-block; cursor: pointer;
   }
   .boton:hover { background: #2B2C2E; }
   .boton.claro { background: transparent; color: var(--tinta); }
-  .boton.claro:hover { background: var(--arena); border-color: var(--arena); }
+  .boton.claro:hover { background: var(--crema); }
 
   /* Desplegable nativo: funciona con teclado y sin JavaScript. */
   .formas { border-top: 1px solid var(--linea); padding-top: 14px; }
   .formas summary {
     cursor: pointer; list-style: none; display: flex; align-items: center; gap: 9px;
-    font-family: var(--display); font-weight: 600; font-size: 0.95rem; color: var(--tinta);
+    font-family: var(--texto); font-weight: 600; font-size: 0.92rem; color: var(--tinta);
   }
   .formas summary::-webkit-details-marker { display: none; }
   .formas summary::after {
@@ -186,19 +210,46 @@
   }
   .metodo:last-child { border-bottom: 0; padding-bottom: 0; }
   .metodo-txt { display: grid; gap: 2px; min-width: 0; flex: 1 1 200px; }
-  .metodo b { font-family: var(--display); font-weight: 600; font-size: 0.97rem; }
+  .metodo b { font-family: var(--texto); font-weight: 600; font-size: 0.93rem; }
   .metodo span { font-size: 0.9rem; color: var(--tinta-sueve); overflow-wrap: anywhere; }
   .pagar {
-    font-family: var(--display); font-weight: 600; font-size: 0.88rem;
+    font-family: var(--texto); font-weight: 600; font-size: 0.84rem;
     background: var(--tinta); color: #fff; text-decoration: none;
     border-radius: 999px; padding: 8px 20px; white-space: nowrap;
   }
   .pagar:hover { background: #2B2C2E; }
   .pagar:focus-visible { outline: 2px solid var(--arena-hond); outline-offset: 2px; }
 
+  /* ---------- contacto directo ---------- */
+  .contacto {
+    display: flex; flex-wrap: wrap; gap: 18px 24px; align-items: center;
+    background: var(--papel); border: 1px solid var(--linea); border-radius: 14px; padding: 22px 24px;
+  }
+  .contacto .retrato {
+    width: 92px; height: 92px; border-radius: 50%; flex: none;
+    background: var(--arena) center 20% / cover no-repeat; box-shadow: 0 0 0 3px var(--papel), 0 0 0 4px var(--eucalipto);
+  }
+  .contacto .retrato.vacia {
+    display: grid; place-items: center; font-family: var(--display); font-size: 2.4rem; color: #fff;
+    background: linear-gradient(135deg, var(--eucalipto) 0%, var(--eucalipto-h) 100%);
+  }
+  .contacto .txt { flex: 1 1 240px; min-width: 0; }
+  .contacto h2 { margin: 0 0 4px; font-size: 1.7rem; }
+  .contacto p { margin: 0 0 14px; color: var(--tinta-sueve); font-size: 0.93rem; }
+  .boton.wa { background: #25D366; border-color: #25D366; color: #0B2E1A; }
+  .boton.wa:hover { background: #1EBE5B; }
+
+  .aprobado {
+    display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between;
+    background: #EAF1ED; border: 1px solid #BFD4CA; border-left: 4px solid var(--eucalipto);
+    border-radius: 12px; padding: 16px 20px;
+  }
+  .aprobado b { font-family: var(--display); font-size: 1.35rem; display: block; color: var(--eucalipto-h); }
+  .aprobado span { color: var(--tinta-sueve); font-size: 0.92rem; }
+
   /* ---------- pie ---------- */
   .pie {
-    border-top: 2px solid var(--tinta); margin-inline: 24px;
+    border-top: 1px solid var(--linea); margin-inline: 26px;
     padding-block: 16px 34px; display: flex; flex-wrap: wrap;
     gap: 6px 20px; justify-content: space-between;
     font-size: 0.92rem; color: var(--tinta-sueve);
@@ -216,7 +267,7 @@
     border: 1px solid #5E5F62; border-radius: 6px; padding: 5px 9px; max-width: 220px;
   }
   .barra-admin button {
-    font: inherit; font-family: var(--display); font-weight: 600;
+    font: inherit; font-family: var(--texto); font-weight: 600; font-size: 0.82rem;
     border-radius: 999px; padding: 6px 15px; cursor: pointer;
     border: 1px solid var(--arena); background: var(--arena); color: var(--tinta);
   }
@@ -235,7 +286,7 @@
   .panel-cabeza h2 { margin: 0; font-size: 1.05rem; }
   .panel-cuerpo { padding: 18px 20px; display: grid; gap: 20px; }
   fieldset { border: 1px solid var(--linea); border-radius: 8px; padding: 14px 16px; margin: 0; display: grid; gap: 12px; }
-  legend { font-family: var(--display); font-weight: 600; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arena-hond); padding-inline: 6px; }
+  legend { font-family: var(--texto); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arena-hond); padding-inline: 6px; }
   label { display: grid; gap: 4px; font-size: 0.82rem; font-weight: 500; color: var(--tinta-sueve); min-width: 0; }
   input {
     font: inherit; font-family: var(--texto); font-size: 0.93rem; color: var(--tinta);
@@ -251,12 +302,40 @@
   @media (min-width: 440px) { .bi { grid-template-columns: 1fr 1fr; } }
   .marca { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arena-hond); margin-bottom: 5px; }
   .fila-rep { display: grid; gap: 10px; padding: 11px; background: var(--papel); border: 1px solid var(--linea); border-radius: 7px; }
+  .foto-fila { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .foto-fila img { width: 84px; height: 56px; object-fit: cover; border-radius: 6px; background: var(--arena); border: 1px solid var(--linea); }
+  .foto-fila .agregar { position: relative; overflow: hidden; }
+  .foto-fila input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .foto-fila input[type=text] { flex: 1 1 180px; }
   .fila-rep .quitar {
     justify-self: end; font-size: 0.78rem; font-family: var(--texto);
     background: none; border: 0; color: #9A5A4F; cursor: pointer; padding: 2px 4px;
   }
+  /* ---------- landing del cotizador ---------- */
+  .landing h1 { font-size: 2.6rem; margin: 6px 0 4px; }
+  .landing .sub { color: var(--tinta-sueve); margin: 0 0 18px; }
+  .landing .acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cliente { background: var(--papel); border: 1px solid var(--linea); border-radius: 12px; padding: 16px 18px; gap: 10px; }
+  .cliente-cab { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .cliente-cab b { font-family: var(--display); font-size: 1.4rem; display: block; }
+  .cliente-cab small { color: var(--tinta-sueve); }
+  .cot-fila {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 12px 14px; border: 1px solid var(--linea); border-radius: 9px; background: var(--crema);
+    color: inherit; text-decoration: none;
+  }
+  .cot-fila:hover { border-color: var(--arena-hond); }
+  .cot-fila b { display: block; font-family: var(--display); }
+  .cot-fila small { color: var(--tinta-sueve); }
+  .cot-der { text-align: right; flex: none; }
+  .cot-der .cifra-chica { font-family: var(--display); font-weight: 700; display: block; }
+  .insignia { display: inline-block; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase;
+    border: 1px solid var(--linea); border-radius: 999px; padding: 2px 8px; margin-left: 4px; color: var(--tinta-sueve); }
+  .insignia.ok { border-color: #7A9E8E; color: #4F7566; }
+  .agregar.chica { padding: 7px 12px; font-size: 0.85rem; }
+
   .agregar {
-    font-family: var(--display); font-weight: 600; font-size: 0.85rem; justify-self: start;
+    font-family: var(--texto); font-weight: 600; font-size: 0.82rem; justify-self: start;
     background: transparent; border: 1px dashed var(--arena-hond); color: var(--tinta-sueve);
     border-radius: 999px; padding: 6px 14px; cursor: pointer;
   }
@@ -322,7 +401,11 @@
       m2: "Pagar por transferencia", m2d: "SPEI desde tu banco.",
       m3: "Pagar en efectivo", m3d: "En tiendas afiliadas a Mercado Pago.",
       resumenCopiado: "Resumen copiado", sinCotizaciones: "Todavía no hay cotizaciones",
-      leyenda: "Cotización en pesos mexicanos, con factura."
+      leyenda: "Cotización en pesos mexicanos, con factura.",
+      preguntas: "¿Tienes preguntas?", escribe: "Escríbele directo a Karina por WhatsApp",
+      respondo: "Te contesta ella misma, en su horario.", waPregunta: "Hola Karina, tengo una pregunta sobre la cotización",
+      pagoRecibido: "Pago recibido", fechaApartada: "Tu fecha queda apartada",
+      calendario: "Agregar a mi calendario"
     },
     en: {
       cotizacion: "Quote", para: "For:", lugar: "Location", fecha: "Date",
@@ -337,7 +420,11 @@
       m2: "Pay over time", m2d: "Klarna or Affirm, if you qualify at checkout.",
       m3: "Apple Pay or Google Pay", m3d: "On a supported device.",
       resumenCopiado: "Summary copied", sinCotizaciones: "No quotes yet",
-      leyenda: "Quote in US dollars, with an invoice."
+      leyenda: "Quote in US dollars, with an invoice.",
+      preguntas: "Questions?", escribe: "Message Karina directly on WhatsApp",
+      respondo: "She answers personally, during her hours.", waPregunta: "Hi Karina, I have a question about the quote for",
+      pagoRecibido: "Payment received", fechaApartada: "Your date is held",
+      calendario: "Add to my calendar"
     }
   };
 
@@ -381,11 +468,99 @@
     setTimeout(function () { if (d.parentNode) d.remove(); }, 2600);
   }
 
+  /** El slug pedido en la URL: ?c=slug (enlaces públicos) o #slug (navegación interna). */
+  function slugPedido() {
+    var q = new URLSearchParams(location.search).get("c");
+    if (q) return q;
+    return (location.hash || "").replace(/^#/, "").split("?")[0];
+  }
+
+  /** Mercado Pago vuelve a back_url con collection_status=approved cuando el pago entró. */
+  function pagoAprobado() {
+    var q = new URLSearchParams(location.search);
+    var st = q.get("collection_status") || q.get("status") || "";
+    return st === "approved";
+  }
+
   function cotizacionActiva() {
     var lista = estado.cotizaciones || [];
-    var porHash = (location.hash || "").replace(/^#/, "");
+    var porHash = slugPedido();
     return lista.filter(function (c) { return c.slug === porHash; })[0] ||
            lista.filter(function (c) { return c.slug === estado.activa; })[0] || lista[0] || null;
+  }
+
+  /** ¿La URL pide una cotización concreta? Sin eso, se muestra la landing. */
+  function enCotizacion() {
+    var slug = slugPedido();
+    return Boolean(slug) && (estado.cotizaciones || []).some(function (c) { return c.slug === slug; });
+  }
+
+  /**
+   * La landing del cotizador. Sin sesión es una portada sobria: el cliente
+   * llega siempre con su enlace, no por aquí. Con sesión, las cotizaciones
+   * agrupadas por cliente, que es como Karina piensa su trabajo; el grupo se
+   * arma con lo que ya traen las cotizaciones, sin una base de clientes aparte.
+   */
+  function pintarLanding(admin) {
+    var cab =
+      '<section><div class="etq">Cotizador</div><h1>Cotizaciones</h1>' +
+      '<p class="sub">Karina Paz Kennedy · Eventos Tijuana / San Diego</p>';
+    if (!admin) {
+      hoja.innerHTML = '<div class="cuerpo landing">' + cab +
+        "<p>Si recibiste una cotización, ábrela desde el enlace que te enviaron.</p>" +
+        '<div class="acciones"><a class="agregar" href="/app">Entrar</a></div></section></div>';
+      return;
+    }
+    var grupos = {}, orden = [];
+    (estado.cotizaciones || []).forEach(function (c) {
+      var tel = soloDigitos(c.telCliente);
+      var clave = tel || String(c.cliente || "").trim().toLowerCase() || "—";
+      if (!grupos[clave]) { grupos[clave] = { nombre: String(c.cliente || "").trim() || "Sin cliente", tel: tel, lista: [] }; orden.push(clave); }
+      grupos[clave].lista.push(c);
+    });
+    var cuerpo = orden.map(function (k) {
+      var g = grupos[k];
+      var filas = g.lista.map(function (c) {
+        var t = totales(c, "es");
+        return '<a class="cot-fila" href="#' + esc(c.slug) + '"><div><b>' + esc(tx(c.titulo, "es")) + "</b><small>" +
+          esc([tx(c.fecha, "es"), t.invitados ? t.invitados + " personas" : ""].filter(Boolean).join(" · ")) + "</small></div>" +
+          '<div class="cot-der"><span class="cifra-chica">' + esc(dinero(t.total, t.moneda)) + " + IVA</span>" +
+          '<span class="insignia' + (c.linkMxn ? " ok" : "") + '">MXN</span>' +
+          '<span class="insignia' + (c.linkUsd ? " ok" : "") + '">USD</span></div></a>';
+      }).join("");
+      return '<section class="cliente"><div class="cliente-cab"><div><b>' + esc(g.nombre) + "</b>" +
+        (g.tel ? "<small>+" + esc(g.tel) + "</small>" : "") + "</div>" +
+        '<button type="button" class="agregar chica" data-nueva-para="' + esc(g.lista[0].slug) + '">Nueva para este cliente</button></div>' +
+        filas + "</section>";
+    }).join("");
+    hoja.innerHTML = '<div class="cuerpo landing">' + cab +
+      '<div class="acciones"><button type="button" class="agregar" id="btn-nueva-landing">Nueva cotización</button></div></section>' +
+      (cuerpo || '<section><p>Todavía no hay cotizaciones.</p></section>') + "</div>";
+  }
+
+  /** Qué va en pantalla según la URL: una cotización, o la landing. */
+  function ruta() {
+    if (enCotizacion()) {
+      var c = cotizacionActiva();
+      if (c && (c.idioma === "en" || c.idioma === "es")) idioma = c.idioma;
+      pintar();
+    } else {
+      pintarLanding(Boolean(AUTH));
+    }
+    llenarSelector();
+  }
+
+  function nuevaCotizacion(base, mismoCliente) {
+    var copia = base ? JSON.parse(JSON.stringify(base)) : { invitados: 0, precio: { mxn: 0, usd: 0 } };
+    copia.slug = aSlug("cotizacion " + Date.now().toString(36));
+    copia.titulo = { es: "Nueva cotización", en: "New quote" };
+    if (!mismoCliente) { copia.cliente = ""; copia.telCliente = ""; }
+    copia.linkMxn = "";
+    copia.linkUsd = "";
+    estado.cotizaciones.push(copia);
+    estado.activa = copia.slug;
+    location.hash = copia.slug; // hashchange → ruta() → pintar()
+    abrirPanel();
   }
 
   function totales(c, lang) {
@@ -420,10 +595,14 @@
     var iva = t9.masIva ? " " + t9.masIva : "";
 
     var menu = (c.menu || []).map(function (p) {
-      var d = tx(p.detalle, L);
-      return '<div class="platillo"><div class="n">' + esc(tx(p.nombre, L)) + "</div>" +
-             (d ? '<div class="d">' + esc(d) + "</div>" : "") + "</div>";
+      var d = tx(p.detalle, L), n = tx(p.nombre, L);
+      var foto = p.imagen
+        ? '<div class="foto" style="background-image:url(' + "'" + esc(p.imagen) + "'" + ')"></div>'
+        : '<div class="foto vacia">' + esc((n || "·").charAt(0)) + "</div>";
+      return '<div class="platillo">' + foto + '<div class="txt"><div class="n">' + esc(n) + "</div>" +
+             (d ? '<div class="d">' + esc(d) + "</div>" : "") + "</div></div>";
     }).join("");
+    var portada = c.portada || PORTADA_PREDETERMINADA;
 
     var incluye = (c.incluye || []).map(function (i) { return "<div>" + esc(tx(i, L)) + "</div>"; }).join("");
 
@@ -457,6 +636,25 @@
         esc(chef.whatsapp) + "?text=" + encodeURIComponent(t9.apartarWa + " — " + tx(c.titulo, L)) + '">' +
         esc(t9.apartarWa) + "</a>"
       : "";
+    var ics = icsUrl(c, L);
+    var calendario = ics
+      ? '<a class="boton claro" download="' + esc(c.slug) + '.ics" href="' + ics + '">' + esc(t9.calendario) + "</a>"
+      : "";
+    var aprobado = pagoAprobado()
+      ? '<section><div class="aprobado"><div><b>' + esc(t9.pagoRecibido) + "</b><span>" +
+        esc(t9.fechaApartada + ": " + tx(c.fecha, L) + (tx(c.horario, L) ? " · " + tx(c.horario, L) : "")) + "</span></div>" +
+        calendario + "</div></section>"
+      : "";
+    var pregunta = chef.whatsapp
+      ? '<section><div class="contacto">' +
+          (chef.foto
+            ? '<div class="retrato" style="background-image:url(' + "'" + esc(chef.foto) + "'" + ')"></div>'
+            : '<div class="retrato vacia">' + esc(String(chef.nombre || "K").replace(/^chef\s+/i, "").charAt(0)) + "</div>") +
+          '<div class="txt"><h2>' + esc(t9.preguntas) + "</h2><p>" + esc(t9.respondo) + "</p>" +
+            '<a class="boton wa" target="_blank" rel="noopener" href="https://wa.me/' + esc(chef.whatsapp) +
+              "?text=" + encodeURIComponent(t9.waPregunta + " " + tx(c.titulo, L)) + '">' + esc(t9.escribe) + "</a>" +
+          "</div></div></section>"
+      : "";
 
     hoja.innerHTML =
       '<div class="switch">' +
@@ -468,7 +666,9 @@
       "</div>" +
 
       '<header class="cabeza">' +
+        '<div class="foto" style="background-image:url(' + "'" + esc(portada) + "'" + ')"></div>' +
         '<div style="min-width:0">' +
+          '<div class="filo"></div>' +
           '<div class="etq">' + esc(t9.cotizacion) + "</div>" +
           "<h1>" + esc(tx(c.titulo, L)) + "</h1>" +
           '<div class="para">' + esc(t9.para) + " <b>" + esc(c.cliente) + "</b></div>" +
@@ -485,7 +685,7 @@
         dato(t9.horario, tx(c.horario, L)) + dato(t9.invitados, t.invitados + " " + t9.personas) +
       "</div>" +
 
-      '<div class="cuerpo">' +
+      '<div class="cuerpo">' + aprobado +
         (menu ? '<section><div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
           (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
           '</div><div class="rejilla-menu">' + menu + "</div></section>" : "") +
@@ -515,13 +715,14 @@
               "</div></div>" +
           "</div>" +
           '<div class="pago-cuerpo">' +
-            '<div class="acciones">' + cobro + wa +
+            '<div class="acciones">' + cobro + wa + (pagoAprobado() ? "" : calendario) +
               '<button class="boton claro" type="button" data-copiar-resumen>' + esc(t9.copiarResumen) + "</button>" +
             "</div>" +
             (filas ? '<details class="formas"><summary>' + esc(t9.formasDePago) + "</summary>" +
                      '<div class="lista">' + filas + "</div></details>" : "") +
           "</div>" +
         "</div></section>" +
+        pregunta +
       "</div>" +
 
       '<div class="pie">' +
@@ -581,24 +782,13 @@
 
     llenarSelector();
     $("#sel-cot").addEventListener("change", function (e) {
-      estado.activa = e.target.value;
-      if (location.hash) history.replaceState(null, "", location.pathname + location.search);
-      pintar();
+      var v = e.target.value;
+      if (v) { estado.activa = v; location.hash = v; }
+      else { history.replaceState(null, "", location.pathname + location.search); ruta(); }
     });
     $("#btn-editar").addEventListener("click", abrirPanel);
     $("#btn-enviar").addEventListener("click", enviarAlCliente);
-    $("#btn-nueva").addEventListener("click", function () {
-      var base = cotizacionActiva();
-      var copia = base ? JSON.parse(JSON.stringify(base)) : { invitados: 0, precio: { mxn: 0, usd: 0 } };
-      copia.slug = aSlug("cotizacion " + Date.now().toString(36));
-      copia.titulo = { es: "Nueva cotización", en: "New quote" };
-      copia.cliente = "";
-      copia.linkMxn = "";
-      copia.linkUsd = "";
-      estado.cotizaciones.push(copia);
-      estado.activa = copia.slug;
-      llenarSelector(); pintar(); abrirPanel();
-    });
+    $("#btn-nueva").addEventListener("click", function () { nuevaCotizacion(cotizacionActiva(), false); });
   }
 
   /* ---------- enviar al cliente ---------- */
@@ -615,7 +805,24 @@
   function enlacePublico(slug) {
     var base = String((estado.chef || {}).urlPublica || "").trim().replace(/#.*$/, "");
     if (!/^https:\/\//i.test(base)) base = location.origin + location.pathname;
-    return base + "#" + slug;
+    return base.replace(/\?.*$/, "") + "?c=" + encodeURIComponent(slug);
+  }
+
+  /** Archivo .ics con el evento, si Karina capturó inicio (y fin). */
+  function icsUrl(c, L) {
+    if (!c.inicio) return "";
+    function fmt(v) { return String(v).replace(/[-:]/g, "").slice(0, 15); }
+    var fin = c.fin || c.inicio;
+    var lineas = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//KPK Wellness//Cotizador//ES", "BEGIN:VEVENT",
+      "UID:" + c.slug + "@kpk.associates",
+      "DTSTART:" + fmt(c.inicio), "DTEND:" + fmt(fin),
+      "SUMMARY:" + tx(c.titulo, L) + " · Chef Karina Paz Kennedy",
+      "LOCATION:" + tx(c.lugar, L),
+      "DESCRIPTION:" + enlacePublico(c.slug),
+      "END:VEVENT", "END:VCALENDAR"
+    ];
+    return "data:text/calendar;charset=utf-8," + encodeURIComponent(lineas.join("\r\n"));
   }
 
   function enviarAlCliente() {
@@ -641,11 +848,12 @@
   function llenarSelector() {
     var sel = $("#sel-cot");
     if (!sel) return;
-    var actual = cotizacionActiva();
-    sel.innerHTML = (estado.cotizaciones || []).map(function (c) {
-      var n = tx(c.titulo, "es") + (c.cliente ? " · " + c.cliente : "");
-      return '<option value="' + esc(c.slug) + '"' + (actual && c.slug === actual.slug ? " selected" : "") + ">" + esc(n) + "</option>";
-    }).join("");
+    var actual = enCotizacion() ? cotizacionActiva() : null;
+    sel.innerHTML = '<option value=""' + (actual ? "" : " selected") + ">Cotizaciones</option>" +
+      (estado.cotizaciones || []).map(function (c) {
+        var n = tx(c.titulo, "es") + (c.cliente ? " · " + c.cliente : "");
+        return '<option value="' + esc(c.slug) + '"' + (actual && c.slug === actual.slug ? " selected" : "") + ">" + esc(n) + "</option>";
+      }).join("");
   }
 
   function campo(etiqueta, valor, ruta, tipo) {
@@ -674,12 +882,21 @@
       '<button type="button" class="agregar" data-agregar="' + clave + '">Agregar</button></fieldset>';
   }
 
-  function listaPares(titulo, clave, items, l1, l2) {
+  /** Miniatura + subir desde el teléfono + pegar una URL. `ruta` es donde se guarda. */
+  function fotoCampo(valor, ruta) {
+    return '<div class="foto-fila">' +
+      '<img alt="" src="' + esc(valor || "") + '" data-foto-img="' + esc(ruta) + '"' + (valor ? "" : ' hidden') + ">" +
+      '<label class="agregar">Subir foto<input type="file" accept="image/*" data-foto="' + esc(ruta) + '"></label>' +
+      '<input type="text" placeholder="o pega la URL de una foto" value="' + esc(valor || "") + '" data-foto-url="' + esc(ruta) + '">' +
+      "</div>";
+  }
+
+  function listaPares(titulo, clave, items, l1, l2, conFoto) {
     return "<fieldset><legend>" + esc(titulo) + "</legend>" +
       (items || []).map(function (o, i) {
         var n = o.nombre && typeof o.nombre === "object" ? o.nombre : { es: o.nombre || "", en: "" };
         var d = o.detalle && typeof o.detalle === "object" ? o.detalle : { es: o.detalle || "", en: "" };
-        return '<div class="fila-rep"><div class="bi">' +
+        return '<div class="fila-rep">' + (conFoto ? fotoCampo(o.imagen, clave + "." + i + ".imagen") : "") + '<div class="bi">' +
             "<label>" + esc(l1) + ' · ES<input type="text" data-par="' + clave + '" data-sub="nombre" data-i="' + i + '" data-l="es" value="' + esc(n.es || "") + '"></label>' +
             "<label>" + esc(l1) + ' · EN<input type="text" data-par="' + clave + '" data-sub="nombre" data-i="' + i + '" data-l="en" value="' + esc(n.en || "") + '"></label>' +
           '</div><div class="bi">' +
@@ -719,10 +936,17 @@
             bi("Fecha del evento", c.fecha, "fecha") +
             bi("Horario", c.horario, "horario") +
             campo("Invitados", c.invitados, "invitados", "number") +
+            '<div class="par-campos">' +
+              campo("Inicio (para el calendario)", c.inicio, "inicio", "datetime-local") +
+              campo("Fin", c.fin, "fin", "datetime-local") +
+            "</div>" +
             bi("Nota del menú", c.piezas, "piezas") +
+            '<div class="marca">Portada</div>' + fotoCampo(c.portada, "portada") +
+            '<div class="aviso">Sin portada propia se usa la foto de Rosarito. Las fotos de los platillos y la portada ' +
+              "son de muestra: cámbialas por las tuyas cuando las tengas.</div>" +
           "</fieldset>" +
 
-          listaPares("Menú", "menu", c.menu, "Platillo", "Descripción") +
+          listaPares("Menú", "menu", c.menu, "Platillo", "Descripción", true) +
 
           "<fieldset><legend>Precio por persona</legend>" +
             '<div class="par-campos">' +
@@ -762,6 +986,7 @@
               campo("Correo", chef.correo, "chef.correo") +
               campo("Tu WhatsApp (solo dígitos)", chef.whatsapp, "chef.whatsapp") +
             "</div>" +
+            '<div class="marca">Tu foto</div>' + fotoCampo(chef.foto, "chef.foto") +
             campo("Enlace público del cotizador", chef.urlPublica, "chef.urlPublica") +
             '<div class="aviso">Es la dirección que ves en el navegador al abrir este cotizador. ' +
               "Se usa para armar el mensaje de WhatsApp; sin ella el enlace puede salir mal.</div>" +
@@ -781,8 +1006,30 @@
     $("#btn-borrar").addEventListener("click", function () {
       estado.cotizaciones = estado.cotizaciones.filter(function (x) { return x.slug !== c.slug; });
       estado.activa = (estado.cotizaciones[0] || {}).slug || "";
-      cerrarPanel(); llenarSelector(); pintar();
+      cerrarPanel();
+      history.replaceState(null, "", location.pathname + location.search); ruta();
       brindis("Eliminada. Guarda para publicar el cambio.");
+    });
+
+    /** Escribe en la cotización por ruta tipo "menu.2.imagen" o "portada". */
+    function ponerFoto(ruta, valor) {
+      var partes = ruta.split("."), o = cotizacionActiva();
+      if (partes[0] === "chef") { o = estado.chef = estado.chef || {}; partes.shift(); }
+      for (var k = 0; k < partes.length - 1; k++) o = o[partes[k]];
+      o[partes[partes.length - 1]] = valor;
+      var img = panel.querySelector('[data-foto-img="' + ruta + '"]');
+      if (img) { img.src = valor || ""; img.hidden = !valor; }
+      var url = panel.querySelector('[data-foto-url="' + ruta + '"]');
+      if (url && url.value !== valor) url.value = valor || "";
+    }
+    panel.addEventListener("input", function (e) {
+      if (e.target.dataset.fotoUrl) { ponerFoto(e.target.dataset.fotoUrl, e.target.value.trim()); return; }
+    });
+    panel.addEventListener("change", function (e) {
+      var el = e.target;
+      if (!el.dataset.foto || !el.files || !el.files[0]) return;
+      subirFoto(el.files[0], el.dataset.foto, function (rutaRepo) { ponerFoto(el.dataset.foto, rutaRepo); });
+      el.value = "";
     });
 
     panel.addEventListener("input", function (e) {
@@ -849,6 +1096,8 @@
   /* ---------- guardar y cobrar ---------- */
 
   var RUTA_DATOS = "content/cotizaciones.json";
+  /* Mientras Karina no suba su propia portada, se usa esta. */
+  var PORTADA_PREDETERMINADA = "assets/cotizaciones/portada-rosarito.webp";
   var AUTH = null; // { token, email } cuando hay sesión de admin
 
   function api(ruta, opciones) {
@@ -885,6 +1134,47 @@
       });
   }
 
+  /**
+   * Sube una foto desde el teléfono: se reduce aquí mismo (máx. 1400 px, WebP)
+   * para que un original de 8 MB no viaje ni se quede en el repo, y se
+   * commitea en assets/cotizaciones/. Aparece en el sitio con el siguiente deploy.
+   */
+  function subirFoto(archivo, ruta, listo) {
+    var img = new Image(), urlLocal = URL.createObjectURL(archivo);
+    img.onload = function () {
+      var max = 1400, w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, max / Math.max(w, h));
+      var canvas = document.createElement("canvas");
+      canvas.width = Math.round(w * k); canvas.height = Math.round(h * k);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(urlLocal);
+      var tipo = "image/webp";
+      canvas.toBlob(function (blob) {
+        if (!blob) { tipo = "image/jpeg"; canvas.toBlob(mandar, tipo, 0.84); return; }
+        mandar(blob);
+      }, tipo, 0.82);
+      function mandar(blob) {
+        var lector = new FileReader();
+        lector.onload = function () {
+          var b64 = String(lector.result).split(",")[1];
+          var ext = tipo === "image/webp" ? "webp" : "jpg";
+          var slug = (cotizacionActiva() || {}).slug || "cotizacion";
+          var rutaRepo = "assets/cotizaciones/" + slug + "-" + aSlug(ruta) + "-" + Date.now().toString(36) + "." + ext;
+          brindis("Subiendo foto…");
+          api("/commit", {
+            method: "POST",
+            body: JSON.stringify({ path: rutaRepo, content: b64, isBase64: true, message: "foto: " + slug + " " + ruta }),
+          }).then(function () {
+            listo(rutaRepo);
+            brindis("Foto subida. Guarda la cotización para publicarla.");
+          }).catch(function (e) { brindis(e.message); });
+        };
+        lector.readAsDataURL(blob);
+      }
+    };
+    img.onerror = function () { brindis("No pude leer esa imagen."); };
+    img.src = urlLocal;
+  }
+
   /** Pide el cobro a Mercado Pago y guarda la URL en la cotización. */
   function generarCobro(lado) {
     var c = cotizacionActiva();
@@ -905,7 +1195,7 @@
         amount_cents: Math.round(monto * 100),
         currency: t.moneda,
         reference: c.slug,
-        back_url: location.origin + location.pathname + "#" + c.slug,
+        back_url: location.origin + location.pathname + "?c=" + encodeURIComponent(c.slug),
       }),
     })
       .then(function (r) {
@@ -939,16 +1229,21 @@
   }
 
   cargarDatos().then(function () {
-    var inicial = cotizacionActiva();
-    if (inicial && (inicial.idioma === "en" || inicial.idioma === "es")) idioma = inicial.idioma;
-    pintar();
+    ruta();
+    window.addEventListener("hashchange", ruta);
+    hoja.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("[data-nueva-para],#btn-nueva-landing") : null;
+      if (!b || !AUTH) return;
+      var ref = b.dataset.nuevaPara ? estado.cotizaciones.filter(function (c) { return c.slug === b.dataset.nuevaPara; })[0] : null;
+      nuevaCotizacion(ref || estado.cotizaciones[0], Boolean(ref));
+    });
 
     // La barra de admin solo aparece con una sesión que el servidor confirme.
     // Un token viejo en el navegador no alcanza.
     var s = sesionGuardada();
     if (!s) return;
     AUTH = s;
-    api("/session").then(function () { barraAdmin(); }).catch(function () {
+    api("/session").then(function () { barraAdmin(); if (!enCotizacion()) pintarLanding(true); }).catch(function () {
       AUTH = null;
       localStorage.removeItem("kpk_auth");
     });
