@@ -27,6 +27,7 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | ruta | método | quién |
 |---|---|---|
 | `/cotizacion` | GET | pública — sirve la página estática con meta Open Graph por cotización (`?c=slug`), para el preview en WhatsApp |
+| `/invitacion` | GET | pública — invitación para los invitados del cliente (`?c=slug`), sin precios, con preview |
 | `/api/auth/config` | GET · POST | pública — qué métodos de entrada hay |
 | `/api/auth/google` | POST | pública — cambia el ID token de Google por sesión |
 | `/api/login` | POST | pública — solo si `ADMIN_PASSWORD` sigue puesta |

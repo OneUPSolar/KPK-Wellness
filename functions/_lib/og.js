@@ -36,6 +36,23 @@ export function ogDe(datos, slug, origin) {
   };
 }
 
+/** La invitación: nada de precios; solo evento, fecha, lugar y anfitrión. */
+export function ogInvitacion(datos, slug, origin) {
+  const c = (datos?.cotizaciones || []).find((x) => x.slug === slug);
+  const base = { url: `${origin}/invitacion`, image: origin + PORTADA_OG, title: 'Invitación · KPK Wellness', description: 'Catering por Chef Karina Paz Kennedy' };
+  if (!c) return base;
+  const L = c.idioma === 'en' ? 'en' : 'es';
+  const datosEvento = [tx(c.fecha, L), tx(c.horario, L), tx(c.lugar, L)].filter(Boolean).join(' · ');
+  let image = String(c.portada || '').trim();
+  if (image && !/^https?:\/\//i.test(image)) image = `${origin}/${image.replace(/^\/+/, '')}`;
+  return {
+    url: `${origin}/invitacion?c=${encodeURIComponent(slug)}`,
+    image: image || base.image,
+    title: L === 'en' ? `You're invited: ${tx(c.titulo, L)}` : `Estás invitado: ${tx(c.titulo, L)}`,
+    description: `${datosEvento}${c.cliente ? (L === 'en' ? ` · Hosted by ${c.cliente}` : ` · Te invita ${c.cliente}`) : ''}`.slice(0, 300),
+  };
+}
+
 /** Las etiquetas listas para pegar antes de </head>. */
 export function metaOg(og) {
   return [
