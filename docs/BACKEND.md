@@ -38,6 +38,7 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/agent/recipe` | GET · POST | agente — Silver (GPT en ChatGPT) publica una receta |
 | `/api/silver/chat` | GET · POST | admin — Silver dentro de la app, con las llaves de OpenAI y Anthropic de Karina |
 | `/api/payments/stripe` | POST | admin — cobro en dólares con Stripe Checkout (tarjeta, Apple Pay, Klarna/Affirm) |
+| `/api/rsvp` | POST público · GET admin | confirmaciones de asistencia desde la invitación, guardadas en `content/rsvp/<slug>.json` |
 | `/api/tickets` | GET · POST | admin — tickets de fallas y mejoras, como issues `bug-off` (ver `docs/BUG-OFF.md`) |
 
 ## Variables del proyecto

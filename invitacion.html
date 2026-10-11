@@ -42,6 +42,15 @@
   .platillo .img { aspect-ratio: 4 / 3; background: var(--arena) center / cover no-repeat; }
   .platillo .n { font-family: var(--display); font-weight: 600; font-size: 1.1rem; line-height: 1.15; padding: 10px 12px; }
   .acciones { display: flex; flex-wrap: wrap; gap: 10px; }
+  .rsvp { display: grid; gap: 12px; background: var(--crema); border: 1px solid var(--linea); border-radius: 14px; padding: 18px; position: relative; overflow: hidden; }
+  .rsvp-fila { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 480px) { .rsvp-fila { grid-template-columns: 1fr 160px; } }
+  .rsvp label { display: grid; gap: 5px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; color: var(--tinta-sueve); }
+  .rsvp input, .rsvp select { font: inherit; font-family: var(--texto); font-size: 16px; padding: 11px 13px; border: 1px solid var(--linea); border-radius: 10px; background: var(--papel); color: var(--tinta); min-width: 0; width: 100%; }
+  .rsvp input:focus-visible, .rsvp select:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 2px; }
+  .rsvp-aviso { margin: 0; color: #9A5A4F; font-size: 0.9rem; }
+  .rsvp-listo { display: grid; gap: 14px; background: #EAF1ED; border-left: 4px solid var(--eucalipto); border-radius: 0 14px 14px 0; padding: 18px; }
+  .rsvp-listo .mensaje { font-style: normal; }
   .boton { font-family: var(--texto); font-weight: 600; font-size: 0.92rem; border-radius: 999px; padding: 12px 22px; border: 1px solid var(--tinta); background: var(--tinta); color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
   .boton.claro { background: transparent; color: var(--tinta); }
   .boton.primario { background: var(--eucalipto-h); border-color: var(--eucalipto-h); }
@@ -65,10 +74,16 @@
   var T = {
     es: { invitado: "Estás invitado", anfitrion: "Te invita", lugar: "Lugar", fecha: "Fecha", horario: "Hora", menu: "El menú",
           mensaje: "Será un placer tenerte con nosotros.", confirmar: "Confirmar asistencia", calendario: "Agregar a mi calendario",
-          waTexto: "Hola, confirmo mi asistencia a", chef: "Catering por", sin: "No encontramos esta invitación." },
+          waTexto: "Hola, confirmo mi asistencia a", chef: "Catering por", sin: "No encontramos esta invitación.",
+          tuNombre: "Tu nombre", cuantos: "¿Cuántos vienen?", nota: "Alergias o un mensaje (opcional)", noPuedo: "No podré ir",
+          gracias: "¡Gracias, {n}! Quedas confirmado.", graciasNo: "Gracias por avisar, {n}.", avisar: "Avisar al anfitrión por WhatsApp",
+          waConfirmo: "Hola, soy {n}. Confirmo mi asistencia a {e} ({p}).", waNo: "Hola, soy {n}. No podré ir a {e}.", enviando: "Enviando…" },
     en: { invitado: "You're invited", anfitrion: "Hosted by", lugar: "Where", fecha: "When", horario: "Time", menu: "The menu",
           mensaje: "We'd love to have you with us.", confirmar: "RSVP", calendario: "Add to my calendar",
-          waTexto: "Hi! I'm confirming my attendance to", chef: "Catering by", sin: "We couldn't find this invitation." }
+          waTexto: "Hi! I'm confirming my attendance to", chef: "Catering by", sin: "We couldn't find this invitation.",
+          tuNombre: "Your name", cuantos: "How many are coming?", nota: "Allergies or a note (optional)", noPuedo: "Can't make it",
+          gracias: "Thank you, {n}! You're confirmed.", graciasNo: "Thanks for letting us know, {n}.", avisar: "Let the host know on WhatsApp",
+          waConfirmo: "Hi, this is {n}. I'm confirming my attendance to {e} ({p}).", waNo: "Hi, this is {n}. I can't make it to {e}.", enviando: "Sending…" }
   };
   var $ = function (s) { return document.querySelector(s); };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -93,11 +108,22 @@
     var menu = (c.menu || []).map(function (p) {
       return '<div class="platillo"><div class="img"' + (p.imagen ? ' style="background-image:url(' + "'" + esc(p.imagen) + "'" + ')"' : "") + '></div><div class="n">' + esc(tx(p.nombre, L)) + "</div></div>";
     }).join("");
-    var tel = digitos(c.telCliente);
-    var rsvp = tel
-      ? '<a class="boton primario" target="_blank" rel="noopener" href="https://wa.me/' + tel + "?text=" + encodeURIComponent(t.waTexto + " " + tx(c.titulo, L) + " — " + tx(c.fecha, L)) + '">' + WA + esc(t.confirmar) + "</a>"
-      : "";
     var cal = ics(c, L) ? '<a class="boton claro" download="' + esc(c.slug) + '.ics" href="' + ics(c, L) + '">' + esc(t.calendario) + "</a>" : "";
+    // La confirmación se registra en el sitio (para que el anfitrión y Karina
+    // lleven la cuenta) y después se avisa al anfitrión por WhatsApp.
+    var opciones = ""; for (var k = 1; k <= 10; k++) opciones += '<option value="' + k + '">' + k + "</option>";
+    var rsvp =
+      '<form class="rsvp" id="rsvp" autocomplete="on">' +
+        '<div class="rsvp-fila"><label>' + esc(t.tuNombre) + '<input type="text" id="r-nombre" maxlength="80" required autocomplete="name"></label>' +
+        "<label>" + esc(t.cuantos) + '<select id="r-personas">' + opciones + "</select></label></div>" +
+        "<label>" + esc(t.nota) + '<input type="text" id="r-nota" maxlength="300"></label>' +
+        '<input type="text" name="web" id="r-web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">' +
+        '<div class="acciones"><button type="submit" class="boton primario" id="r-si">' + esc(t.confirmar) + "</button>" +
+        '<button type="button" class="boton claro" id="r-no">' + esc(t.noPuedo) + "</button>" + cal + "</div>" +
+        '<p class="rsvp-aviso" id="r-aviso" hidden></p>' +
+      "</form>" +
+      '<div class="rsvp-listo" id="rsvp-listo" hidden><p class="mensaje" id="r-gracias"></p><div class="acciones" id="r-acciones"></div></div>';
+    cal = "";
     hoja.innerHTML =
       '<div class="switch"><button type="button" data-l="es" aria-pressed="' + (L === "es") + '">Español</button>&nbsp;<button type="button" data-l="en" aria-pressed="' + (L === "en") + '">English</button></div>' +
       '<header class="portada"><div class="foto" style="background-image:url(' + "'" + esc(c.portada || PORTADA) + "'" + ')"></div>' +
@@ -111,13 +137,40 @@
       "</div>" +
       '<div class="cuerpo">' +
         '<p class="mensaje">' + esc(tx(c.mensajeInvitacion, L) || t.mensaje) + "</p>" +
-        (rsvp || cal ? '<div class="acciones">' + rsvp + cal + "</div>" : "") +
+        rsvp +
         (menu ? "<section><h2>" + esc(t.menu) + '</h2><div class="menu">' + menu + "</div></section>" : "") +
       "</div>" +
       '<div class="pie"><div>' + esc(t.chef) + ' <a class="chef" href="/card/">' + esc(chef.nombre || "Chef Karina Paz Kennedy") + "</a></div><div>kpk.associates</div></div>";
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-l]"), function (b) {
       b.addEventListener("click", function () { L = b.getAttribute("data-l"); pintar(); });
     });
+    var forma = $("#rsvp");
+    if (forma) {
+      forma.addEventListener("submit", function (e) { e.preventDefault(); confirmar(c, t, true); });
+      $("#r-no").addEventListener("click", function () { if ($("#r-nombre").reportValidity()) confirmar(c, t, false); });
+    }
+  }
+
+  function confirmar(c, t, asiste) {
+    var nombre = $("#r-nombre").value.trim(), personas = Number($("#r-personas").value) || 1, nota = $("#r-nota").value.trim();
+    var aviso = $("#r-aviso"), si = $("#r-si"), no = $("#r-no");
+    aviso.hidden = true; si.disabled = true; no.disabled = true; si.textContent = t.enviando;
+    fetch("/api/rsvp", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ slug: c.slug, nombre: nombre, personas: personas, nota: nota, asiste: asiste, web: $("#r-web").value }) })
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
+      .then(function (out) {
+        if (!out.ok) { aviso.textContent = out.b.error || "No se pudo registrar."; aviso.hidden = false; return; }
+        $("#rsvp").hidden = true;
+        $("#r-gracias").textContent = (asiste ? t.gracias : t.graciasNo).replace("{n}", nombre);
+        var tel = digitos(c.telCliente), ev = tx(c.titulo, L) + " — " + tx(c.fecha, L);
+        var msg = (asiste ? t.waConfirmo : t.waNo).replace("{n}", nombre).replace("{e}", ev).replace("{p}", personas + (L === "en" ? (personas === 1 ? " guest" : " guests") : (personas === 1 ? " persona" : " personas")));
+        $("#r-acciones").innerHTML =
+          (tel ? '<a class="boton primario" target="_blank" rel="noopener" href="https://wa.me/' + tel + "?text=" + encodeURIComponent(msg) + '">' + WA + esc(t.avisar) + "</a>" : "") +
+          (asiste && ics(c, L) ? '<a class="boton claro" download="' + esc(c.slug) + '.ics" href="' + ics(c, L) + '">' + esc(t.calendario) + "</a>" : "");
+        $("#rsvp-listo").hidden = false;
+      })
+      .catch(function () { aviso.textContent = "No se pudo contactar al servidor."; aviso.hidden = false; })
+      .then(function () { si.disabled = false; no.disabled = false; si.textContent = t.confirmar; });
   }
   fetch("content/cotizaciones.json?t=" + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
     datos = d;
