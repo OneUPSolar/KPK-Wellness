@@ -33,7 +33,8 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/commit` | POST | admin — guarda un archivo en el repo |
 | `/api/recipe-config` | GET · POST | admin — configuración del recetario |
 | `/api/register` | POST | pública — registro a eventos |
-| `/api/agent/recipe` | GET · POST | agente — Silver publica una receta (ver `docs/silver-agent/`) |
+| `/api/agent/recipe` | GET · POST | agente — Silver (GPT en ChatGPT) publica una receta |
+| `/api/silver/chat` | GET · POST | admin — Silver dentro de la app, con la llave de OpenAI de Karina |
 
 ## Variables del proyecto
 
@@ -49,6 +50,8 @@ Environment variables. Las marcadas como secreto quedan cifradas.
 | `ALLOWED_EMAILS` | no | lista separada por comas de quién puede entrar |
 | `REPO` | no | `OneUPSolar/KPK-Wellness` |
 | `AGENT_TOKEN` | sí | credencial de Silver (ChatGPT). `openssl rand -hex 32`. Sin ella, `/api/agent/*` responde 503 |
+| `OPENAI_API_KEY` | sí | llave de OpenAI de Karina, para Silver en la app. Sin ella, `/api/silver/chat` responde 503 |
+| `OPENAI_MODEL` | no | opcional; predeterminado `gpt-4.1` |
 
 Sin `SESSION_SECRET` nadie puede entrar: las rutas responden 503 en vez de
 dejar pasar. Es a propósito — una configuración incompleta no debe abrir el

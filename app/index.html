@@ -119,6 +119,35 @@
 
   footer { margin-top: auto; padding-block: 26px 36px; color: var(--muted); font-size: 0.8rem;
            display: flex; flex-wrap: wrap; gap: 10px 16px; justify-content: space-between; align-items: center; }
+  /* ---------- Silver ---------- */
+  .chat { flex: 1; display: flex; flex-direction: column; }
+  .hilo { display: flex; flex-direction: column; gap: 10px; padding-bottom: 12px; }
+  .msg {
+    max-width: 92%; padding: 12px 15px; border-radius: 14px; font-size: 0.95rem; line-height: 1.5;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .msg.yo { align-self: flex-end; background: var(--navy); border-bottom-right-radius: 4px; }
+  .msg.silver { align-self: flex-start; background: var(--charcoal-2); border: 1px solid #343447; border-bottom-left-radius: 4px; }
+  .msg.error { background: #3A2A2E; border-color: #5A3A40; color: #E8B4B4; }
+  .msg.espera { color: var(--muted); font-style: italic; }
+  .publicada {
+    display: inline-block; margin-top: 8px; font-size: 0.8rem; color: var(--eucalyptus);
+    text-decoration: none; border: 1px solid var(--eucalyptus); border-radius: 999px; padding: 4px 10px;
+  }
+  .redactar {
+    position: sticky; bottom: 0; background: var(--charcoal); padding: 12px 0 26px;
+    display: flex; gap: 10px; align-items: flex-end; border-top: 1px solid var(--linea);
+  }
+  .redactar textarea {
+    flex: 1; font-family: var(--sans); font-size: 16px; line-height: 1.4;
+    background: var(--charcoal-2); color: var(--white); border: 1px solid #343447; border-radius: 13px;
+    padding: 12px 14px; resize: none; min-height: 48px;
+  }
+  .redactar textarea:focus { outline: none; border-color: var(--eucalyptus); }
+  .enviar { background: var(--eucalyptus); color: var(--charcoal); border-color: var(--eucalyptus); }
+  .enviar:hover { color: var(--charcoal); }
+  .enviar:disabled { opacity: 0.5; cursor: default; }
+
   [hidden] { display: none !important; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -157,6 +186,10 @@
         <span class="punto"></span>
         <span><b>Recetas</b><small>Publicar y administrar el recetario</small></span>
       </a>
+      <a class="tarjeta" href="#silver" id="abrir-silver">
+        <span class="punto"></span>
+        <span><b>Silver</b><small>Dicta un platillo y publícalo como receta</small></span>
+      </a>
       <a class="tarjeta" href="/card/">
         <span class="punto"></span>
         <span><b>Tarjeta digital</b><small>Tu tarjeta de presentación</small></span>
@@ -171,6 +204,22 @@
     <span></span>
     <button type="button" class="boton" id="salir">Cerrar sesión</button>
   </footer>
+</div>
+
+<!-- Silver: el chat con su asistente de recetas -->
+<div class="envoltura" id="silver" hidden>
+  <div class="cabeza-panel">
+    <div class="marca-chica">Silver<span>Recetas</span></div>
+    <button type="button" class="boton" id="volver">← Panel</button>
+  </div>
+  <main class="chat">
+    <p class="nota" id="silver-estado" hidden></p>
+    <div class="hilo" id="hilo" aria-live="polite"></div>
+  </main>
+  <form class="redactar" id="redactar">
+    <textarea id="texto" rows="2" placeholder="Describe el platillo…" required></textarea>
+    <button type="submit" class="boton enviar" id="enviar">Enviar</button>
+  </form>
 </div>
 
 <script>
@@ -203,6 +252,70 @@
     if (!window.matchMedia('(display-mode: standalone)').matches && !navigator.standalone) {
       $('instalar').hidden = false;
     }
+  }
+
+  /* ---------- Silver ---------- */
+  // El hilo vive en esta pestaña nada más; la llave de OpenAI nunca llega aquí.
+  var HILO = 'kpk_silver';
+  var hilo = [];
+  function cargarHilo() { try { hilo = JSON.parse(sessionStorage.getItem(HILO) || '[]'); } catch (e) { hilo = []; } }
+  function guardarHilo() { try { sessionStorage.setItem(HILO, JSON.stringify(hilo.slice(-24))); } catch (e) { /* sin memoria, sin drama */ } }
+  function burbuja(clase, texto) {
+    var d = document.createElement('div');
+    d.className = 'msg ' + clase; d.textContent = texto;
+    $('hilo').appendChild(d); d.scrollIntoView({ block: 'end' });
+    return d;
+  }
+  function pintarHilo() {
+    $('hilo').innerHTML = '';
+    if (!hilo.length) burbuja('silver', 'Hola, Karina. Descríbeme un platillo y lo convierto en receta. Te la enseño antes de publicarla.');
+    hilo.forEach(function (m) { burbuja(m.role === 'user' ? 'yo' : 'silver', m.content); });
+  }
+  function abrirSilver() {
+    $('panel').hidden = true; $('silver').hidden = false;
+    cargarHilo(); pintarHilo();
+    var sesion = leerSesion();
+    fetch('/api/silver/chat', { headers: { authorization: 'Bearer ' + (sesion && sesion.token) } })
+      .then(function (r) { return r.json(); })
+      .then(function (st) {
+        if (st.habilitada) return;
+        $('silver-estado').textContent = 'Silver aún no está conectada: falta OPENAI_API_KEY en Cloudflare.';
+        $('silver-estado').hidden = false;
+        $('enviar').disabled = true;
+      })
+      .catch(function () { /* el envío lo dirá */ });
+    $('texto').focus();
+  }
+  function cerrarSilver() { $('silver').hidden = true; $('panel').hidden = false; }
+  function enviar(ev) {
+    ev.preventDefault();
+    var texto = $('texto').value.trim();
+    if (!texto || $('enviar').disabled) return;
+    var sesion = leerSesion();
+    hilo.push({ role: 'user', content: texto }); guardarHilo();
+    burbuja('yo', texto); $('texto').value = '';
+    $('enviar').disabled = true;
+    var espera = burbuja('silver espera', 'Silver está escribiendo…');
+    fetch('/api/silver/chat', {
+      method: 'POST',
+      headers: { authorization: 'Bearer ' + (sesion && sesion.token), 'content-type': 'application/json' },
+      body: JSON.stringify({ messages: hilo })
+    })
+      .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
+      .then(function (out) {
+        espera.remove();
+        if (!out.ok) { burbuja('silver error', out.b.error || 'Silver no pudo responder.'); return; }
+        hilo.push({ role: 'assistant', content: out.b.reply }); guardarHilo();
+        var d = burbuja('silver', out.b.reply);
+        (out.b.publicadas || []).forEach(function (p) {
+          var a = document.createElement('a');
+          a.className = 'publicada'; a.href = p.url; a.target = '_blank'; a.rel = 'noopener';
+          a.textContent = (p.actualizada ? 'Actualizada: ' : 'Publicada: ') + p.id;
+          d.appendChild(document.createElement('br')); d.appendChild(a);
+        });
+      })
+      .catch(function () { espera.remove(); burbuja('silver error', 'No se pudo contactar al servidor.'); })
+      .then(function () { $('enviar').disabled = false; $('texto').focus(); });
   }
 
   function salir() {
@@ -280,6 +393,14 @@
       navigator.serviceWorker.register('sw.js').catch(function () { /* sin app instalable */ });
     });
   }
+
+  $('abrir-silver').addEventListener('click', function (e) { e.preventDefault(); abrirSilver(); });
+  $('volver').addEventListener('click', cerrarSilver);
+  $('redactar').addEventListener('submit', enviar);
+  // Enter manda; Shift+Enter hace salto de línea.
+  $('texto').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('redactar').requestSubmit(); }
+  });
 }());
 </script>
 </body>

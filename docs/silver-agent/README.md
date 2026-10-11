@@ -76,6 +76,14 @@ openssl rand -hex 32
 
 To revoke Silver, rotate `AGENT_TOKEN`. Nothing else uses it.
 
+## Silver inside the app
+
+The same Silver also lives at kpk.associates/app → **Silver**, talking to OpenAI
+with Karina's own API key (`OPENAI_API_KEY`, a Pages secret; the browser never
+sees it). It reads `silver-instructions.md` from this repo at runtime, so editing
+that file changes both the GPT and the in-app assistant — one Silver, not two.
+Publishing goes through the same `publicarReceta` as the GPT route.
+
 ## Visibility
 
 `content/recipe-config.json` has `"allFree": true`, so every recipe — including

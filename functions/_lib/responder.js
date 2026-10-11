@@ -62,7 +62,10 @@ export async function ghRead(env, path) {
   if (res.status === 404) return null;
   if (!res.ok) throw json({ error: `GitHub respondió ${res.status} al leer ${path}.` }, 502);
   const data = await res.json();
-  return { content: atob(data.content.replace(/\n/g, '')), sha: data.sha };
+  // atob devuelve bytes como Latin-1; hay que decodificarlos como UTF-8 o
+  // "Preparación" llega como "PreparaciÃ³n".
+  const bytes = Uint8Array.from(atob(data.content.replace(/\n/g, '')), (c) => c.charCodeAt(0));
+  return { content: new TextDecoder().decode(bytes), sha: data.sha };
 }
 
 /** Escribe un archivo del repo. `content` es texto, o base64 si isBase64. */
