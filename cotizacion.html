@@ -33,6 +33,8 @@
   }
 
   * { box-sizing: border-box; }
+  /* `hidden` manda aunque la clase ponga display: así una caja vacía nunca se asoma. */
+  [hidden] { display: none !important; }
   body {
     margin: 0; background: var(--crema); color: var(--tinta);
     font-family: var(--texto); font-size: 15px; line-height: 1.55;
@@ -345,6 +347,15 @@
   .aprobado b { font-family: var(--display); font-size: 1.35rem; display: block; color: var(--eucalipto-h); }
   .aprobado span { color: var(--tinta-sueve); font-size: 0.92rem; }
 
+  /* ---------- Zelle ---------- */
+  .zelle { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; border-top: 1px solid var(--linea); padding-top: 16px; }
+  .zelle-qr { width: 128px; height: 128px; flex: none; border: 1px solid var(--linea); border-radius: 10px; background: #fff; padding: 6px; image-rendering: pixelated; }
+  .zelle-txt { flex: 1 1 240px; min-width: 0; display: grid; gap: 8px; }
+  .zelle-txt b { font-family: var(--display); font-size: 1.35rem; font-weight: 600; }
+  .zelle-txt p { margin: 0; font-size: 0.93rem; }
+  .zelle-txt small { color: var(--tinta-sueve); font-size: 0.82rem; }
+  .zelle .acciones { padding-bottom: 0; }
+
   /* ---------- pie ---------- */
   .pie {
     border-top: 1px solid var(--linea); margin-inline: 26px;
@@ -515,7 +526,7 @@
       sobreCot: "Hola Karina, sobre la cotización", preguntarWa: "Preguntar por WhatsApp",
       tuPregunta: "Escribe tu pregunta…", enviarWa: "Enviar por WhatsApp",
       descuento: "{d}% de descuento", conDescuento: "Transferencia o efectivo: {m} ({d}% de descuento)",
-      m4: "", m4d: "", m4wa: ""
+      zelleTitulo: "", zelleCuerpo: "", zelleBoton: "", zelleWa: "", zelleDespues: ""
     },
     en: {
       cotizacion: "Quote", para: "For:", lugar: "Location", fecha: "Date",
@@ -540,8 +551,9 @@
       holaSoy: "Hi, I'm Karina Kennedy.", ayudar: "How can I help? Pick a question or write to me.",
       sobreCot: "Hi Karina, about the quote for", preguntarWa: "Ask on WhatsApp",
       tuPregunta: "Type your question…", enviarWa: "Send on WhatsApp",
-      descuento: "{d}% off", conDescuento: "Zelle or cash dollars: {m} ({d}% off)",
-      m4: "Zelle or cash dollars", m4d: "Send it to {z} and confirm on WhatsApp.", m4wa: "I'll pay the deposit by Zelle"
+      descuento: "{d}% off", conDescuento: "",
+      zelleTitulo: "Pay with Zelle", zelleCuerpo: "Send {m} to {n} at {z}, or scan the code in your banking app.",
+      zelleBoton: "Open Zelle", zelleWa: "I sent the deposit by Zelle", zelleDespues: "Then confirm on WhatsApp so Karina holds your date."
     }
   };
 
@@ -708,8 +720,10 @@
     var iva = lado.conIva ? (isFinite(Number(c.ivaPct)) ? Number(c.ivaPct) : 16) : 0;
     var anticipo = total * pct / 100;
     var anticipoConIva = anticipo * (1 + iva / 100);
-    // En pesos: transferencia o efectivo. En dólares: Zelle o efectivo.
+    // El descuento es del lado en pesos (transferencia o efectivo). En dólares
+    // ya no hay IVA, así que no aplica.
     var dPct = isFinite(Number(c.descuentoEfectivoPct)) ? Number(c.descuentoEfectivoPct) : DESCUENTO_EFECTIVO;
+    if (!lado.conIva) dPct = 0;
     return {
       moneda: lado.moneda, invitados: invitados, porPersona: porPersona, total: total,
       pct: pct, iva: iva, anticipo: anticipo, anticipoConIva: anticipoConIva,
@@ -786,14 +800,19 @@
       // Dólares: Stripe cobra tarjeta, Klarna/Affirm y Apple/Google Pay en el mismo checkout.
       filas += fila(t9.m1, t9.m1d, irAPagar) + fila(t9.m2, t9.m2d, irAPagar) + fila(t9.m3, t9.m3d, irAPagar);
     }
-    // Zelle o dólares en efectivo: no hay link, se confirma por WhatsApp.
-    if (L === "en" && t9.m4 && (chef.zelle || chef.whatsapp)) {
-      var waZelle = chef.whatsapp
-        ? '<a class="pagar" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
-          encodeURIComponent(t9.m4wa + " — " + tx(c.titulo, L) + " — " + dinero(t.anticipoEfectivo, t.moneda)) + '">' +
-          esc(t9.m4wa) + " · " + dinero(t.anticipoEfectivo, t.moneda) + "</a>"
-        : "";
-      filas += fila(t9.m4 + etqDesc, chef.zelle ? t9.m4d.replace("{z}", chef.zelle) : "", waZelle);
+    // Dólares sin Stripe: Zelle es el camino. Nombre, número, QR y el link que
+    // trae el propio QR (abre la app del banco con Karina como destinataria).
+    var zelle = "";
+    if (L === "en" && chef.zelle && t9.zelleTitulo) {
+      var cuerpoZ = t9.zelleCuerpo.replace("{m}", dinero(t.anticipo, t.moneda)).replace("{n}", chef.zelleNombre || chef.nombre || "").replace("{z}", chef.zelle);
+      zelle = '<div class="zelle">' +
+        (chef.zelleQr ? '<img class="zelle-qr" alt="Zelle QR" src="' + esc(chef.zelleQr) + '">' : "") +
+        '<div class="zelle-txt"><b>' + esc(t9.zelleTitulo) + "</b><p>" + esc(cuerpoZ) + "</p>" +
+          '<div class="acciones">' +
+            (chef.zelleLink ? '<a class="boton" target="_blank" rel="noopener" href="' + esc(chef.zelleLink) + '">' + esc(t9.zelleBoton) + "</a>" : "") +
+            (chef.whatsapp ? '<a class="boton wa" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
+              encodeURIComponent(t9.zelleWa + " — " + tx(c.titulo, L) + " — " + dinero(t.anticipo, t.moneda)) + '">' + esc(t9.zelleWa) + "</a>" : "") +
+          "</div><small>" + esc(t9.zelleDespues) + "</small></div></div>";
     }
     var nota = tx(c.notaPago, L);
     if (nota) filas += fila(nota, "", "");
@@ -803,6 +822,8 @@
     var textoReservar = t9.reservar + " · " + dinero(t.anticipoConIva, t.moneda);
     var reservar = link
       ? '<a class="boton primario" target="_blank" rel="noopener" href="' + esc(link) + '">' + esc(textoReservar) + "</a>"
+      : L === "en" && chef.zelleLink
+        ? '<a class="boton primario" target="_blank" rel="noopener" href="' + esc(chef.zelleLink) + '">' + esc(textoReservar) + "</a>"
       : chef.whatsapp
         ? '<a class="boton primario" target="_blank" rel="noopener" href="https://wa.me/' + esc(chef.whatsapp) + "?text=" +
           encodeURIComponent(t9.reservarWa + " " + tx(c.titulo, L) + " (" + tx(c.fecha, L) + ") — " + dinero(t.anticipoConIva, t.moneda)) + '">' +
@@ -926,6 +947,7 @@
             '<div class="acciones">' + reservar + (pagoAprobado() ? "" : calendario) +
               '<button class="boton claro" type="button" data-copiar-resumen>' + esc(t9.copiarResumen) + "</button>" +
             "</div>" +
+            zelle +
             (filas ? '<details class="formas"><summary>' + esc(t9.formasDePago) + "</summary>" +
                      '<div class="lista">' + filas + "</div></details>" : "") +
           "</div>" +
@@ -1360,7 +1382,12 @@
               campo("Correo", chef.correo, "chef.correo") +
               campo("Tu WhatsApp (solo dígitos)", chef.whatsapp, "chef.whatsapp") +
             "</div>" +
-            campo("Zelle (correo o teléfono) · dólares con descuento", chef.zelle, "chef.zelle") +
+            '<div class="par-campos">' +
+              campo("Zelle (teléfono o correo)", chef.zelle, "chef.zelle") +
+              campo("Nombre en Zelle", chef.zelleNombre, "chef.zelleNombre") +
+            "</div>" +
+            campo("Link de Zelle (el que trae tu QR)", chef.zelleLink, "chef.zelleLink") +
+            '<div class="marca">QR de Zelle</div>' + fotoCampo(chef.zelleQr, "chef.zelleQr") +
             '<div class="marca">Tu foto</div>' + fotoCampo(chef.foto, "chef.foto") +
             '<div class="aviso">Abajo de cada cotización apareces tú: "Hola, soy Karina Kennedy". Las preguntas que ' +
               "ve el cliente son estas; si las dejas vacías se usan las sugeridas.</div>" +
