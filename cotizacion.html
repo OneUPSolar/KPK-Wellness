@@ -114,23 +114,72 @@
   .nota-fila { font-family: var(--texto); font-weight: 500; font-size: 0.84rem; color: var(--tinta-sueve); }
 
   .rejilla-2 { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); }
-  .rejilla-menu { display: grid; gap: 12px; grid-template-columns: 1fr; }
-  @media (min-width: 620px) { .rejilla-menu { grid-template-columns: 1fr 1fr; } }
+  /* ---------- carrusel del menú ----------
+     Scroll nativo con snap: funciona con el dedo, con la rueda y con teclado
+     aunque el JS no corra. El JS solo agrega flechas, puntos y el avance suave. */
+  .carrusel { position: relative; margin-inline: -24px; overflow: hidden; }
+  .pista {
+    display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory;
+    padding: 4px 24px 10px; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    scroll-padding-inline: 24px;
+  }
+  .pista::-webkit-scrollbar { display: none; }
+  .pista .platillo { flex: 0 0 min(78%, 380px); scroll-snap-align: start; }
+  @media (min-width: 720px) { .pista .platillo { flex-basis: calc(50% - 7px); } }
+  .flechas { display: none; position: absolute; inset: 0 24px auto 24px; top: 50%; pointer-events: none; justify-content: space-between; transform: translateY(-80%); }
+  @media (hover: hover) and (min-width: 720px) { .flechas { display: flex; } }
+  .flecha {
+    pointer-events: auto; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--linea);
+    background: rgba(255,255,255,0.92); color: var(--tinta); cursor: pointer; font-size: 0; display: grid; place-items: center;
+    box-shadow: 0 6px 18px rgba(31,32,36,0.14); transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .flecha:hover { background: #fff; transform: scale(1.06); }
+  .flecha::before { content: ''; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg) translate(-1px, 1px); }
+  .flecha.prev::before { transform: rotate(135deg) translate(-1px, 1px); }
+  .puntos { display: flex; justify-content: center; gap: 7px; padding-top: 6px; }
+  .punto { width: 7px; height: 7px; border-radius: 50%; border: 0; padding: 0; background: var(--linea); cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
+  .punto[aria-current="true"] { background: var(--eucalipto); transform: scale(1.35); }
 
   .titulo-fila h2 { font-size: 1.75rem; }
   .platillo {
-    background: var(--papel); border: 1px solid var(--linea); border-radius: 12px;
+    background: var(--papel); border: 1px solid var(--linea); border-radius: 14px;
     overflow: hidden; min-width: 0; display: grid;
   }
-  .platillo .foto { aspect-ratio: 16 / 10; background: var(--arena) center / cover no-repeat; }
-  /* Sin foto todavía: un lienzo de arena con la inicial, no un hueco. */
-  .platillo .foto.vacia {
-    display: grid; place-items: center; font-family: var(--display); font-size: 3rem; color: #fff;
-    background: linear-gradient(135deg, var(--arena) 0%, var(--arena-hond) 100%);
+  .platillo .foto {
+    position: relative; aspect-ratio: 4 / 3; overflow: hidden; isolation: isolate;
+    background: var(--arena); display: grid; align-items: end;
   }
-  .platillo .txt { padding: 14px 16px 16px; }
-  .platillo .n { font-family: var(--display); font-weight: 600; font-size: 1.3rem; line-height: 1.15; }
-  .platillo .d { font-size: 0.88rem; color: var(--tinta-sueve); margin-top: 3px; }
+  .platillo .foto .img {
+    position: absolute; inset: 0; z-index: -1; background: center / cover no-repeat;
+    transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .platillo:hover .foto .img { transform: scale(1.05); }
+  /* El nombre vive sobre la foto, como en una carta. */
+  .platillo .n {
+    font-family: var(--display); font-weight: 600; font-size: 1.55rem; line-height: 1.08; color: #fff;
+    padding: 46px 16px 14px; text-shadow: 0 1px 14px rgba(0,0,0,0.45);
+    background: linear-gradient(180deg, rgba(20,21,26,0) 0%, rgba(20,21,26,0.62) 100%);
+  }
+  /* Sin foto todavía: un lienzo de arena con la inicial, no un hueco. */
+  .platillo .foto.vacia { background: linear-gradient(135deg, var(--arena) 0%, var(--arena-hond) 100%); }
+  .platillo .foto.vacia .inicial {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-family: var(--display); font-size: 4rem; color: rgba(255,255,255,0.8); z-index: -1;
+  }
+  .platillo .txt { padding: 12px 16px 14px; min-height: 48px; }
+  .platillo .d { font-size: 0.9rem; color: var(--tinta-sueve); }
+
+  /* ---------- movimiento ----------
+     Un solo momento orquestado: la portada respira y el menú avanza; lo demás
+     entra al hacer scroll. Con "reducir movimiento" todo queda quieto. */
+  @keyframes respira { from { transform: scale(1.02); } to { transform: scale(1.1); } }
+  .cabeza .foto { animation: respira 28s ease-in-out infinite alternate; will-change: transform; }
+  .boton, .pagar { transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease; }
+  .boton:hover, .pagar:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(31,32,36,0.14); }
+  @media (prefers-reduced-motion: reduce) {
+    .cabeza .foto { animation: none; }
+    .platillo .foto .img, .boton, .pagar { transition: none; }
+  }
 
   /* ---------- precio ---------- */
   .precio {
@@ -364,6 +413,11 @@
 <body>
 <div class="hoja" id="hoja"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"></script>
+<script src="js/motion.js"></script>
 <script>
 (function () {
   "use strict";
@@ -594,13 +648,17 @@
     var link = /^https:\/\//i.test(c[lado.link] || "") ? c[lado.link] : "";
     var iva = t9.masIva ? " " + t9.masIva : "";
 
-    var menu = (c.menu || []).map(function (p) {
+    var platillos = c.menu || [];
+    var menu = platillos.map(function (p) {
       var d = tx(p.detalle, L), n = tx(p.nombre, L);
       var foto = p.imagen
-        ? '<div class="foto" style="background-image:url(' + "'" + esc(p.imagen) + "'" + ')"></div>'
-        : '<div class="foto vacia">' + esc((n || "·").charAt(0)) + "</div>";
-      return '<div class="platillo">' + foto + '<div class="txt"><div class="n">' + esc(n) + "</div>" +
-             (d ? '<div class="d">' + esc(d) + "</div>" : "") + "</div></div>";
+        ? '<div class="foto"><div class="img" style="background-image:url(' + "'" + esc(p.imagen) + "'" + ')"></div>' +
+          '<div class="n">' + esc(n) + "</div></div>"
+        : '<div class="foto vacia"><div class="inicial">' + esc((n || "·").charAt(0)) + '</div><div class="n">' + esc(n) + "</div></div>";
+      return '<div class="platillo">' + foto + '<div class="txt">' + (d ? '<div class="d">' + esc(d) + "</div>" : "") + "</div></div>";
+    }).join("");
+    var puntos = platillos.map(function (_, i) {
+      return '<button type="button" class="punto" data-ir="' + i + '" aria-label="' + (i + 1) + '"' + (i === 0 ? ' aria-current="true"' : "") + "></button>";
     }).join("");
     var portada = c.portada || PORTADA_PREDETERMINADA;
 
@@ -670,7 +728,7 @@
         '<div style="min-width:0">' +
           '<div class="filo"></div>' +
           '<div class="etq">' + esc(t9.cotizacion) + "</div>" +
-          "<h1>" + esc(tx(c.titulo, L)) + "</h1>" +
+          "<h1 data-split>" + esc(tx(c.titulo, L)) + "</h1>" +
           '<div class="para">' + esc(t9.para) + " <b>" + esc(c.cliente) + "</b></div>" +
         "</div>" +
         '<div class="firma">' +
@@ -688,17 +746,21 @@
       '<div class="cuerpo">' + aprobado +
         (menu ? '<section><div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
           (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
-          '</div><div class="rejilla-menu">' + menu + "</div></section>" : "") +
+          '</div><div class="carrusel"><div class="pista" id="pista" data-lenis-prevent>' + menu + "</div>" +
+          '<div class="flechas"><button type="button" class="flecha prev" data-paso="-1">Anterior</button>' +
+          '<button type="button" class="flecha" data-paso="1">Siguiente</button></div>' +
+          (platillos.length > 1 ? '<div class="puntos">' + puntos + "</div>" : "") +
+          "</div></section>" : "") +
 
         '<section><div class="precio">' +
           '<div><div class="etq">' + esc(t9.porPersona + iva) + "</div>" +
-            '<div class="cifra oro">' + dinero(t.porPersona, t.moneda) + "</div></div>" +
+            '<div class="cifra oro" data-count="' + t.porPersona + '" data-format="moneda:' + esc(t.moneda) + '">' + dinero(t.porPersona, t.moneda) + "</div></div>" +
           '<div class="col-der"><div class="etq">' +
             esc(t9.total + " · " + t.invitados + " " + t9.personas + iva) + "</div>" +
-            '<div class="cifra">' + dinero(t.total, t.moneda) + "</div></div>" +
+            '<div class="cifra" data-count="' + t.total + '" data-format="moneda:' + esc(t.moneda) + '">' + dinero(t.total, t.moneda) + "</div></div>" +
         "</div></section>" +
 
-        (incluye ? "<section><h2>" + esc(t9.incluye) + '</h2><div class="incluye">' + incluye + "</div></section>" : "") +
+        (incluye ? '<section><h2>' + esc(t9.incluye) + '</h2><div class="incluye">' + incluye + "</div></section>" : "") +
 
         ((opcionales || condiciones) ? '<section><div class="rejilla-2">' +
           (opcionales ? '<div class="caja"><div class="etq">' + esc(t9.opcional) + "</div>" + opcionales + "</div>" : "") +
@@ -745,7 +807,68 @@
     }
   }
 
+  var QUIETO = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /** Flechas, puntos y avance suave. Se detiene en cuanto el cliente toca. */
+  function carrusel() {
+    var pista = $("#pista");
+    if (!pista) return;
+    var tarjetas = pista.children, puntos = hoja.querySelectorAll(".punto");
+    function indice() {
+      var x = pista.scrollLeft, mejor = 0, dist = Infinity;
+      for (var i = 0; i < tarjetas.length; i++) {
+        var d = Math.abs(tarjetas[i].offsetLeft - pista.offsetLeft - x);
+        if (d < dist) { dist = d; mejor = i; }
+      }
+      return mejor;
+    }
+    function ir(i, suave) {
+      i = Math.max(0, Math.min(tarjetas.length - 1, i));
+      pista.scrollTo({ left: tarjetas[i].offsetLeft - pista.offsetLeft, behavior: suave === false || QUIETO ? "auto" : "smooth" });
+    }
+    function marcar() {
+      var i = indice();
+      Array.prototype.forEach.call(puntos, function (p, k) {
+        if (k === i) p.setAttribute("aria-current", "true"); else p.removeAttribute("aria-current");
+      });
+    }
+    var reloj = null, usuario = false;
+    function parar() { usuario = true; if (reloj) { clearInterval(reloj); reloj = null; } }
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-paso]"), function (b) {
+      b.addEventListener("click", function () { parar(); ir(indice() + Number(b.getAttribute("data-paso"))); });
+    });
+    Array.prototype.forEach.call(puntos, function (p) {
+      p.addEventListener("click", function () { parar(); ir(Number(p.getAttribute("data-ir"))); });
+    });
+    ["pointerdown", "wheel", "touchstart", "keydown"].forEach(function (ev) { pista.addEventListener(ev, parar, { passive: true }); });
+    pista.addEventListener("scroll", function () { window.requestAnimationFrame(marcar); }, { passive: true });
+    // Avance suave cada 5 s mientras nadie ha tocado y la pestaña está visible.
+    if (!QUIETO && tarjetas.length > 1) {
+      reloj = setInterval(function () {
+        if (document.hidden || usuario) return;
+        var i = indice();
+        ir(i + 1 >= tarjetas.length ? 0 : i + 1);
+      }, 5000);
+    }
+  }
+
+  /** La portada se mueve un poco más lento que la página. */
+  function parallax() {
+    var foto = hoja.querySelector(".cabeza .foto");
+    if (!foto || QUIETO) return;
+    var tope = foto.parentNode;
+    function mover() {
+      var y = window.scrollY, alto = tope.offsetHeight;
+      if (y > alto) return;
+      foto.style.translate = "0 " + Math.round(y * 0.22) + "px";
+    }
+    window.addEventListener("scroll", function () { window.requestAnimationFrame(mover); }, { passive: true });
+    mover();
+  }
+
   function cablear(c, t, t9, L, iva) {
+    carrusel(); parallax();
+    if (window.Motion) { window.Motion.dinero = dinero; window.Motion.init(hoja); }
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
       b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
     });
