@@ -42,6 +42,7 @@
   .platillo .img { aspect-ratio: 4 / 3; background: var(--arena) center / cover no-repeat; }
   .platillo .n { font-family: var(--display); font-weight: 600; font-size: 1.1rem; line-height: 1.15; padding: 10px 12px; }
   .acciones { display: flex; flex-wrap: wrap; gap: 10px; }
+  .nota-fotos { margin: 10px 0 0; font-size: 0.78rem; color: var(--tinta-sueve); }
   .rsvp { display: grid; gap: 12px; background: var(--crema); border: 1px solid var(--linea); border-radius: 14px; padding: 18px; position: relative; overflow: hidden; }
   .rsvp-fila { display: grid; gap: 12px; grid-template-columns: 1fr; }
   @media (min-width: 480px) { .rsvp-fila { grid-template-columns: 1fr 160px; } }
@@ -75,12 +76,14 @@
     es: { invitado: "Estás invitado", anfitrion: "Te invita", lugar: "Lugar", fecha: "Fecha", horario: "Hora", menu: "El menú",
           mensaje: "Será un placer tenerte con nosotros.", confirmar: "Confirmar asistencia", calendario: "Agregar a mi calendario",
           waTexto: "Hola, confirmo mi asistencia a", chef: "Catering por", sin: "No encontramos esta invitación.",
+          fotosNota: "Las fotografías son representativas del tipo de platillo; el tamaño y las porciones pueden variar.",
           tuNombre: "Tu nombre", cuantos: "¿Cuántos vienen?", nota: "Alergias o un mensaje (opcional)", noPuedo: "No podré ir",
           gracias: "¡Gracias, {n}! Quedas confirmado.", graciasNo: "Gracias por avisar, {n}.", avisar: "Avisar al anfitrión por WhatsApp",
           waConfirmo: "Hola, soy {n}. Confirmo mi asistencia a {e} ({p}).", waNo: "Hola, soy {n}. No podré ir a {e}.", enviando: "Enviando…" },
     en: { invitado: "You're invited", anfitrion: "Hosted by", lugar: "Where", fecha: "When", horario: "Time", menu: "The menu",
           mensaje: "We'd love to have you with us.", confirmar: "RSVP", calendario: "Add to my calendar",
           waTexto: "Hi! I'm confirming my attendance to", chef: "Catering by", sin: "We couldn't find this invitation.",
+          fotosNota: "Photos are representative of each dish; size and portions may vary.",
           tuNombre: "Your name", cuantos: "How many are coming?", nota: "Allergies or a note (optional)", noPuedo: "Can't make it",
           gracias: "Thank you, {n}! You're confirmed.", graciasNo: "Thanks for letting us know, {n}.", avisar: "Let the host know on WhatsApp",
           waConfirmo: "Hi, this is {n}. I'm confirming my attendance to {e} ({p}).", waNo: "Hi, this is {n}. I can't make it to {e}.", enviando: "Sending…" }
@@ -138,7 +141,7 @@
       '<div class="cuerpo">' +
         '<p class="mensaje">' + esc(tx(c.mensajeInvitacion, L) || t.mensaje) + "</p>" +
         rsvp +
-        (menu ? "<section><h2>" + esc(t.menu) + '</h2><div class="menu">' + menu + "</div></section>" : "") +
+        (menu ? "<section><h2>" + esc(t.menu) + '</h2><div class="menu">' + menu + '</div><p class="nota-fotos">' + esc(t.fotosNota) + "</p></section>" : "") +
       "</div>" +
       '<div class="pie"><div>' + esc(t.chef) + ' <a class="chef" href="/card/">' + esc(chef.nombre || "Chef Karina Paz Kennedy") + "</a></div><div>kpk.associates</div></div>";
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-l]"), function (b) {

@@ -139,6 +139,7 @@
   .flecha::before { content: ''; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg) translate(-1px, 1px); }
   .flecha.prev::before { transform: rotate(135deg) translate(-1px, 1px); }
   .puntos { display: flex; justify-content: center; gap: 7px; padding-top: 6px; }
+  .nota-fotos { margin: 4px 0 0; font-size: 0.78rem; color: var(--tinta-sueve); text-align: center; }
   .punto { width: 7px; height: 7px; border-radius: 50%; border: 0; padding: 0; background: var(--linea); cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
   .punto[aria-current="true"] { background: var(--eucalipto); transform: scale(1.35); }
 
@@ -439,6 +440,9 @@
   .foto-fila .agregar { position: relative; overflow: hidden; }
   .foto-fila input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
   .foto-fila input[type=text] { flex: 1 1 180px; }
+  .ia { border: 1px dashed var(--linea); border-radius: 8px; padding: 8px 12px; display: grid; gap: 8px; }
+  .ia summary { cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--eucalipto-h); }
+  .ia small { color: var(--tinta-sueve); font-size: 0.78rem; }
   .fila-rep .quitar {
     justify-self: end; font-size: 0.78rem; font-family: var(--texto);
     background: none; border: 0; color: #9A5A4F; cursor: pointer; padding: 2px 4px;
@@ -548,6 +552,7 @@
       pagoRecibido: "Pago recibido", fechaApartada: "Tu fecha queda apartada", avisarPago: "Avisar a Karina por WhatsApp",
       waPagado: "Hola Karina, ya pagué el anticipo de {e} ({f}). Mi fecha queda agendada.",
       calendario: "Agregar a mi calendario", invitacion: "Crear la invitación para mis invitados",
+      fotosNota: "Las fotografías son representativas del tipo de platillo; el tamaño y las porciones pueden variar. Solo con fines de presentación.",
       reservar: "Pagar anticipo y reservar fecha",
       reservarWa: "Hola Karina, quiero pagar el anticipo y reservar la fecha para",
       holaSoy: "Hola, soy Karina Kennedy.", ayudar: "¿En qué te puedo ayudar? Elige una pregunta o escríbeme.",
@@ -575,6 +580,7 @@
       pagoRecibido: "Payment received", fechaApartada: "Your date is held", avisarPago: "Let Karina know on WhatsApp",
       waPagado: "Hi Karina, I just paid the deposit for {e} ({f}). My date is booked.",
       calendario: "Add to my calendar", invitacion: "Create the invitation for my guests",
+      fotosNota: "Photos are representative of each dish; size and portions may vary. For presentation purposes only.",
       reservar: "Pay the deposit and reserve the date",
       reservarWa: "Hi Karina, I'd like to pay the deposit and reserve the date for",
       holaSoy: "Hi, I'm Karina Kennedy.", ayudar: "How can I help? Pick a question or write to me.",
@@ -952,7 +958,8 @@
           '<div class="flechas"><button type="button" class="flecha prev" data-paso="-1">Anterior</button>' +
           '<button type="button" class="flecha" data-paso="1">Siguiente</button></div>' +
           (platillos.length > 1 ? '<div class="puntos">' + puntos + "</div>" : "") +
-          "</div></section>" : "") +
+          "</div>" + (platillos.some(function (p) { return p.imagen; }) ? '<p class="nota-fotos">' + esc(t9.fotosNota) + "</p>" : "") +
+          "</section>" : "") +
 
         '<section>' + lapiz("precio", "Editar precios") + '<div class="precio">' +
           '<div><div class="etq">' + esc(t9.porPersona + iva) + "</div>" +
@@ -1346,7 +1353,14 @@
       '<label class="agregar">Subir foto<input type="file" accept="image/*" data-foto="' + esc(ruta) + '"></label>' +
       '<input type="text" placeholder="o pega la URL de una foto" value="' + esc(valor || "") + '" data-foto-url="' + esc(ruta) + '">' +
       '<button type="button" class="quitar" data-foto-quitar="' + esc(ruta) + '"' + (valor ? "" : " hidden") + ">Quitar foto</button>" +
-      "</div>";
+      "</div>" +
+      // Silver cambia la foto con una instrucción, o la genera desde cero.
+      '<details class="ia"><summary>Editar con IA (Silver)</summary>' +
+        '<input type="text" placeholder="' + esc(valor ? "Qué cambiar: haz la porción más chica, quita el tazón de salsa…" : "Qué generar: tostada de atún con aguacate, luz de atardecer…") + '" maxlength="1000" data-ia-prompt="' + esc(ruta) + '">' +
+        '<div class="acciones">' +
+          (valor ? '<button type="button" class="agregar" data-ia="editar" data-ruta="' + esc(ruta) + '">Editar esta foto</button>' : "") +
+          '<button type="button" class="agregar" data-ia="generar" data-ruta="' + esc(ruta) + '">Generar nueva</button>' +
+        "</div><small>Tarda 15–40 segundos. El resultado se pone en el campo; guarda la cotización para publicarlo.</small></details>";
   }
 
   function listaPares(titulo, clave, items, l1, l2, conFoto) {
@@ -1555,6 +1569,13 @@
       brindis("Eliminada. Guarda para publicar el cambio.");
     });
 
+    /** Lee el valor actual de una ruta tipo "menu.2.imagen", "portada" o "chef.foto". */
+    function leerFoto(ruta) {
+      var partes = ruta.split("."), o = cotizacionActiva();
+      if (partes[0] === "chef") { o = estado.chef || {}; partes.shift(); }
+      for (var k = 0; k < partes.length; k++) { if (!o) return ""; o = o[partes[k]]; }
+      return o;
+    }
     /** Escribe en la cotización por ruta tipo "menu.2.imagen" o "portada". */
     function ponerFoto(ruta, valor) {
       var partes = ruta.split("."), o = cotizacionActiva();
@@ -1612,6 +1633,25 @@
       var act = cotizacionActiva();
       var agregar = e.target.getAttribute && e.target.getAttribute("data-agregar");
       var quitar = e.target.getAttribute && e.target.getAttribute("data-quitar");
+      var ia = e.target.getAttribute && e.target.getAttribute("data-ia");
+      if (ia) {
+        var rutaIa = e.target.getAttribute("data-ruta");
+        var entrada = panel.querySelector('[data-ia-prompt="' + rutaIa + '"]');
+        var prompt = entrada ? entrada.value.trim() : "";
+        if (prompt.length < 3) { brindis("Escribe qué quieres cambiar o generar."); if (entrada) entrada.focus(); return; }
+        var imgActual = ia === "editar" ? String(leerFoto(rutaIa) || "") : "";
+        var botonIa = e.target; botonIa.disabled = true; var texto0 = botonIa.textContent; botonIa.textContent = "Silver está trabajando…";
+        api("/silver/imagen", { method: "POST", body: JSON.stringify({ prompt: prompt, imagen: imgActual, slug: act.slug, campo: rutaIa }) })
+          .then(function (r) {
+            ponerFoto(rutaIa, r.ruta);
+            var img = panel.querySelector('[data-foto-img="' + rutaIa + '"]');
+            if (img && r.preview) img.src = r.preview;
+            brindis("Foto lista. Guarda la cotización para publicarla.");
+          })
+          .catch(function (err) { brindis(err.message); })
+          .then(function () { botonIa.disabled = false; botonIa.textContent = texto0; });
+        return;
+      }
       var fotoQuitar = e.target.getAttribute && e.target.getAttribute("data-foto-quitar");
       if (fotoQuitar) { ponerFoto(fotoQuitar, ""); e.target.hidden = true; brindis("Foto quitada. El platillo se queda."); return; }
       if (e.target.id === "btn-historial") {
