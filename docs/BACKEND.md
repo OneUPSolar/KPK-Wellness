@@ -40,6 +40,7 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/payments/stripe` | POST | admin — cobro en dólares con Stripe Checkout (tarjeta, Apple Pay, Klarna/Affirm) |
 | `/api/pagado` | POST público | al volver de Mercado Pago aprobado: verifica el pago con MP, lo registra en la cotización y manda el correo de reserva |
 | `/api/rsvp` | POST público · GET admin | confirmaciones de asistencia desde la invitación, guardadas en `content/rsvp/<slug>.json` |
+| `/api/silver/imagen` | POST | admin — Silver edita o genera una foto (OpenAI gpt-image-1) y la commitea en assets/cotizaciones/ |
 | `/api/tickets` | GET · POST | admin — tickets de fallas y mejoras, como issues `bug-off` (ver `docs/BUG-OFF.md`) |
 
 ## Variables del proyecto
