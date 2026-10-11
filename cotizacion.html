@@ -33,6 +33,8 @@
   }
 
   * { box-sizing: border-box; }
+  /* `hidden` manda aunque la clase ponga display: así una caja vacía nunca se asoma. */
+  [hidden] { display: none !important; }
   body {
     margin: 0; background: var(--crema); color: var(--tinta);
     font-family: var(--texto); font-size: 15px; line-height: 1.55;
