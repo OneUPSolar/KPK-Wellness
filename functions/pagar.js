@@ -64,7 +64,7 @@ small{display:block;margin-top:24px;color:#8a8b90;font-size:12px}</style></head>
 
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
-  const slug = String(url.searchParams.get('c') || '').trim().toLowerCase();
+  const slug = String(url.searchParams.get('c') || '').trim().toLowerCase().replace(/-view$/, '');
   const efectivo = url.searchParams.get('m') === 'efectivo';
   if (!/^[a-z0-9-]{1,80}$/.test(slug)) return pagina('Falta la cotización', 'Este enlace de pago está incompleto.', '', '');
 
@@ -83,7 +83,8 @@ export async function onRequestGet({ request, env }) {
     return pagina('El pago en línea no está disponible ahora', 'Escríbele a Karina y te comparte cómo pagar.', wa, env.MP_ACCESS_TOKEN ? 'Monto en cero.' : 'Sin credencial de cobro.');
   }
 
-  const vuelta = `${url.origin}/cotizacion?c=${encodeURIComponent(slug)}`;
+  // Regresa al link del cliente.
+  const vuelta = `${url.origin}/cotizacion?c=${encodeURIComponent(slug)}-view`;
   const concepto = `Anticipo · ${titulo}${c.cliente ? ' · ' + tx(c.cliente) : ''}${efectivo ? ' · transferencia/efectivo' : ''}`.slice(0, 240);
   const idem = crypto.randomUUID();
   let out = {}, status = 0;

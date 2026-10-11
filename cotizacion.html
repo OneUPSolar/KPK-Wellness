@@ -56,6 +56,10 @@
     border-bottom: 1px solid var(--linea);
   }
   .switch .leyenda { font-size: 0.8rem; min-width: 0; }
+  .switch .derecha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .switch .acceso { font: 500 0.8rem/1 var(--texto); color: var(--tinta-sueve); background: none; border: 0; padding: 8px 4px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--linea); }
+  .switch .acceso:hover { color: var(--tinta); text-decoration-color: currentColor; }
+  .switch .acceso:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 2px; border-radius: 4px; }
   .switch .grupo { display: flex; gap: 2px; background: var(--crema); border: 1px solid var(--linea); border-radius: 999px; padding: 3px; }
   .switch button {
     font: inherit; font-family: var(--texto); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.02em;
@@ -402,12 +406,6 @@
   .barra-admin .modo { font-size: 0.78rem; color: #B9BAB8; text-align: right; }
   @media (max-width: 860px) { .barra-admin .modo { display: none; } }
   body.vista-cliente .barra-admin { display: none; }
-  .aviso-cliente {
-    position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 45;
-    font: 500 0.82rem/1 var(--texto); color: #fff; background: var(--tinta); border: 0; border-radius: 999px;
-    padding: 10px 16px; cursor: pointer; box-shadow: 0 8px 24px rgba(31,32,36,0.25); white-space: nowrap;
-  }
-  .aviso-cliente b { color: var(--arena); margin-left: 10px; font-weight: 600; }
 
   /* ---------- Karina, abajo a la derecha ---------- */
   .k-lanzador { position: fixed; right: 20px; bottom: 20px; z-index: 30; display: grid; justify-items: end; gap: 12px; }
@@ -698,10 +696,17 @@
   }
 
   /** El slug pedido en la URL: ?c=slug (enlaces públicos) o #slug (navegación interna). */
-  function slugPedido() {
+  function slugCrudo() {
     var q = new URLSearchParams(location.search).get("c");
     if (q) return q;
     return (location.hash || "").replace(/^#/, "").split("?")[0];
+  }
+  /** "surf-lopez-view" es la cotización "surf-lopez" en vista del cliente. */
+  function slugPedido() {
+    var s = slugCrudo();
+    if (!/-view$/.test(s)) return s;
+    var existe = (estado.cotizaciones || []).some(function (c) { return c.slug === s; });
+    return existe ? s : s.replace(/-view$/, "");
   }
 
   /** Mercado Pago vuelve a back_url con collection_status=approved cuando el pago entró. */
@@ -977,9 +982,12 @@
     hoja.innerHTML =
       '<div class="switch">' +
         '<span class="leyenda">' + esc(t9.leyenda) + "</span>" +
+        '<div class="derecha">' +
         '<div class="grupo" role="group" aria-label="Idioma y moneda / Language and currency">' +
           '<button type="button" data-idioma="es" aria-pressed="' + (L === "es") + '">Español · MXN</button>' +
           '<button type="button" data-idioma="en" aria-pressed="' + (L === "en") + '">English · USD</button>' +
+        "</div>" +
+        (admin ? "" : '<button type="button" class="acceso" id="btn-acceso">' + (AUTH ? "Panel de administrador" : "Entrar") + "</button>") +
         "</div>" +
       "</div>" +
 
@@ -1305,6 +1313,14 @@
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
       b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
     });
+    var acceso = hoja.querySelector("#btn-acceso");
+    if (acceso) {
+      acceso.addEventListener("click", function () {
+        // Con sesión, el mismo link sin -view; sin sesión, al login de administradores y de regreso aquí.
+        if (AUTH) { vistaCliente(false); return; }
+        location.href = "/app/?volver=" + encodeURIComponent(location.pathname + "?c=" + c.slug);
+      });
+    }
     var resumen = hoja.querySelector("[data-copiar-resumen]");
     if (resumen) {
       resumen.addEventListener("click", function () {
@@ -1323,23 +1339,11 @@
   /* ---------- editor ---------- */
 
   /** Con sesión, alterna entre la vista de administrador y la del cliente. */
+  /** Cambia entre el link del cliente (slug-view) y el del panel (slug). */
   function vistaCliente(si) {
-    VISTA_CLIENTE = si;
-    document.body.classList.toggle("vista-cliente", si);
-    var aviso = document.getElementById("aviso-cliente");
-    if (si && !aviso) {
-      aviso = document.createElement("button");
-      aviso.type = "button";
-      aviso.id = "aviso-cliente";
-      aviso.className = "aviso-cliente";
-      aviso.innerHTML = "Así lo ve el cliente <b>Volver a administrador</b>";
-      aviso.addEventListener("click", function () { vistaCliente(false); });
-      document.body.appendChild(aviso);
-    } else if (!si && aviso) aviso.remove();
-    var u = new URL(location.href);
-    if (si) u.searchParams.set("vista", "cliente"); else u.searchParams.delete("vista");
-    history.replaceState(null, "", u.pathname + u.search + u.hash);
-    if (enCotizacion()) pintar(); else pintarLanding(esAdmin());
+    var c = cotizacionActiva();
+    if (!c) return;
+    location.href = location.pathname + "?c=" + encodeURIComponent(c.slug) + (si ? "-view" : "");
   }
 
   function barraAdmin() {
@@ -1365,7 +1369,7 @@
     });
     $("#btn-editar").addEventListener("click", abrirPanel);
     $("#btn-cliente").addEventListener("click", function () { vistaCliente(true); });
-    if (VISTA_CLIENTE) vistaCliente(true);
+    document.body.classList.toggle("vista-cliente", VISTA_CLIENTE);
     $("#btn-enviar").addEventListener("click", enviarAlCliente);
     $("#btn-nueva").addEventListener("click", function () { nuevaCotizacion(cotizacionActiva(), false); });
   }
@@ -1384,7 +1388,7 @@
   function enlacePublico(slug) {
     var base = String((estado.chef || {}).urlPublica || "").trim().replace(/#.*$/, "");
     if (!/^https:\/\//i.test(base)) base = location.origin + location.pathname;
-    return base.replace(/\?.*$/, "") + "?c=" + encodeURIComponent(slug);
+    return base.replace(/\?.*$/, "") + "?c=" + encodeURIComponent(slug) + "-view";
   }
 
   /** Archivo .ics con el evento, si Karina capturó inicio (y fin). */
@@ -1849,7 +1853,8 @@
   var PORTADA_PREDETERMINADA = "assets/cotizaciones/portada-rosarito.webp";
   var AUTH = null; // { token, email } cuando hay sesión de admin
   // "Ver como cliente": con sesión, la página se pinta exactamente como la ve el cliente.
-  var VISTA_CLIENTE = new URLSearchParams(location.search).get("vista") === "cliente";
+  // El link del cliente termina en -view: ahí siempre se ve como cliente, aunque haya sesión.
+  var VISTA_CLIENTE = new URLSearchParams(location.search).get("vista") === "cliente" || /-view$/.test(slugCrudo());
   function esAdmin() { return Boolean(AUTH) && !VISTA_CLIENTE; }
 
   function api(ruta, opciones) {
