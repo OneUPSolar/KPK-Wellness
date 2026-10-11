@@ -269,24 +269,73 @@
   .pagar:hover { background: #2B2C2E; }
   .pagar:focus-visible { outline: 2px solid var(--arena-hond); outline-offset: 2px; }
 
-  /* ---------- contacto directo ---------- */
-  .contacto {
-    display: flex; flex-wrap: wrap; gap: 18px 24px; align-items: center;
-    background: var(--papel); border: 1px solid var(--linea); border-radius: 14px; padding: 22px 24px;
+  /* ---------- Karina te atiende ----------
+     Lo único que brilla en la página es ella: un halo que gira y un pulso
+     suave. El cliente pregunta aquí y termina en su WhatsApp. */
+  @keyframes gira { to { transform: rotate(360deg); } }
+  @keyframes pulso { 0% { box-shadow: 0 0 0 0 rgba(122,158,142,0.45); } 100% { box-shadow: 0 0 0 22px rgba(122,158,142,0); } }
+  .karina { background: var(--papel); border: 1px solid var(--linea); border-radius: 16px; padding: 24px; display: grid; gap: 18px; }
+  .k-cab { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .halo { position: relative; width: 112px; height: 112px; border-radius: 50%; flex: none; isolation: isolate; }
+  .halo::before {
+    content: ''; position: absolute; inset: -5px; border-radius: 50%; z-index: -1;
+    background: conic-gradient(from 0deg, var(--eucalipto), var(--arena), #fff, var(--eucalipto));
+    animation: gira 7s linear infinite;
   }
-  .contacto .retrato {
-    width: 92px; height: 92px; border-radius: 50%; flex: none;
-    background: var(--arena) center 20% / cover no-repeat; box-shadow: 0 0 0 3px var(--papel), 0 0 0 4px var(--eucalipto);
+  .halo::after { content: ''; position: absolute; inset: 0; border-radius: 50%; animation: pulso 2.6s ease-out infinite; }
+  .retrato {
+    width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--papel);
+    background: var(--arena) center 20% / cover no-repeat;
   }
-  .contacto .retrato.vacia {
-    display: grid; place-items: center; font-family: var(--display); font-size: 2.4rem; color: #fff;
+  .retrato.vacia {
+    display: grid; place-items: center; font-family: var(--display); font-size: 2.8rem; color: #fff;
     background: linear-gradient(135deg, var(--eucalipto) 0%, var(--eucalipto-h) 100%);
   }
-  .contacto .txt { flex: 1 1 240px; min-width: 0; }
-  .contacto h2 { margin: 0 0 4px; font-size: 1.7rem; }
-  .contacto p { margin: 0 0 14px; color: var(--tinta-sueve); font-size: 0.93rem; }
+  .burbuja {
+    position: relative; flex: 1 1 240px; min-width: 0; background: var(--crema); border-radius: 16px; padding: 14px 18px;
+  }
+  .burbuja::before { content: ''; position: absolute; left: -8px; top: 26px; border: 8px solid transparent; border-left: 0; border-right-color: var(--crema); }
+  .burbuja b { font-family: var(--display); font-weight: 600; font-size: 1.5rem; display: block; line-height: 1.1; margin-bottom: 4px; }
+  .burbuja span { color: var(--tinta-sueve); font-size: 0.94rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: var(--texto); font-size: 0.88rem; font-weight: 500; color: var(--tinta);
+    background: transparent; border: 1px solid var(--linea); border-radius: 999px; padding: 8px 14px; cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .chip:hover, .chip[aria-expanded="true"] { border-color: var(--eucalipto); background: #EAF1ED; }
+  .respuesta { background: #EAF1ED; border-left: 3px solid var(--eucalipto); border-radius: 0 12px 12px 0; padding: 14px 16px; display: grid; gap: 10px; justify-items: start; }
+  .respuesta p { margin: 0; font-size: 0.95rem; }
+  .pregunta-libre { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pregunta-libre input { flex: 1 1 220px; font: inherit; font-size: 16px; padding: 11px 14px; border: 1px solid var(--linea); border-radius: 999px; background: var(--papel); color: var(--tinta); min-width: 0; }
+  .pregunta-libre input:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 2px; }
   .boton.wa { background: #25D366; border-color: #25D366; color: #0B2E1A; }
   .boton.wa:hover { background: #1EBE5B; }
+  .boton.primario { background: var(--eucalipto-h); border-color: var(--eucalipto-h); color: #fff; font-size: 0.98rem; padding: 13px 24px; }
+  .boton.primario:hover { background: #42665A; }
+  /* ---------- modo administrador ----------
+     Con sesión, cada sección y cada foto llevan su lápiz: la misma página
+     sirve para armar y para editar. */
+  .cuerpo section { position: relative; }
+  .lapiz {
+    position: absolute; top: 0; right: 0; z-index: 2;
+    font-family: var(--texto); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.04em;
+    background: rgba(255,255,255,0.94); color: var(--eucalipto-h); border: 1px solid var(--eucalipto);
+    border-radius: 999px; padding: 5px 11px; cursor: pointer; box-shadow: 0 4px 12px rgba(31,32,36,0.12);
+  }
+  .lapiz:hover { background: var(--eucalipto); color: #fff; }
+  .cabeza .lapiz { top: 14px; right: 14px; }
+  .platillo .foto .lapiz { top: 10px; right: 10px; }
+  /* Sobre las tarjetas con cifras, el lápiz monta el borde para no tapar números. */
+  .lapiz[data-editar="precio"], .lapiz[data-editar="cobro"] { top: -14px; right: 14px; }
+  .caja { position: relative; }
+  .caja .lapiz { top: 10px; right: 10px; }
+  .karina.asistente .retrato.vacia { background: linear-gradient(135deg, #2B3A5C 0%, #1F2024 100%); }
+  .karina.asistente .respuesta { background: var(--crema); border-left-color: #2B3A5C; white-space: pre-wrap; }
+
+  /* En angosto el retrato queda arriba de la burbuja; la colita ya no apunta a nada. */
+  @media (max-width: 560px) { .burbuja::before { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .halo::before, .halo::after { animation: none; } }
 
   .aprobado {
     display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between;
@@ -459,7 +508,14 @@
       preguntas: "¿Tienes preguntas?", escribe: "Escríbele directo a Karina por WhatsApp",
       respondo: "Te contesta ella misma, en su horario.", waPregunta: "Hola Karina, tengo una pregunta sobre la cotización",
       pagoRecibido: "Pago recibido", fechaApartada: "Tu fecha queda apartada",
-      calendario: "Agregar a mi calendario"
+      calendario: "Agregar a mi calendario",
+      reservar: "Pagar anticipo y reservar fecha",
+      reservarWa: "Hola Karina, quiero pagar el anticipo y reservar la fecha para",
+      holaSoy: "Hola, soy Karina Kennedy.", ayudar: "¿En qué te puedo ayudar? Elige una pregunta o escríbeme.",
+      sobreCot: "Hola Karina, sobre la cotización", preguntarWa: "Preguntar por WhatsApp",
+      tuPregunta: "Escribe tu pregunta…", enviarWa: "Enviar por WhatsApp",
+      descuento: "{d}% de descuento", conDescuento: "Transferencia o efectivo: {m} ({d}% de descuento)",
+      m4: "", m4d: "", m4wa: ""
     },
     en: {
       cotizacion: "Quote", para: "For:", lugar: "Location", fecha: "Date",
@@ -478,7 +534,14 @@
       preguntas: "Questions?", escribe: "Message Karina directly on WhatsApp",
       respondo: "She answers personally, during her hours.", waPregunta: "Hi Karina, I have a question about the quote for",
       pagoRecibido: "Payment received", fechaApartada: "Your date is held",
-      calendario: "Add to my calendar"
+      calendario: "Add to my calendar",
+      reservar: "Pay the deposit and reserve the date",
+      reservarWa: "Hi Karina, I'd like to pay the deposit and reserve the date for",
+      holaSoy: "Hi, I'm Karina Kennedy.", ayudar: "How can I help? Pick a question or write to me.",
+      sobreCot: "Hi Karina, about the quote for", preguntarWa: "Ask on WhatsApp",
+      tuPregunta: "Type your question…", enviarWa: "Send on WhatsApp",
+      descuento: "{d}% off", conDescuento: "Zelle or cash dollars: {m} ({d}% off)",
+      m4: "Zelle or cash dollars", m4d: "Send it to {z} and confirm on WhatsApp.", m4wa: "I'll pay the deposit by Zelle"
     }
   };
 
@@ -617,19 +680,40 @@
     abrirPanel();
   }
 
+  /**
+   * Redondeo de mostrador: sin centavos, a múltiplos de 5, y los números
+   * "redondos" (50, 100, 500…) bajan uno: $99 se ve mejor que $100.
+   */
+  function redondear(x) {
+    var r = Math.round(x / 5) * 5;
+    if (r > 0 && r % 50 === 0) r -= 1;
+    return r;
+  }
+
+  var TIPO_CAMBIO = 16.5;          // pesos por dólar; no se muestra al cliente
+  var DESCUENTO_EFECTIVO = 5;      // % por transferencia o efectivo, solo en pesos
+
   function totales(c, lang) {
     var lado = LADOS[lang];
     var invitados = Number(c.invitados) || 0;
-    var porPersona = Number((c.precio || {})[lado.precio]) || 0;
+    var precio = c.precio || {};
+    var mxn = Number(precio.mxn) || 0;
+    var tc = Number(c.tipoCambio) > 0 ? Number(c.tipoCambio) : TIPO_CAMBIO;
+    // El dólar sale del precio en pesos, salvo que Karina capture uno a mano.
+    var porPersona = lang === "en" ? (Number(precio.usd) || redondear(mxn / tc)) : mxn;
     var total = invitados * porPersona;
     var pct = Number(c.anticipoPct);
     if (!isFinite(pct) || pct < 0 || pct > 100) pct = 50;
     // El IVA es del lado mexicano. En dólares va invoice, sin IVA.
     var iva = lado.conIva ? (isFinite(Number(c.ivaPct)) ? Number(c.ivaPct) : 16) : 0;
     var anticipo = total * pct / 100;
+    var anticipoConIva = anticipo * (1 + iva / 100);
+    // En pesos: transferencia o efectivo. En dólares: Zelle o efectivo.
+    var dPct = isFinite(Number(c.descuentoEfectivoPct)) ? Number(c.descuentoEfectivoPct) : DESCUENTO_EFECTIVO;
     return {
       moneda: lado.moneda, invitados: invitados, porPersona: porPersona, total: total,
-      pct: pct, iva: iva, anticipo: anticipo, anticipoConIva: anticipo * (1 + iva / 100)
+      pct: pct, iva: iva, anticipo: anticipo, anticipoConIva: anticipoConIva,
+      descuentoPct: dPct, anticipoEfectivo: dPct ? redondear(anticipoConIva * (1 - dPct / 100)) : anticipoConIva
     };
   }
 
@@ -638,6 +722,7 @@
   function pintar() {
     var c = cotizacionActiva();
     var L = idioma, t9 = T[L], chef = estado.chef || {};
+    var admin = Boolean(AUTH);
 
     if (!c) {
       hoja.innerHTML = '<div class="cuerpo"><section><h2>' + esc(t9.sinCotizaciones) + "</h2></section></div>";
@@ -649,18 +734,25 @@
     var iva = t9.masIva ? " " + t9.masIva : "";
 
     var platillos = c.menu || [];
-    var menu = platillos.map(function (p) {
+    var menu = platillos.map(function (p, i) {
       var d = tx(p.detalle, L), n = tx(p.nombre, L);
+      var lp = lapiz("menu", "Cambiar foto", "menu." + i + ".imagen");
       var foto = p.imagen
         ? '<div class="foto"><div class="img" style="background-image:url(' + "'" + esc(p.imagen) + "'" + ')"></div>' +
-          '<div class="n">' + esc(n) + "</div></div>"
-        : '<div class="foto vacia"><div class="inicial">' + esc((n || "·").charAt(0)) + '</div><div class="n">' + esc(n) + "</div></div>";
+          lp + '<div class="n">' + esc(n) + "</div></div>"
+        : '<div class="foto vacia"><div class="inicial">' + esc((n || "·").charAt(0)) + "</div>" + lp + '<div class="n">' + esc(n) + "</div></div>";
       return '<div class="platillo">' + foto + '<div class="txt">' + (d ? '<div class="d">' + esc(d) + "</div>" : "") + "</div></div>";
     }).join("");
     var puntos = platillos.map(function (_, i) {
       return '<button type="button" class="punto" data-ir="' + i + '" aria-label="' + (i + 1) + '"' + (i === 0 ? ' aria-current="true"' : "") + "></button>";
     }).join("");
     var portada = c.portada || PORTADA_PREDETERMINADA;
+    // Un lápiz abre el editor en esa sección; con `foto`, abre directo el selector de archivo.
+    function lapiz(seccion, etiqueta, foto) {
+      if (!admin) return "";
+      return '<button type="button" class="lapiz" data-editar="' + esc(seccion) + '"' +
+        (foto ? ' data-foto-editar="' + esc(foto) + '"' : "") + ">" + esc(etiqueta || "Editar") + "</button>";
+    }
 
     var incluye = (c.incluye || []).map(function (i) { return "<div>" + esc(tx(i, L)) + "</div>"; }).join("");
 
@@ -678,22 +770,44 @@
              (detalle ? "<span>" + esc(detalle) + "</span>" : "") + "</div>" + (accion || "") + "</div>";
     }
     var irAPagar = '<a class="pagar" target="_blank" rel="noopener" href="' + esc(link) + '">' + esc(t9.pagar) + "</a>";
+    // El link con descuento cierra la tarjeta en Mercado Pago; si no existe,
+    // transferencia y efectivo van al mismo checkout sin descuento.
+    var linkEf = L === "es" && /^https:\/\//i.test(c.linkMxnEfectivo || "") ? c.linkMxnEfectivo : "";
+    var irAPagarEf = linkEf
+      ? '<a class="pagar" target="_blank" rel="noopener" href="' + esc(linkEf) + '">' + esc(t9.pagar) + " · " + dinero(t.anticipoEfectivo, t.moneda) + "</a>"
+      : irAPagar;
+    var etqDesc = t.descuentoPct ? " · " + t9.descuento.replace("{d}", t.descuentoPct) : "";
     var filas = "";
-    if (link) {
+    if (link && L === "es") {
+      filas += fila(t9.m1, t9.m1d, irAPagar) +
+               fila(t9.m2 + etqDesc, t9.m2d, irAPagarEf) +
+               fila(t9.m3 + etqDesc, t9.m3d, irAPagarEf);
+    } else if (link) {
+      // Dólares: Stripe cobra tarjeta, Klarna/Affirm y Apple/Google Pay en el mismo checkout.
       filas += fila(t9.m1, t9.m1d, irAPagar) + fila(t9.m2, t9.m2d, irAPagar) + fila(t9.m3, t9.m3d, irAPagar);
+    }
+    // Zelle o dólares en efectivo: no hay link, se confirma por WhatsApp.
+    if (L === "en" && t9.m4 && (chef.zelle || chef.whatsapp)) {
+      var waZelle = chef.whatsapp
+        ? '<a class="pagar" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
+          encodeURIComponent(t9.m4wa + " — " + tx(c.titulo, L) + " — " + dinero(t.anticipoEfectivo, t.moneda)) + '">' +
+          esc(t9.m4wa) + " · " + dinero(t.anticipoEfectivo, t.moneda) + "</a>"
+        : "";
+      filas += fila(t9.m4 + etqDesc, chef.zelle ? t9.m4d.replace("{z}", chef.zelle) : "", waZelle);
     }
     var nota = tx(c.notaPago, L);
     if (nota) filas += fila(nota, "", "");
 
-    var cobro = link
-      ? '<a class="boton" target="_blank" rel="noopener" href="' + esc(link) + '">' +
-        esc(t9.pagarAnticipo) + " · " + dinero(t.anticipoConIva, t.moneda) + "</a>"
-      : "";
-    var wa = chef.whatsapp
-      ? '<a class="boton' + (cobro ? " claro" : "") + '" target="_blank" rel="noopener" href="https://wa.me/' +
-        esc(chef.whatsapp) + "?text=" + encodeURIComponent(t9.apartarWa + " — " + tx(c.titulo, L)) + '">' +
-        esc(t9.apartarWa) + "</a>"
-      : "";
+    // El botón principal siempre está. Con link de cobro va al checkout; sin él,
+    // va al WhatsApp de Karina con la intención ya escrita.
+    var textoReservar = t9.reservar + " · " + dinero(t.anticipoConIva, t.moneda);
+    var reservar = link
+      ? '<a class="boton primario" target="_blank" rel="noopener" href="' + esc(link) + '">' + esc(textoReservar) + "</a>"
+      : chef.whatsapp
+        ? '<a class="boton primario" target="_blank" rel="noopener" href="https://wa.me/' + esc(chef.whatsapp) + "?text=" +
+          encodeURIComponent(t9.reservarWa + " " + tx(c.titulo, L) + " (" + tx(c.fecha, L) + ") — " + dinero(t.anticipoConIva, t.moneda)) + '">' +
+          esc(textoReservar) + "</a>"
+        : "";
     var ics = icsUrl(c, L);
     var calendario = ics
       ? '<a class="boton claro" download="' + esc(c.slug) + '.ics" href="' + ics + '">' + esc(t9.calendario) + "</a>"
@@ -703,15 +817,42 @@
         esc(t9.fechaApartada + ": " + tx(c.fecha, L) + (tx(c.horario, L) ? " · " + tx(c.horario, L) : "")) + "</span></div>" +
         calendario + "</div></section>"
       : "";
-    var pregunta = chef.whatsapp
-      ? '<section><div class="contacto">' +
-          (chef.foto
-            ? '<div class="retrato" style="background-image:url(' + "'" + esc(chef.foto) + "'" + ')"></div>'
-            : '<div class="retrato vacia">' + esc(String(chef.nombre || "K").replace(/^chef\s+/i, "").charAt(0)) + "</div>") +
-          '<div class="txt"><h2>' + esc(t9.preguntas) + "</h2><p>" + esc(t9.respondo) + "</p>" +
-            '<a class="boton wa" target="_blank" rel="noopener" href="https://wa.me/' + esc(chef.whatsapp) +
-              "?text=" + encodeURIComponent(t9.waPregunta + " " + tx(c.titulo, L)) + '">' + esc(t9.escribe) + "</a>" +
-          "</div></div></section>"
+    var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
+    var chips = preguntas.map(function (q, i) {
+      return '<button type="button" class="chip" data-faq="' + i + '" aria-expanded="false">' + esc(tx(q.nombre, L)) + "</button>";
+    }).join("");
+    var chipsAdmin = [
+      "Haz la comanda de cocina",
+      "Sugiere un cambio de menú",
+      "Redacta el WhatsApp para el cliente",
+      "Revisa precios y anticipo"
+    ].map(function (q) { return '<button type="button" class="chip" data-pedir="' + esc(q) + '">' + esc(q) + "</button>"; }).join("");
+    var pregunta = admin
+      ? '<section><div class="karina asistente">' +
+          '<div class="k-cab"><div class="halo"><div class="retrato vacia" id="asis-inicial">' + esc((asisNombre || "Silver").charAt(0)) + "</div></div>" +
+          '<div class="burbuja"><b id="asis-nombre">' + esc(asisNombre || "Silver") + "</b>" +
+            "<span>Para esta cotización: la comanda de cocina, cambios de menú o precio, el mensaje al cliente. " +
+            "Lo que cambie se aplica en pantalla; tú decides si guardas.</span></div></div>" +
+          '<div class="chips">' + chipsAdmin + "</div>" +
+          '<div class="respuesta" id="asis-respuesta"' + (ultimaAdmin ? "" : " hidden") + '><p id="asis-texto">' + esc(ultimaAdmin) + "</p></div>" +
+          '<form class="pregunta-libre" id="asis-forma">' +
+            '<input type="text" id="asis-entrada" placeholder="Pídele algo: cambia la tostada por aguachile, sube a 60 invitados…" maxlength="600" required>' +
+            '<button type="submit" class="boton primario" id="asis-enviar">Pedir</button></form>' +
+        "</div></section>"
+      : chef.whatsapp
+      ? '<section><div class="karina">' +
+          '<div class="k-cab"><div class="halo">' +
+            (chef.foto
+              ? '<div class="retrato" style="background-image:url(' + "'" + esc(chef.foto) + "'" + ')"></div>'
+              : '<div class="retrato vacia">' + esc(String(chef.nombre || "K").replace(/^chef\s+/i, "").charAt(0)) + "</div>") +
+          '</div><div class="burbuja"><b>' + esc(t9.holaSoy) + "</b><span>" + esc(t9.ayudar) + "</span></div></div>" +
+          '<div class="chips">' + chips + "</div>" +
+          '<div class="respuesta" id="faq-respuesta" hidden><p id="faq-texto"></p>' +
+            '<a class="boton wa" id="faq-wa" target="_blank" rel="noopener" href="#">' + esc(t9.preguntarWa) + "</a></div>" +
+          '<form class="pregunta-libre" id="pregunta-libre">' +
+            '<input type="text" id="pregunta-texto" placeholder="' + esc(t9.tuPregunta) + '" maxlength="300" required>' +
+            '<button type="submit" class="boton wa">' + esc(t9.enviarWa) + "</button></form>" +
+        "</div></section>"
       : "";
 
     hoja.innerHTML =
@@ -725,6 +866,7 @@
 
       '<header class="cabeza">' +
         '<div class="foto" style="background-image:url(' + "'" + esc(portada) + "'" + ')"></div>' +
+        lapiz("evento", "Editar evento y portada", "portada") +
         '<div style="min-width:0">' +
           '<div class="filo"></div>' +
           '<div class="etq">' + esc(t9.cotizacion) + "</div>" +
@@ -744,7 +886,7 @@
       "</div>" +
 
       '<div class="cuerpo">' + aprobado +
-        (menu ? '<section><div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
+        (menu ? '<section>' + lapiz("menu", "Editar menú") + '<div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
           (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
           '</div><div class="carrusel"><div class="pista" id="pista" data-lenis-prevent>' + menu + "</div>" +
           '<div class="flechas"><button type="button" class="flecha prev" data-paso="-1">Anterior</button>' +
@@ -752,7 +894,7 @@
           (platillos.length > 1 ? '<div class="puntos">' + puntos + "</div>" : "") +
           "</div></section>" : "") +
 
-        '<section><div class="precio">' +
+        '<section>' + lapiz("precio", "Editar precios") + '<div class="precio">' +
           '<div><div class="etq">' + esc(t9.porPersona + iva) + "</div>" +
             '<div class="cifra oro" data-count="' + t.porPersona + '" data-format="moneda:' + esc(t.moneda) + '">' + dinero(t.porPersona, t.moneda) + "</div></div>" +
           '<div class="col-der"><div class="etq">' +
@@ -760,24 +902,28 @@
             '<div class="cifra" data-count="' + t.total + '" data-format="moneda:' + esc(t.moneda) + '">' + dinero(t.total, t.moneda) + "</div></div>" +
         "</div></section>" +
 
-        (incluye ? '<section><h2>' + esc(t9.incluye) + '</h2><div class="incluye">' + incluye + "</div></section>" : "") +
+        (incluye ? '<section>' + lapiz("incluye", "Editar") + '<h2>' + esc(t9.incluye) + '</h2><div class="incluye">' + incluye + "</div></section>" : "") +
 
         ((opcionales || condiciones) ? '<section><div class="rejilla-2">' +
-          (opcionales ? '<div class="caja"><div class="etq">' + esc(t9.opcional) + "</div>" + opcionales + "</div>" : "") +
-          (condiciones ? '<div class="caja"><div class="etq">' + esc(t9.condiciones) + "</div><ul>" + condiciones + "</ul></div>" : "") +
+          (opcionales ? '<div class="caja">' + lapiz("opcionales", "Editar") + '<div class="etq">' + esc(t9.opcional) + "</div>" + opcionales + "</div>" : "") +
+          (condiciones ? '<div class="caja">' + lapiz("condiciones", "Editar") + '<div class="etq">' + esc(t9.condiciones) + "</div><ul>" + condiciones + "</ul></div>" : "") +
         "</div></section>" : "") +
 
-        '<section><div class="pago">' +
+        '<section>' + lapiz("cobro", "Editar cobro") + '<div class="pago">' +
           '<div class="pago-cabeza">' +
             '<div><div class="etq">' + esc(t9.formaPago) + "</div>" +
               "<h2>" + esc(t9.anticipo.replace("{p}", t.pct)) + "</h2></div>" +
             '<div><div class="monto">' + dinero(t.anticipoConIva, t.moneda) + "</div>" +
               '<div class="monto-nota">' +
                 esc((t.iva ? dinero(t.anticipo, t.moneda) + " + " + t.iva + "% IVA · " : "") + t9.comprobante) +
-              "</div></div>" +
+              "</div>" +
+              (t.descuentoPct && t9.conDescuento
+                ? '<div class="monto-nota">' + esc(t9.conDescuento.replace("{m}", dinero(t.anticipoEfectivo, t.moneda)).replace("{d}", t.descuentoPct)) + "</div>"
+                : "") +
+              "</div>" +
           "</div>" +
           '<div class="pago-cuerpo">' +
-            '<div class="acciones">' + cobro + wa + (pagoAprobado() ? "" : calendario) +
+            '<div class="acciones">' + reservar + (pagoAprobado() ? "" : calendario) +
               '<button class="boton claro" type="button" data-copiar-resumen>' + esc(t9.copiarResumen) + "</button>" +
             "</div>" +
             (filas ? '<details class="formas"><summary>' + esc(t9.formasDePago) + "</summary>" +
@@ -866,8 +1012,99 @@
     mover();
   }
 
+  /* ---------- el asistente del administrador ---------- */
+  var hiloAdmin = [], ultimaAdmin = "", asisNombre = "", asisMotor = null;
+
+  function asistente(c, L) {
+    var forma = $("#asis-forma");
+    if (!forma) return;
+    if (!asisNombre) {
+      api("/silver/chat").then(function (st) {
+        var p = st.proveedores && st.proveedores[st.predeterminado];
+        if (!p) return;
+        asisNombre = p.nombre; asisMotor = st.predeterminado;
+        var n = $("#asis-nombre"), i = $("#asis-inicial");
+        if (n) n.textContent = asisNombre;
+        if (i) i.textContent = asisNombre.charAt(0);
+      }).catch(function () { /* sin llave: el primer pedido lo dirá */ });
+    }
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-pedir]"), function (b) {
+      b.addEventListener("click", function () { pedir(c, L, b.getAttribute("data-pedir")); });
+    });
+    forma.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = $("#asis-entrada").value.trim();
+      if (v) { $("#asis-entrada").value = ""; pedir(c, L, v); }
+    });
+  }
+
+  /** Un pedido al asistente. Si vuelve con cambios, se aplican en pantalla y Karina decide si guarda. */
+  function pedir(c, L, texto) {
+    var caja = $("#asis-respuesta"), p = $("#asis-texto"), boton = $("#asis-enviar");
+    hiloAdmin.push({ role: "user", content: texto });
+    hiloAdmin = hiloAdmin.slice(-20);
+    if (caja) { caja.hidden = false; p.textContent = (asisNombre || "Silver") + " está pensando…"; }
+    if (boton) boton.disabled = true;
+    api("/silver/chat", {
+      method: "POST",
+      body: JSON.stringify({ messages: hiloAdmin, proveedor: asisMotor || undefined,
+        contexto: { cotizacion: c, chef: estado.chef || {}, idioma: L } }),
+    })
+      .then(function (out) {
+        hiloAdmin.push({ role: "assistant", content: out.reply || "" });
+        ultimaAdmin = [out.reply].concat(out.notas || []).filter(Boolean).join("\n");
+        if (out.cambios && typeof out.cambios === "object") {
+          Object.keys(out.cambios).forEach(function (k) {
+            var v = out.cambios[k];
+            if (k === "precio" && v && typeof v === "object") c.precio = Object.assign(c.precio || {}, v);
+            else c[k] = v;
+          });
+          brindis("Cambios aplicados en pantalla. Revisa y pulsa Guardar.");
+          llenarSelector(); pintar();
+        } else if (p) {
+          p.textContent = ultimaAdmin;
+        }
+      })
+      .catch(function (e) { if (p) p.textContent = e.message; })
+      .then(function () { var b = $("#asis-enviar"); if (b) b.disabled = false; });
+  }
+
+  /** Karina te atiende: cada pregunta muestra su respuesta y ofrece seguir por WhatsApp. */
+  function atencion(c, t, t9, L, chef) {
+    var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
+    var caja = $("#faq-respuesta"), texto = $("#faq-texto"), wa = $("#faq-wa");
+    if (!caja) return;
+    function enlaceWa(mensaje) {
+      return "https://wa.me/" + soloDigitos(chef.whatsapp) + "?text=" + encodeURIComponent(t9.sobreCot + " " + tx(c.titulo, L) + ": " + mensaje);
+    }
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-faq]"), function (b) {
+      b.addEventListener("click", function () {
+        var q = preguntas[Number(b.getAttribute("data-faq"))];
+        if (!q) return;
+        var abierto = b.getAttribute("aria-expanded") === "true";
+        Array.prototype.forEach.call(hoja.querySelectorAll("[data-faq]"), function (x) { x.setAttribute("aria-expanded", "false"); });
+        if (abierto) { caja.hidden = true; return; }
+        b.setAttribute("aria-expanded", "true");
+        texto.textContent = tx(q.detalle, L).replace("{p}", t.pct);
+        wa.href = enlaceWa(tx(q.nombre, L));
+        caja.hidden = false;
+      });
+    });
+    var forma = $("#pregunta-libre");
+    if (forma) {
+      forma.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var v = $("#pregunta-texto").value.trim();
+        if (v) window.open(enlaceWa(v), "_blank", "noopener");
+      });
+    }
+  }
+
   function cablear(c, t, t9, L, iva) {
-    carrusel(); parallax();
+    carrusel(); parallax(); atencion(c, t, t9, L, estado.chef || {}); asistente(c, L);
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-editar]"), function (b) {
+      b.addEventListener("click", function () { abrirPanel(b.getAttribute("data-editar"), b.getAttribute("data-foto-editar")); });
+    });
     if (window.Motion) { window.Motion.dinero = dinero; window.Motion.init(hoja); }
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
       b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
@@ -1030,9 +1267,14 @@
       '<button type="button" class="agregar" data-agregar="' + clave + '">Agregar</button></fieldset>';
   }
 
-  function abrirPanel() {
+  /** Qué fieldset corresponde a cada lápiz de la página. */
+  var ANCLAS = { evento: "Evento", portada: "Evento", menu: "Menú", precio: "Precio por persona", incluye: "Incluye",
+                 opcionales: "Opcionales", condiciones: "Condiciones", cobro: "Cobro", contacto: "Contacto", preguntas: "Preguntas" };
+
+  function abrirPanel(ancla, foto) {
     var c = cotizacionActiva();
     if (!c) return;
+    if ($("#panel")) cerrarPanel();
     var chef = estado.chef || {};
     c.precio = c.precio || { mxn: 0, usd: 0 };
 
@@ -1074,14 +1316,19 @@
           "<fieldset><legend>Precio por persona</legend>" +
             '<div class="par-campos">' +
               campo("MXN (sin IVA)", c.precio.mxn, "precio.mxn", "number") +
-              campo("USD (sin IVA)", c.precio.usd, "precio.usd", "number") +
+              campo("USD · vacío = se calcula", c.precio.usd, "precio.usd", "number") +
             "</div>" +
             '<div class="par-campos">' +
               campo("Anticipo (%)", c.anticipoPct, "anticipoPct", "number") +
               campo("IVA (%) · solo pesos", c.ivaPct, "ivaPct", "number") +
             "</div>" +
-            '<div class="aviso">Los dos precios se capturan a mano. El cotizador no convierte monedas: ' +
-              "un tipo de cambio inventado hoy queda mal mañana.</div>" +
+            '<div class="par-campos">' +
+              campo("Tipo de cambio (MXN por USD)", c.tipoCambio || TIPO_CAMBIO, "tipoCambio", "number") +
+              campo("Descuento transferencia/efectivo (%)", isFinite(Number(c.descuentoEfectivoPct)) ? c.descuentoEfectivoPct : DESCUENTO_EFECTIVO, "descuentoEfectivoPct", "number") +
+            "</div>" +
+            '<div class="aviso">El precio en dólares sale del de pesos entre el tipo de cambio, redondeado a múltiplos de 5 ' +
+              "(y 100 se vuelve 99). El tipo de cambio no se le muestra al cliente. El descuento aplica solo en pesos, " +
+              "pagando por transferencia o en efectivo.</div>" +
             '<div class="aviso" id="vista-total"></div>' +
           "</fieldset>" +
 
@@ -1090,13 +1337,17 @@
           listaBi("Condiciones", "condiciones", c.condiciones, "Condición") +
 
           "<fieldset><legend>Cobro</legend>" +
-            campo("Link en pesos · Mercado Pago", c.linkMxn, "linkMxn") +
-            '<button type="button" class="agregar" id="btn-cobro-es">Generar cobro</button>' +
-            campo("Link en dólares · Stripe", c.linkUsd, "linkUsd") +
+            campo("Link en pesos · tarjeta (Mercado Pago)", c.linkMxn, "linkMxn") +
+            campo("Link en pesos · transferencia o efectivo, con descuento", c.linkMxnEfectivo, "linkMxnEfectivo") +
+            '<button type="button" class="agregar" id="btn-cobro-es">Generar cobros</button>' +
+            campo("Link en dólares · tarjeta, Apple Pay, Klarna/Affirm (Stripe)", c.linkUsd, "linkUsd") +
+            '<button type="button" class="agregar" id="btn-cobro-en">Generar cobro en dólares</button>' +
             '<div class="aviso">El lado en español cobra con el link en pesos; el inglés, con el de dólares. ' +
               "Klarna y Affirm aparecen solos en el checkout de Stripe si los activaste en su panel.</div>" +
             bi("Nota adicional", c.notaPago, "notaPago") +
           "</fieldset>" +
+
+          listaPares("Preguntas frecuentes (las contesta Karina)", "chef.preguntas", chef.preguntas, "Pregunta", "Respuesta") +
 
           "<fieldset><legend>Contacto</legend>" +
             campo("Nombre", chef.nombre, "chef.nombre") +
@@ -1109,7 +1360,10 @@
               campo("Correo", chef.correo, "chef.correo") +
               campo("Tu WhatsApp (solo dígitos)", chef.whatsapp, "chef.whatsapp") +
             "</div>" +
+            campo("Zelle (correo o teléfono) · dólares con descuento", chef.zelle, "chef.zelle") +
             '<div class="marca">Tu foto</div>' + fotoCampo(chef.foto, "chef.foto") +
+            '<div class="aviso">Abajo de cada cotización apareces tú: "Hola, soy Karina Kennedy". Las preguntas que ' +
+              "ve el cliente son estas; si las dejas vacías se usan las sugeridas.</div>" +
             campo("Enlace público del cotizador", chef.urlPublica, "chef.urlPublica") +
             '<div class="aviso">Es la dirección que ves en el navegador al abrir este cotizador. ' +
               "Se usa para armar el mensaje de WhatsApp; sin ella el enlace puede salir mal.</div>" +
@@ -1121,11 +1375,26 @@
     document.body.appendChild(panel);
     refrescarTotal();
 
+    // Llegó por un lápiz: el editor abre en esa sección; con foto, directo al selector.
+    if (ancla && ANCLAS[ancla]) {
+      Array.prototype.some.call(panel.querySelectorAll("legend"), function (lg) {
+        if (lg.textContent.indexOf(ANCLAS[ancla]) !== 0) return false;
+        lg.parentNode.scrollIntoView({ block: "start" });
+        return true;
+      });
+    }
+    if (foto) {
+      var entrada = panel.querySelector('[data-foto="' + foto + '"]');
+      if (entrada) entrada.click();
+    }
+
     panel.addEventListener("click", function (e) { if (e.target === panel) cerrarPanel(); });
     $("#btn-cerrar").addEventListener("click", cerrarPanel);
     $("#btn-guardar").addEventListener("click", guardar);
     var bc = $("#btn-cobro-es");
     if (bc) bc.addEventListener("click", function () { generarCobro("es"); });
+    var bu = $("#btn-cobro-en");
+    if (bu) bu.addEventListener("click", function () { generarCobro("en"); });
     $("#btn-borrar").addEventListener("click", function () {
       estado.cotizaciones = estado.cotizaciones.filter(function (x) { return x.slug !== c.slug; });
       estado.activa = (estado.cotizaciones[0] || {}).slug || "";
@@ -1175,7 +1444,7 @@
         if (!arr[i] || typeof arr[i] !== "object") arr[i] = { es: String(arr[i] || ""), en: "" };
         arr[i][el.dataset.l] = el.value;
       } else if (el.dataset.par) {
-        var f = act[el.dataset.par][Number(el.dataset.i)], sub = el.dataset.sub;
+        var lp = listaDe(act, el.dataset.par), f = lp[Number(el.dataset.i)], sub = el.dataset.sub;
         if (!f[sub] || typeof f[sub] !== "object") f[sub] = { es: String(f[sub] || ""), en: "" };
         f[sub][el.dataset.l] = el.value;
       }
@@ -1186,16 +1455,23 @@
       var agregar = e.target.getAttribute && e.target.getAttribute("data-agregar");
       var quitar = e.target.getAttribute && e.target.getAttribute("data-quitar");
       if (agregar) {
-        act[agregar] = act[agregar] || [];
-        act[agregar].push(agregar === "incluye" || agregar === "condiciones"
+        listaDe(act, agregar).push(agregar === "incluye" || agregar === "condiciones"
           ? { es: "", en: "" }
           : { nombre: { es: "", en: "" }, detalle: { es: "", en: "" } });
         cerrarPanel(); abrirPanel();
       } else if (quitar) {
-        act[quitar].splice(Number(e.target.getAttribute("data-i")), 1);
+        listaDe(act, quitar).splice(Number(e.target.getAttribute("data-i")), 1);
         cerrarPanel(); abrirPanel();
       }
     });
+  }
+
+  /** Una lista editable: de la cotización, o de Karina si la clave empieza con "chef.". */
+  function listaDe(act, clave) {
+    var o = act, k = clave;
+    if (k.indexOf("chef.") === 0) { o = estado.chef = estado.chef || {}; k = k.slice(5); }
+    o[k] = o[k] || [];
+    return o[k];
   }
 
   function refrescarTotal() {
@@ -1206,6 +1482,7 @@
     caja.textContent =
       "Español · " + mx.invitados + " × " + dinero(mx.porPersona, "MXN") + " = " + dinero(mx.total, "MXN") +
       " · anticipo " + dinero(mx.anticipoConIva, "MXN") + " con IVA" +
+      (mx.descuentoPct ? " · transferencia/efectivo " + dinero(mx.anticipoEfectivo, "MXN") : "") +
       "   |   English · " + us.invitados + " × " + dinero(us.porPersona, "USD") + " = " + dinero(us.total, "USD") +
       " · deposit " + dinero(us.anticipo, "USD");
   }
@@ -1219,6 +1496,20 @@
   /* ---------- guardar y cobrar ---------- */
 
   var RUTA_DATOS = "content/cotizaciones.json";
+  /* Preguntas que ve el cliente mientras Karina no escribe las suyas (Editar → Contacto). */
+  var PREGUNTAS_BASE = [
+    { nombre: { es: "¿Cómo aparto la fecha?", en: "How do I hold the date?" },
+      detalle: { es: "Con el anticipo del {p}%. El resto se liquida el día del evento.", en: "With the {p}% deposit. The balance is due on the day of the event." } },
+    { nombre: { es: "¿Puedo cambiar el menú?", en: "Can I change the menu?" },
+      detalle: { es: "Sí. Dime qué te gustaría y te propongo opciones al mismo precio, o te cotizo el cambio.", en: "Yes. Tell me what you'd like and I'll suggest options at the same price, or quote the change." } },
+    { nombre: { es: "¿Hay opción vegetariana o sin gluten?", en: "Vegetarian or gluten-free options?" },
+      detalle: { es: "Sí. Dime cuántas personas y adapto el menú.", en: "Yes. Tell me how many guests and I'll adapt the menu." } },
+    { nombre: { es: "¿Incluye meseros?", en: "Are servers included?" },
+      detalle: { es: "Se cotizan aparte. Te recomiendo cuántos según tu grupo.", en: "They're quoted separately. I'll recommend how many for your group." } },
+    { nombre: { es: "¿Y si cambio la fecha?", en: "What if I change the date?" },
+      detalle: { es: "Avísame cuanto antes. Si hay disponibilidad, el anticipo se mueve a la nueva fecha.", en: "Let me know as soon as you can. If the new date is open, the deposit moves with it." } }
+  ];
+
   /* Mientras Karina no suba su propia portada, se usa esta. */
   var PORTADA_PREDETERMINADA = "assets/cotizaciones/portada-rosarito.webp";
   var AUTH = null; // { token, email } cuando hay sesión de admin
@@ -1309,27 +1600,43 @@
     var concepto = "Anticipo " + t.pct + "% - " + tx(c.titulo, lado) + (c.cliente ? " - " + c.cliente : "");
     var boton = $("#btn-cobro-" + lado);
     if (boton) { boton.disabled = true; boton.textContent = "Creando…"; }
+    var back = location.origin + location.pathname + "?c=" + encodeURIComponent(c.slug);
 
-    api("/payments/charge", {
-      method: "POST",
-      body: JSON.stringify({
-        concept: concepto.slice(0, 240),
-        // En centavos enteros, redondeados aquí y no en el servidor.
-        amount_cents: Math.round(monto * 100),
-        currency: t.moneda,
-        reference: c.slug,
-        back_url: location.origin + location.pathname + "?c=" + encodeURIComponent(c.slug),
-      }),
-    })
+    function cobro(importe, extra) {
+      return api(lado === "es" ? "/payments/charge" : "/payments/stripe", {
+        method: "POST",
+        body: JSON.stringify(Object.assign({
+          concept: concepto.slice(0, 240),
+          // En centavos enteros, redondeados aquí y no en el servidor.
+          amount_cents: Math.round(importe * 100),
+          currency: t.moneda,
+          reference: c.slug,
+          back_url: back,
+        }, extra || {})),
+      });
+    }
+
+    // En pesos salen dos links: tarjeta al precio completo, y transferencia o
+    // efectivo con el descuento, con la tarjeta cerrada para ese link.
+    var conDescuento = lado === "es" && t.descuentoPct > 0;
+    cobro(monto)
       .then(function (r) {
         c[LADOS[lado].link] = r.pay_url || "";
         if (!r.live_mode) brindis("Ojo: se creó con credencial de PRUEBA. No cobra.");
-        else brindis("Cobro creado por " + dinero(monto, t.moneda) + ". Falta Guardar.");
+        if (!conDescuento) return null;
+        return cobro(t.anticipoEfectivo, {
+          concept: (concepto + " - transferencia/efectivo").slice(0, 240),
+          excluded_payment_types: ["credit_card", "debit_card", "prepaid_card"],
+        }).then(function (r2) { c.linkMxnEfectivo = r2.pay_url || ""; });
+      })
+      .then(function () {
+        brindis("Cobro creado por " + dinero(monto, t.moneda) +
+          (conDescuento ? " y " + dinero(t.anticipoEfectivo, t.moneda) + " con descuento" : "") + ". Falta Guardar.");
         cerrarPanel(); abrirPanel();
       })
       .catch(function (e) { brindis(e.message); })
       .finally(function () {
-        if (boton && boton.isConnected) { boton.disabled = false; boton.textContent = "Generar cobro"; }
+        if (boton && boton.isConnected) { boton.disabled = false; boton.textContent = lado === "es" ? "Generar cobros" : "Generar cobro en dólares"; }
       });
   }
 
@@ -1366,7 +1673,7 @@
     var s = sesionGuardada();
     if (!s) return;
     AUTH = s;
-    api("/session").then(function () { barraAdmin(); if (!enCotizacion()) pintarLanding(true); }).catch(function () {
+    api("/session").then(function () { barraAdmin(); if (enCotizacion()) pintar(); else pintarLanding(true); }).catch(function () {
       AUTH = null;
       localStorage.removeItem("kpk_auth");
     });

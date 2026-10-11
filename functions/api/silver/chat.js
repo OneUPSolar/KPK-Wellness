@@ -19,7 +19,7 @@ export async function onRequestPost({ request, env }) {
   try {
     await requireAdmin(request, env);
     const body = await readJson(request);
-    return json(await conversar(env, body?.messages, body?.proveedor));
+    return json(await conversar(env, body?.messages, body?.proveedor, body?.contexto));
   } catch (res) {
     return res instanceof Response ? res : json({ error: 'Silver no pudo responder.' }, 500);
   }

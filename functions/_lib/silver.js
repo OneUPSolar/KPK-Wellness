@@ -1,16 +1,18 @@
 /**
  * Silver dentro de la app de Karina.
  *
- * Las instrucciones son las mismas que se pegan en el GPT de ChatGPT
- * (docs/silver-agent/silver-instructions.md), leídas del repo, para que haya
- * una sola Silver y no dos que se vayan separando. Lo único que cambia es la
- * sección de publicar: aquí no hay Action, hay una herramienta del modelo que
- * el servidor ejecuta con la misma publicarReceta que usa el GPT.
+ * Dos modos, un mismo motor:
+ *  - recetas (por defecto): las instrucciones son las mismas que se pegan en el
+ *    GPT de ChatGPT (docs/silver-agent/silver-instructions.md), leídas del repo,
+ *    y la herramienta publica con la misma publicarReceta que usa el GPT.
+ *  - cotizador: cuando llega `contexto.cotizacion`, Silver atiende a Karina (o a
+ *    quien administre) dentro de una cotización: hace la comanda, propone
+ *    cambios y redacta mensajes. Los cambios no se publican: vuelven a la app
+ *    como `cambios`, Karina los ve aplicados y decide si guarda.
  *
- * Dos proveedores, las dos llaves de Karina, y cada uno con nombre propio
- * para que ella sepa quién le contesta: Silver habla con OpenAI, Claudio con
- * Claude. Cada uno habla su protocolo, pero la herramienta, el prompt y el
- * commit son los mismos.
+ * Dos proveedores, las dos llaves de Karina, y cada uno con nombre propio:
+ * Silver habla con OpenAI, Claudio con Claude. Cada uno habla su protocolo,
+ * pero las herramientas, el prompt y lo que pasa después son los mismos.
  */
 import { ghRead, json } from './responder.js';
 import { CATEGORIAS, publicarReceta } from './recetas.js';
@@ -20,10 +22,12 @@ const INSTRUCCIONES = 'docs/silver-agent/silver-instructions.md';
 /** Máximo de vueltas modelo → herramienta → modelo en una sola respuesta. */
 const MAX_VUELTAS = 3;
 
-/** Una sola definición; cada proveedor la envuelve en su forma. */
-const HERRAMIENTA = {
+/* ───────────────── herramientas ───────────────── */
+
+const PUBLICAR = {
   name: 'publicar_receta',
   description: 'Publica una receta en kpk.associates. Llamar solo después de que Karina confirme. Si el id ya existe, la actualiza.',
+  strict: true,
   schema: {
     type: 'object',
     additionalProperties: false,
@@ -33,6 +37,20 @@ const HERRAMIENTA = {
       categoria: { type: 'string', enum: CATEGORIAS },
       id: { type: 'string', description: 'Slug en minúsculas, a-z 0-9 y guiones. Debe ser igual al id del frontmatter.' },
       markdown: { type: 'string', description: 'La receta completa en markdown, texto plano, sin cercas de código.' },
+    },
+  },
+};
+
+const ACTUALIZAR = {
+  name: 'actualizar_cotizacion',
+  description: 'Aplica cambios a la cotización abierta. Manda SOLO los campos que cambian, con el mismo esquema del JSON. No publica nada: Karina revisa y guarda.',
+  strict: false,
+  schema: {
+    type: 'object',
+    required: ['cambios'],
+    properties: {
+      cambios: { type: 'object', description: 'Objeto parcial con los campos que cambian. Las listas (menu, incluye, opcionales, condiciones) se mandan completas.' },
+      nota: { type: 'string', description: 'Una línea para Karina sobre qué cambió y por qué.' },
     },
   },
 };
@@ -64,13 +82,47 @@ export function adaptarInstrucciones(md) {
   return s;
 }
 
-async function instrucciones(env) {
+async function instruccionesRecetas(env) {
   // Diez minutos: una edición a las instrucciones entra sola, sin redeploy.
   if (cache.texto && Date.now() - cache.cuando < 10 * 60 * 1000) return cache.texto;
   const file = await ghRead(env, INSTRUCCIONES);
   if (!file) throw json({ error: `No encontré ${INSTRUCCIONES} en el repo.` }, 500);
   cache = { texto: adaptarInstrucciones(file.content), cuando: Date.now() };
   return cache.texto;
+}
+
+/** Lo que sabe Silver cuando atiende una cotización. */
+export function instruccionesCotizador(nombre, contexto) {
+  const cot = contexto.cotizacion || {};
+  const chef = contexto.chef || {};
+  const idioma = contexto.idioma === 'en' ? 'en' : 'es';
+  return `Eres **${nombre}**, asistente de la chef Karina Paz Kennedy dentro de su cotizador (kpk.associates).
+Hablas con Karina o con quien administra su negocio, no con el cliente. Responde en español, claro y breve; el contenido
+que vaya al cliente se escribe en el idioma de la cotización (${idioma === 'en' ? 'inglés' : 'español'}).
+
+## Qué haces
+
+1. **La comanda.** Cuando te la pidan, arma la lista de producción para cocina de esta cotización: por platillo, piezas
+   totales (invitados × piezas por persona, repartidas según la nota del menú; si no está claro, repártelas parejo y dilo),
+   insumos principales con cantidad estimada, y un orden de preparación con tiempos. Lista para copiar, sin adornos.
+2. **Cambios.** Cuando pidan cambiar algo concreto (menú, precios, incluye, condiciones, fechas, textos), llama a
+   \`actualizar_cotizacion\` con SOLO los campos que cambian, respetando el esquema: los textos van bilingües
+   \`{ "es": "...", "en": "..." }\`; el menú es una lista completa de \`{ "nombre": {es,en}, "detalle": {es,en}, "imagen": "..." }\`
+   (conserva \`imagen\` de los platillos que no cambian); las listas se mandan completas. Después confirma en una
+   línea qué cambió. Nada se publica: Karina ve el cambio aplicado y decide si guarda.
+3. **Mensajes.** Redacta mensajes para el cliente (WhatsApp): cortos, cálidos, en su idioma, sin tecnicismos.
+4. **Revisión.** Si te piden revisar precios o el anticipo, calcula con los datos: total = invitados × precio por persona;
+   IVA ${cot.ivaPct ?? 16}% solo en pesos; anticipo ${cot.anticipoPct ?? 50}%.
+
+No inventes datos que no estén en la cotización; si falta algo, pregunta.
+
+## Quién cotiza
+${JSON.stringify({ nombre: chef.nombre, zona: chef.zona, whatsapp: chef.whatsapp }, null, 0)}
+
+## La cotización abierta (JSON)
+\`\`\`json
+${JSON.stringify(cot, null, 2)}
+\`\`\``;
 }
 
 /** Lo que manda la app: solo usuario y asistente, acotado. */
@@ -82,18 +134,27 @@ export function limpiarHistorial(mensajes) {
     .slice(-24);
 }
 
-/** Ejecuta la herramienta y devuelve lo que se le cuenta al modelo. */
-async function ejecutar(nombre, args, env, publicadas) {
-  if (nombre !== HERRAMIENTA.name) return { error: `Herramienta desconocida: ${nombre}` };
-  let resultado;
-  try {
-    resultado = await publicarReceta(env, args);
-  } catch (e) {
-    // Un fallo de GitHub se le cuenta al modelo, no se oculta.
-    resultado = { error: e instanceof Response ? (await e.json().catch(() => ({}))).error || `GitHub ${e.status}` : 'No se pudo publicar.' };
+/** Ejecuta una herramienta y devuelve lo que se le cuenta al modelo. */
+async function ejecutar(nombre, args, env, salida) {
+  if (nombre === PUBLICAR.name) {
+    let resultado;
+    try {
+      resultado = await publicarReceta(env, args);
+    } catch (e) {
+      // Un fallo de GitHub se le cuenta al modelo, no se oculta.
+      resultado = { error: e instanceof Response ? (await e.json().catch(() => ({}))).error || `GitHub ${e.status}` : 'No se pudo publicar.' };
+    }
+    if (!resultado.error) salida.publicadas.push(resultado);
+    return resultado.error ? resultado : { success: true, ...resultado };
   }
-  if (!resultado.error) publicadas.push(resultado);
-  return resultado.error ? resultado : { success: true, ...resultado };
+  if (nombre === ACTUALIZAR.name) {
+    const cambios = args && typeof args.cambios === 'object' && args.cambios && !Array.isArray(args.cambios) ? args.cambios : null;
+    if (!cambios || !Object.keys(cambios).length) return { error: 'cambios debe ser un objeto con al menos un campo.' };
+    salida.cambios = Object.assign(salida.cambios || {}, cambios);
+    if (args.nota) salida.notas.push(String(args.nota));
+    return { success: true, aplicado: Object.keys(cambios), aviso: 'Aplicado en pantalla; Karina decide si guarda.' };
+  }
+  return { error: `Herramienta desconocida: ${nombre}` };
 }
 
 /* ───────────────── OpenAI ───────────────── */
@@ -105,14 +166,14 @@ const openai = {
   habilitado: (env) => Boolean(env.OPENAI_API_KEY),
   modelo: (env) => env.OPENAI_MODEL || 'gpt-4.1',
 
-  async llamar(env, messages) {
+  async llamar(env, messages, herramientas) {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: { authorization: `Bearer ${env.OPENAI_API_KEY}`, 'content-type': 'application/json' },
       body: JSON.stringify({
         model: this.modelo(env),
         messages,
-        tools: [{ type: 'function', function: { name: HERRAMIENTA.name, description: HERRAMIENTA.description, parameters: HERRAMIENTA.schema } }],
+        tools: herramientas.map((h) => ({ type: 'function', function: { name: h.name, description: h.description, parameters: h.schema } })),
         tool_choice: 'auto',
       }),
     });
@@ -125,10 +186,10 @@ const openai = {
     return msg;
   },
 
-  async conversar(env, sistema, historial, publicadas) {
+  async conversar(env, sistema, historial, salida, herramientas) {
     const messages = [{ role: 'system', content: sistema }, ...historial];
     for (let vuelta = 0; vuelta <= MAX_VUELTAS; vuelta++) {
-      const msg = await this.llamar(env, messages);
+      const msg = await this.llamar(env, messages, herramientas);
       const llamadas = Array.isArray(msg.tool_calls) ? msg.tool_calls : [];
       if (!llamadas.length || vuelta === MAX_VUELTAS) return String(msg.content || '').trim();
 
@@ -136,7 +197,7 @@ const openai = {
       for (const c of llamadas) {
         let args = {};
         try { args = JSON.parse(c.function?.arguments || '{}'); } catch { args = {}; }
-        const r = await ejecutar(c.function?.name, args, env, publicadas);
+        const r = await ejecutar(c.function?.name, args, env, salida);
         messages.push({ role: 'tool', tool_call_id: c.id, content: JSON.stringify(r) });
       }
     }
@@ -153,7 +214,7 @@ const anthropic = {
   habilitado: (env) => Boolean(env.ANTHROPIC_API_KEY),
   modelo: (env) => env.ANTHROPIC_MODEL || 'claude-opus-5-5',
 
-  async llamar(env, sistema, messages) {
+  async llamar(env, sistema, messages, herramientas) {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -168,11 +229,11 @@ const anthropic = {
         model: this.modelo(env),
         max_tokens: 16000,
         // El razonamiento viene siempre encendido en esta familia; la
-        // profundidad se controla con effort. Una receta no necesita más.
+        // profundidad se controla con effort. Una receta o una comanda no necesitan más.
         output_config: { effort: 'medium' },
         fallbacks: 'default',
         system: sistema,
-        tools: [{ name: HERRAMIENTA.name, description: HERRAMIENTA.description, input_schema: HERRAMIENTA.schema, strict: true }],
+        tools: herramientas.map((h) => ({ name: h.name, description: h.description, input_schema: h.schema, ...(h.strict ? { strict: true } : {}) })),
         messages,
       }),
     });
@@ -184,13 +245,13 @@ const anthropic = {
     return body;
   },
 
-  async conversar(env, sistema, historial, publicadas) {
+  async conversar(env, sistema, historial, salida, herramientas) {
     const messages = historial.map((m) => ({ role: m.role, content: m.content }));
     for (let vuelta = 0; vuelta <= MAX_VUELTAS; vuelta++) {
-      const msg = await this.llamar(env, sistema, messages);
+      const msg = await this.llamar(env, sistema, messages, herramientas);
       const texto = msg.content.filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
       if (msg.stop_reason === 'refusal') {
-        return texto || 'No puedo ayudar con esa petición. ¿Probamos con otro platillo?';
+        return texto || 'No puedo ayudar con esa petición. ¿Probamos con otra cosa?';
       }
       const usos = msg.content.filter((b) => b.type === 'tool_use');
       if (msg.stop_reason !== 'tool_use' || !usos.length || vuelta === MAX_VUELTAS) return texto;
@@ -200,7 +261,7 @@ const anthropic = {
       messages.push({ role: 'assistant', content: msg.content });
       const resultados = [];
       for (const u of usos) {
-        const r = await ejecutar(u.name, u.input && typeof u.input === 'object' ? u.input : {}, env, publicadas);
+        const r = await ejecutar(u.name, u.input && typeof u.input === 'object' ? u.input : {}, env, salida);
         resultados.push({ type: 'tool_result', tool_use_id: u.id, content: JSON.stringify(r), ...(r.error ? { is_error: true } : {}) });
       }
       messages.push({ role: 'user', content: resultados });
@@ -211,7 +272,7 @@ const anthropic = {
 
 const PROVEEDORES = { openai, anthropic };
 
-/** Qué motores tiene llave, y cuál se usa si la app no pide uno. */
+/** Qué motores tienen llave, y cuál se usa si la app no pide uno. */
 export function estado(env) {
   const proveedores = {};
   for (const p of Object.values(PROVEEDORES)) {
@@ -221,17 +282,17 @@ export function estado(env) {
   return { habilitada: Boolean(predeterminado), predeterminado, proveedores };
 }
 
-/** Las instrucciones están escritas para Silver; Claudio las recibe a su nombre. */
+/** Las instrucciones de recetas están escritas para Silver; Claudio las recibe a su nombre. */
 export function conNombre(sistema, nombre) {
   return nombre === 'Silver' ? sistema : sistema.replace(/\bSilver\b/g, nombre);
 }
 
 /**
- * Una vuelta de conversación. Devuelve { reply, publicadas, proveedor, nombre }.
- * El modelo puede pedir publicar; el servidor lo hace y le devuelve el
- * resultado para que redacte la confirmación con lo que de verdad pasó.
+ * Una vuelta de conversación. Devuelve { reply, publicadas, cambios, notas, proveedor, nombre }.
+ * El modelo puede pedir publicar o actualizar; el servidor lo hace y le
+ * devuelve el resultado para que redacte la confirmación con lo que de verdad pasó.
  */
-export async function conversar(env, historial, proveedor) {
+export async function conversar(env, historial, proveedor, contexto) {
   const st = estado(env);
   const clave = proveedor || st.predeterminado;
   const p = PROVEEDORES[clave];
@@ -245,7 +306,13 @@ export async function conversar(env, historial, proveedor) {
     throw json({ error: 'El último mensaje debe ser de Karina.' }, 400);
   }
 
-  const publicadas = [];
-  const reply = await p.conversar(env, conNombre(await instrucciones(env), p.nombre), limpio, publicadas);
-  return { reply, publicadas, proveedor: p.clave, nombre: p.nombre };
+  const enCotizador = Boolean(contexto && contexto.cotizacion && typeof contexto.cotizacion === 'object');
+  const sistema = enCotizador
+    ? instruccionesCotizador(p.nombre, contexto)
+    : conNombre(await instruccionesRecetas(env), p.nombre);
+  const herramientas = enCotizador ? [ACTUALIZAR] : [PUBLICAR];
+
+  const salida = { publicadas: [], cambios: null, notas: [] };
+  const reply = await p.conversar(env, sistema, limpio, salida, herramientas);
+  return { reply, publicadas: salida.publicadas, cambios: salida.cambios, notas: salida.notas, proveedor: p.clave, nombre: p.nombre };
 }

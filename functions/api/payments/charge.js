@@ -40,12 +40,19 @@ export function parseCharge(body) {
   const backUrl = body?.back_url ? String(body.back_url) : undefined;
   if (backUrl && !/^https:\/\//i.test(backUrl)) return { error: 'back_url debe ser https.' };
 
+  // Un cobro puede cerrar la tarjeta: así el link con descuento por
+  // transferencia/efectivo no se puede pagar con tarjeta al precio rebajado.
+  const PERMITIDOS = ['credit_card', 'debit_card', 'prepaid_card', 'ticket', 'bank_transfer', 'atm'];
+  const excluir = Array.isArray(body?.excluded_payment_types) ? body.excluded_payment_types.map(String) : [];
+  if (excluir.some((t) => !PERMITIDOS.includes(t))) return { error: 'excluded_payment_types trae un tipo desconocido.' };
+
   return {
     concept,
     cents,
     currency,
     backUrl,
     reference: body?.reference ? String(body.reference).slice(0, 120) : undefined,
+    excluir,
   };
 }
 
@@ -79,6 +86,9 @@ export async function onRequestPost({ request, env }) {
           unit_price: parsed.cents / 100,
         }],
         external_reference: parsed.reference || idem,
+        ...(parsed.excluir.length
+          ? { payment_methods: { excluded_payment_types: parsed.excluir.map((id) => ({ id })) } }
+          : {}),
         ...(parsed.backUrl
           ? { back_urls: { success: parsed.backUrl, pending: parsed.backUrl, failure: parsed.backUrl } }
           : {}),
