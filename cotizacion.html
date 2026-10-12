@@ -490,6 +490,29 @@
     padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 10px; justify-content: space-between;
   }
   .tel { display: flex; gap: 6px; min-width: 0; }
+  /* ---------- factura ---------- */
+  .fac-fondo { position: fixed; inset: 0; z-index: 60; background: rgba(31,32,36,0.55); display: grid; align-items: end; justify-items: center; }
+  @media (min-width: 640px) { .fac-fondo { align-items: center; } }
+  .fac-caja { width: min(540px, 100%); max-height: calc(100dvh - env(safe-area-inset-top, 0px)); overflow-y: auto; background: var(--papel);
+    border-radius: 20px 20px 0 0; padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 12px; }
+  @media (min-width: 640px) { .fac-caja { border-radius: 20px; } }
+  .fac-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .fac-cab b { font-family: var(--display); font-size: 1.5rem; font-weight: 600; }
+  .fac-x { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--linea); background: none; font-size: 1.3rem; cursor: pointer; color: var(--tinta-sueve); }
+  .fac-nota { margin: 0; color: var(--tinta-sueve); font-size: 0.92rem; }
+  .fac-caja label { display: grid; gap: 4px; font-size: 0.86rem; font-weight: 500; color: var(--tinta); }
+  .fac-caja label small { font-weight: 400; color: var(--tinta-sueve); }
+  .fac-caja input:not([type=file]), .fac-caja select { font: inherit; font-size: 16px; padding: 10px 12px; border: 1px solid var(--linea); border-radius: 10px; background: #fff; color: var(--tinta); width: 100%; min-width: 0; }
+  .fac-par { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; }
+  .fac-archivo { position: relative; display: block; border: 1px dashed var(--arena-hond); border-radius: 12px; padding: 14px; text-align: center; color: var(--tinta-sueve); cursor: pointer; }
+  .fac-archivo input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .fac-aviso { margin: 0; font-size: 0.9rem; } .fac-aviso.error { color: #A2453D; } .fac-aviso a { color: var(--eucalipto-h); font-weight: 600; }
+  .fac-acciones { display: flex; gap: 8px; justify-content: flex-end; position: sticky; bottom: 0; background: var(--papel); padding-top: 6px; }
+  .facturas { display: grid; gap: 8px; }
+  .fac-item { padding: 8px 0; border-top: 1px solid var(--linea); font-size: 0.92rem; }
+  .fac-item small { color: var(--tinta-sueve); }
+  .fac-item .boton { margin-top: 6px; padding: 6px 12px; font-size: 0.8rem; }
+  .nota-chica { font-size: 0.9rem; color: var(--tinta-sueve); }
   .par-campos label:has(.tel) { grid-column: 1 / -1; }
   .tel select { flex: 0 0 auto; max-width: 46%; font: inherit; font-size: 0.88rem; border: 1px solid var(--linea); border-radius: 6px; background: var(--papel); padding: 8px 6px; color: var(--tinta); }
   .tel .tel-num { flex: 1; }
@@ -631,8 +654,8 @@
       m2: "Pagar por transferencia", m2d: "SPEI desde tu banco.",
       m3: "Pagar en efectivo", m3d: "En tiendas afiliadas a Mercado Pago.",
       mOtro: "Pagar en dólares (USD)", mOtrod: "{m} · sin IVA, con invoice. Por Zelle.", mOtroBoton: "Ver en dólares", mOtroIdioma: "en",
-      mFac: "Factura para deducir impuestos (CFDI)", mFacd: "Incluida en el precio en pesos. Te pedimos RFC, razón social, régimen fiscal, código postal y uso de CFDI (tipo de deducción).",
-      mFacBoton: "Pedir factura", mFacWa: "Hola Karina, necesito factura (CFDI) para deducir el anticipo de",
+      mFac: "Factura para deducir impuestos (CFDI)", mFacd: "Incluida en el precio en pesos. Sube tu constancia de situación fiscal y elige el uso de CFDI. No detiene tu pago: la factura sale después.",
+      mFacBoton: "Datos para factura", mFacWa: "Hola Karina, necesito factura (CFDI) para deducir el anticipo de",
       mFacDatos: "Mis datos fiscales:\nRFC:\nRazón social:\nRégimen fiscal:\nCódigo postal:\nUso de CFDI (tipo de deducción, ej. G03 Gastos en general):\nCorreo para la factura:",
       resumenCopiado: "Resumen copiado", sinCotizaciones: "Todavía no hay cotizaciones",
       leyenda: "Cotización en pesos mexicanos, con factura.",
@@ -951,7 +974,9 @@
     var tOtro = totales(c, t9.mOtroIdioma);
     filas += fila(t9.mOtro, t9.mOtrod.replace("{m}", dinero(L === "es" ? tOtro.anticipo : tOtro.anticipoConIva, tOtro.moneda)),
       '<button type="button" class="pagar" data-cambiar-idioma="' + t9.mOtroIdioma + '">' + esc(t9.mOtroBoton) + "</button>");
-    if (chef.whatsapp) {
+    if (L === "es") {
+      filas += fila(t9.mFac, t9.mFacd, '<button type="button" class="pagar" data-factura>' + esc(t9.mFacBoton) + "</button>");
+    } else if (chef.whatsapp) {
       filas += fila(t9.mFac, t9.mFacd, '<a class="pagar" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
         encodeURIComponent(t9.mFacWa + " " + tx(c.titulo, L) + " (" + dinero(t.anticipoConIva, t.moneda) + ").\n\n" + t9.mFacDatos) + '">' + esc(t9.mFacBoton) + "</a>");
     }
@@ -997,7 +1022,8 @@
     var aprobado = pagoAprobado()
       ? '<section><div class="aprobado"><div><b>' + esc(t9.pagoRecibido) + "</b><span>" +
         esc(t9.fechaApartada + ": " + tx(c.fecha, L) + (tx(c.horario, L) ? " · " + tx(c.horario, L) : "")) + "</span></div>" +
-        '<div class="acciones">' + waPagado + calendario + "</div></div></section>"
+        '<div class="acciones">' + waPagado + calendario +
+          (L === "es" ? '<button type="button" class="boton claro" data-factura>¿Necesitas factura?</button>' : "") + "</div></div></section>"
       : "";
     var preguntas = (chef.preguntas && chef.preguntas.length ? chef.preguntas : PREGUNTAS_BASE);
     var chips = preguntas.map(function (q, i) {
@@ -1057,6 +1083,7 @@
       "</div>" +
 
       '<div class="cuerpo">' + aprobado +
+        (admin ? '<section><div class="caja facturas" id="facturas"><div class="etq">Facturas solicitadas</div><div id="facturas-lista" class="nota-chica">Cargando…</div></div></section>' : "") +
         (menu ? '<section>' + lapiz("menu", "Editar menú") + '<div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
           (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
           '</div><div class="carrusel"><div class="pista" id="pista" data-lenis-prevent>' + menu + "</div>" +
@@ -1340,6 +1367,112 @@
     });
   }
 
+  /* ---------- factura (CFDI) ----------
+     El cliente sube su constancia y elige el uso de CFDI. No detiene el pago:
+     se guarda en privado (nunca en el repo) y Karina factura cuando el pago entra. */
+  var REGIMENES = [["612", "612 · Personas Físicas con Actividades Empresariales y Profesionales"], ["626", "626 · Régimen Simplificado de Confianza"],
+    ["601", "601 · General de Ley Personas Morales"], ["605", "605 · Sueldos y Salarios"], ["606", "606 · Arrendamiento"],
+    ["603", "603 · Personas Morales con Fines no Lucrativos"], ["621", "621 · Incorporación Fiscal"], ["625", "625 · Plataformas Tecnológicas"],
+    ["616", "616 · Sin obligaciones fiscales"]];
+  var USOS_CFDI = [["G03", "G03 · Gastos en general"], ["G01", "G01 · Adquisición de mercancías"], ["S01", "S01 · Sin efectos fiscales"]];
+
+  function leerArchivo(f) {
+    return new Promise(function (ok, mal) {
+      if (f.size > 5 * 1024 * 1024) { mal(new Error("La constancia pesa más de 5 MB.")); return; }
+      var r = new FileReader();
+      r.onload = function () { ok(r.result); };
+      r.onerror = function () { mal(new Error("No se pudo leer el archivo.")); };
+      r.readAsDataURL(f);
+    });
+  }
+
+  function formFactura(c, L) {
+    if (document.querySelector(".fac-fondo")) return;
+    var chef = estado.chef || {}, archivo = "";
+    var opt = function (lista, sel) { return lista.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === sel ? " selected" : "") + ">" + esc(o[1]) + "</option>"; }).join(""); };
+    var fondo = document.createElement("div");
+    fondo.className = "fac-fondo";
+    fondo.innerHTML =
+      '<form class="fac-caja" role="dialog" aria-modal="true" aria-label="Datos para factura" novalidate>' +
+        '<div class="fac-cab"><b>Datos para tu factura</b><button type="button" class="fac-x" aria-label="Cerrar">×</button></div>' +
+        '<p class="fac-nota">Para deducir el anticipo de impuestos. Esto no detiene tu pago: paga cuando quieras y la factura (CFDI) se emite después.</p>' +
+        '<label>Constancia de situación fiscal <small>PDF o foto · opcional</small>' +
+          '<span class="fac-archivo"><input type="file" name="archivo" accept="application/pdf,image/*"><span class="fac-archivo-txt">Subir constancia</span></span></label>' +
+        '<label>RFC<input name="rfc" autocomplete="off" autocapitalize="characters" maxlength="13" required></label>' +
+        '<label>Nombre o razón social <small>como aparece en tu constancia</small><input name="razon" maxlength="200" required></label>' +
+        '<label>Régimen fiscal<select name="regimen" required><option value="">Elige…</option>' + opt(REGIMENES) + "</select></label>" +
+        '<div class="fac-par"><label>Código postal<input name="cp" inputmode="numeric" maxlength="5" required></label>' +
+          '<label>Uso de CFDI <small>tipo de deducción</small><select name="uso" required>' + opt(USOS_CFDI, "G03") + "</select></label></div>" +
+        '<label>Correo para recibir la factura<input name="correo" type="email" autocomplete="email" value="' + esc(c.correoCliente || "") + '" required></label>' +
+        '<input name="web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">' +
+        '<p class="fac-aviso" role="status" hidden></p>' +
+        '<div class="fac-acciones"><button type="button" class="boton claro fac-volver">← Volver</button><button type="submit" class="boton primario fac-enviar">Enviar datos</button></div>' +
+      "</form>";
+    document.body.appendChild(fondo);
+    var forma = fondo.querySelector("form");
+    var aviso = function (clase, t, html) { var p = forma.querySelector(".fac-aviso"); p.className = "fac-aviso " + clase; if (html) p.innerHTML = html; else p.textContent = t; p.hidden = !t && !html; };
+    function cerrar() { fondo.remove(); }
+    forma.querySelector(".fac-x").addEventListener("click", cerrar);
+    forma.querySelector(".fac-volver").addEventListener("click", cerrar);
+    fondo.addEventListener("click", function (e) { if (e.target === fondo) cerrar(); });
+    fondo.addEventListener("keydown", function (e) { if (e.key === "Escape") cerrar(); });
+    forma.archivo.addEventListener("change", function () {
+      var f = forma.archivo.files[0];
+      if (!f) return;
+      leerArchivo(f).then(function (url) { archivo = url; forma.querySelector(".fac-archivo-txt").textContent = "✓ " + f.name; })
+        .catch(function (e) { archivo = ""; aviso("error", e.message); });
+    });
+    forma.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var b = forma.querySelector(".fac-enviar");
+      b.disabled = true; b.textContent = "Enviando…"; aviso("", "");
+      fetch("/api/factura", {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ c: c.slug, rfc: forma.rfc.value, razon: forma.razon.value, regimen: forma.regimen.value, cp: forma.cp.value,
+          uso: forma.uso.value, correo: forma.correo.value, web: forma.web.value, archivo: archivo })
+      })
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok) { var err = new Error(j.error || "No se pudo enviar."); err.sinAlmacen = j.sinAlmacen; throw err; } return j; }); })
+        .then(function () {
+          forma.innerHTML = '<div class="fac-cab"><b>¡Listo!</b><button type="button" class="fac-x" aria-label="Cerrar">×</button></div>' +
+            '<p class="fac-nota">Recibimos tus datos fiscales. Karina emite tu factura cuando tu pago esté acreditado y te llega a ' + esc(forma.correo ? forma.correo.value : "tu correo") + ".</p>" +
+            '<div class="fac-acciones"><button type="button" class="boton primario fac-volver">Volver a la cotización</button></div>';
+          forma.querySelector(".fac-x").addEventListener("click", cerrar);
+          forma.querySelector(".fac-volver").addEventListener("click", cerrar);
+        })
+        .catch(function (err) {
+          b.disabled = false; b.textContent = "Enviar datos";
+          if (err.sinAlmacen && chef.whatsapp) {
+            aviso("error", "", esc("Por ahora mándanos tus datos por WhatsApp:") + ' <a target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) +
+              "?text=" + encodeURIComponent(T.es.mFacWa + " " + tx(c.titulo, "es") + ".\n\n" + T.es.mFacDatos) + '">Abrir WhatsApp</a>');
+          } else aviso("error", err.message);
+        });
+    });
+    forma.rfc.focus();
+  }
+
+  /** Admin: lo que los clientes subieron para su factura. */
+  function facturasAdmin(c) {
+    var caja = $("#facturas-lista");
+    if (!caja) return;
+    api("/factura?c=" + encodeURIComponent(c.slug)).then(function (r) {
+      var l = r.solicitudes || [];
+      if (!l.length) { caja.textContent = "Nadie ha pedido factura todavía."; return; }
+      caja.innerHTML = l.map(function (x) {
+        return '<div class="fac-item"><b>' + esc(x.razon) + "</b> · " + esc(x.rfc) + "<br><small>" + esc(x.regimen) + " · CP " + esc(x.cp) + " · " + esc(x.uso) +
+          " · " + esc(x.correo) + " · " + esc(new Date(x.cuando).toLocaleDateString("es-MX")) + "</small>" +
+          (x.constancia ? ' <button type="button" class="boton claro fac-bajar" data-archivo="' + esc(x.constancia) + '">Descargar constancia</button>' : "") + "</div>";
+      }).join("");
+      Array.prototype.forEach.call(caja.querySelectorAll(".fac-bajar"), function (b) {
+        b.addEventListener("click", function () {
+          fetch("/api/factura?c=" + encodeURIComponent(c.slug) + "&archivo=" + encodeURIComponent(b.dataset.archivo), { headers: { authorization: "Bearer " + AUTH.token } })
+            .then(function (r) { if (!r.ok) throw new Error("No se pudo descargar."); return r.blob(); })
+            .then(function (blob) { var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = b.dataset.archivo.split("/").pop(); a.click(); })
+            .catch(function (e) { brindis(e.message); });
+        });
+      });
+    }).catch(function (e) { caja.textContent = e.message; });
+  }
+
   var pagoAvisado = false;
   /** Vuelve de Mercado Pago aprobado: el servidor verifica el pago, lo registra y manda el correo de reserva. */
   function registrarPago(c) {
@@ -1371,6 +1504,10 @@
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
       b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
     });
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-factura]"), function (b) {
+      b.addEventListener("click", function () { formFactura(c, L); });
+    });
+    if (esAdmin()) facturasAdmin(c);
     var acceso = hoja.querySelector("#btn-acceso");
     if (acceso) {
       acceso.addEventListener("click", function () {
