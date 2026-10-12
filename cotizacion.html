@@ -1592,7 +1592,7 @@
   function enlacePublico(slug) {
     var base = String((estado.chef || {}).urlPublica || "").trim().replace(/#.*$/, "");
     if (!/^https:\/\//i.test(base)) base = location.origin + location.pathname;
-    return base.replace(/\?.*$/, "") + "?c=" + encodeURIComponent(slug) + "-view";
+    return base.replace(/\?.*$/, "").replace(/\.html$/, "") + "?c=" + encodeURIComponent(slug) + "-view";
   }
 
   /** Archivo .ics con el evento, si Karina capturó inicio (y fin). */
