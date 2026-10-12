@@ -11,7 +11,7 @@
 <meta property="og:description" content="Pide tu catering, organiza un evento de yoga o escríbeme directo. Tijuana · San Diego.">
 <meta property="og:image" content="https://kpk.associates/assets/cotizaciones/portada-rosarito-og.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#F7F5F1">
+<meta name="theme-color" content="#FA7E1E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -19,20 +19,29 @@
   :root {
     --papel: #F7F5F1; --tinta: #1F2024; --tinta-suave: #5C5E66; --eucalipto: #7A9E8E; --eucalipto-h: #4F7466;
     --arena: #D9C9AE; --linea: #E4DED3; --blanco: #FFFFFF;
+    /* Los colores de Instagram: de amarillo a azul, como el anillo de las historias. */
+    --ig-amarillo: #FEDA75; --ig-naranja: #FA7E1E; --ig-rosa: #D62976; --ig-morado: #962FBF; --ig-azul: #4F5BD5;
+    --ig: linear-gradient(135deg, var(--ig-naranja), var(--ig-rosa) 50%, var(--ig-morado));
     --display: 'Cormorant Garamond', Georgia, serif; --texto: 'Inter', system-ui, -apple-system, sans-serif;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
-    margin: 0; min-height: 100dvh; background: var(--papel); color: var(--tinta);
+    margin: 0; min-height: 100dvh; color: var(--tinta);
+    background: var(--ig-rosa);
     font: 400 16px/1.5 var(--texto); -webkit-font-smoothing: antialiased;
     padding: calc(28px + env(safe-area-inset-top, 0px)) 16px calc(32px + env(safe-area-inset-bottom, 0px));
   }
   /* Un velo de arena arriba: la página se siente del mismo papel que la cotización. */
-  body::before {
-    content: ''; position: fixed; inset: 0 0 auto 0; height: 46vh; z-index: -1;
-    background: radial-gradient(120% 90% at 50% 0%, rgba(217,201,174,0.55), rgba(247,245,241,0) 70%);
-  }
+  /* Fondo: la costa de Baja al atardecer bajo el degradado de Instagram.
+     Va en capas fijas (no background-attachment: fixed, que iPhone ignora). */
+  .fondo, .velo { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+  .fondo { background: url('/assets/gallery-coastal.webp') center 30% / cover no-repeat; transform: scale(1.06); animation: respira 30s ease-in-out infinite alternate; }
+  .velo { z-index: -1;
+    background:
+      radial-gradient(80% 50% at 20% 0%, rgba(254,218,117,.45), rgba(254,218,117,0) 70%),
+      linear-gradient(180deg, rgba(250,126,30,.50) 0%, rgba(214,41,118,.62) 36%, rgba(150,47,191,.74) 70%, rgba(79,91,213,.86) 100%); }
+  @keyframes respira { to { transform: scale(1.14) translateY(-1.5%); } }
   main { max-width: 440px; margin: 0 auto; display: grid; gap: 22px; }
   .idioma { justify-self: end; display: flex; gap: 2px; background: var(--blanco); border: 1px solid var(--linea); border-radius: 999px; padding: 3px; }
   .idioma button { font: 600 12px/1 var(--texto); letter-spacing: .04em; border: 0; background: none; color: var(--tinta-suave); padding: 7px 12px; border-radius: 999px; cursor: pointer; }
@@ -40,13 +49,13 @@
 
   .perfil { display: grid; justify-items: center; text-align: center; gap: 10px; }
   .halo { position: relative; width: 118px; height: 118px; border-radius: 50%; isolation: isolate; }
-  .halo::before { content: ''; position: absolute; inset: -5px; border-radius: 50%; z-index: -1;
-    background: conic-gradient(from 0deg, var(--eucalipto), var(--arena), #fff, var(--eucalipto)); animation: gira 8s linear infinite; }
-  .halo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 18%; border: 3px solid var(--papel); display: block; background: var(--arena); }
+  .halo::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; z-index: -1;
+    background: conic-gradient(from 200deg, var(--ig-amarillo), var(--ig-naranja), var(--ig-rosa), var(--ig-morado), var(--ig-azul), var(--ig-amarillo)); animation: gira 8s linear infinite; }
+  .halo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 18%; border: 4px solid #fff; display: block; background: var(--arena); }
   @keyframes gira { to { transform: rotate(360deg); } }
-  h1 { font: 600 2.1rem/1.05 var(--display); margin: 6px 0 0; letter-spacing: -.005em; }
-  .rol { font-size: .92rem; color: var(--tinta-suave); margin: 0; }
-  .zona { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--eucalipto-h); font-weight: 600; margin: 0; }
+  h1 { font: 600 2.1rem/1.05 var(--display); margin: 6px 0 0; letter-spacing: -.005em; color: #fff; text-shadow: 0 1px 12px rgba(80,20,60,.25); }
+  .rol { font-size: .92rem; color: rgba(255,255,255,.92); margin: 0; }
+  .zona { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: #fff; font-weight: 600; margin: 0; opacity: .85; }
 
   nav { display: grid; gap: 12px; }
   .enlace {
@@ -55,29 +64,32 @@
     border-radius: 18px; padding: 14px 16px; min-height: 72px;
     transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
-  .enlace:hover { transform: translateY(-1px); border-color: var(--eucalipto); box-shadow: 0 10px 26px rgba(31,32,36,.08); }
-  .enlace:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 3px; }
-  .ico { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #EEF3F0; color: var(--eucalipto-h); }
+  .enlace { border-color: transparent; box-shadow: 0 8px 24px rgba(60,10,60,.18); }
+  .enlace:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(60,10,60,.26); }
+  .enlace:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .ico { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--ig); color: #fff; }
   .ico svg { width: 22px; height: 22px; }
   .enlace b { display: block; font-weight: 600; font-size: 1rem; }
   .enlace small { display: block; color: var(--tinta-suave); font-size: .85rem; margin-top: 1px; }
   .enlace .flecha { color: var(--tinta-suave); }
-  .enlace.principal { background: var(--eucalipto-h); border-color: var(--eucalipto-h); color: #fff; }
-  .enlace.principal small, .enlace.principal .flecha { color: rgba(255,255,255,.82); }
-  .enlace.principal .ico { background: rgba(255,255,255,.16); color: #fff; }
-  .enlace.principal:hover { border-color: #42665A; background: #42665A; }
+  .enlace.principal { background: var(--tinta); color: #fff; }
+  .enlace.principal small, .enlace.principal .flecha { color: rgba(255,255,255,.8); }
+  .enlace.principal:hover { background: #2A2B30; }
 
-  footer { text-align: center; font-size: .82rem; color: var(--tinta-suave); display: grid; gap: 6px; padding-top: 6px; }
-  footer a { color: var(--tinta-suave); }
+  footer { text-align: center; font-size: .82rem; color: rgba(255,255,255,.88); display: grid; gap: 6px; padding-top: 6px; }
+  footer a { color: #fff; }
 
   .perfil, nav .enlace, footer { animation: entra .6s cubic-bezier(.2,.7,.2,1) both; }
   nav .enlace:nth-child(1) { animation-delay: .08s } nav .enlace:nth-child(2) { animation-delay: .14s }
   nav .enlace:nth-child(3) { animation-delay: .2s } nav .enlace:nth-child(4) { animation-delay: .26s } footer { animation-delay: .32s }
   @keyframes entra { from { opacity: 0; transform: translateY(10px); } }
-  @media (prefers-reduced-motion: reduce) { .halo::before, .perfil, nav .enlace, footer { animation: none; } .enlace { transition: none; } }
+  .hecho { font-size: .78rem; opacity: .9; }
+  .hecho a { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255,255,255,.5); }
+  @media (prefers-reduced-motion: reduce) { .fondo { animation: none; } .halo::before, .perfil, nav .enlace, footer { animation: none; } .enlace { transition: none; } }
 </style>
 </head>
 <body>
+<div class="fondo" aria-hidden="true"></div><div class="velo" aria-hidden="true"></div>
 <main>
   <div class="idioma" role="group" aria-label="Idioma / Language">
     <button type="button" data-idioma="es" aria-pressed="true">ES</button>
@@ -116,6 +128,7 @@
 
   <footer>
     <span><a href="/" data-t="sitio">kpk.associates</a></span>
+    <span class="hecho"><span data-t="hecho">Todo hecho por Maxify Technologies</span> · <a href="https://beefup.tech" target="_blank" rel="noopener">Beef Up</a></span>
   </footer>
 </main>
 <script>
@@ -124,11 +137,11 @@
   var T = {
     es: { rol: 'Chef · Instructora de yoga · Wellness', catering: 'Pide tu catering', cateringD: 'Cuéntame de tu evento y te mando tu cotización',
       yoga: 'Organiza un evento de yoga', yogaD: 'Clases privadas, grupos, empresas y retiros', tarjeta: 'Mi tarjeta de presentación',
-      tarjetaD: 'Guarda mi contacto', wa: 'Escríbeme por WhatsApp', waD: 'Te contesto directo', sitio: 'kpk.associates',
+      tarjetaD: 'Guarda mi contacto', wa: 'Escríbeme por WhatsApp', waD: 'Te contesto directo', sitio: 'kpk.associates', hecho: 'Todo hecho por Maxify Technologies',
       waTexto: 'Hola Karina, te encontré en Instagram.' },
     en: { rol: 'Chef · Yoga instructor · Wellness', catering: 'Book catering', cateringD: 'Tell me about your event and I’ll send you a quote',
       yoga: 'Plan a yoga event', yogaD: 'Private classes, groups, companies and retreats', tarjeta: 'My business card',
-      tarjetaD: 'Save my contact', wa: 'Message me on WhatsApp', waD: 'I reply directly', sitio: 'kpk.associates',
+      tarjetaD: 'Save my contact', wa: 'Message me on WhatsApp', waD: 'I reply directly', sitio: 'kpk.associates', hecho: 'All made by Maxify Technologies',
       waTexto: 'Hi Karina, I found you on Instagram.' }
   };
   function poner(L) {

@@ -19,6 +19,8 @@
   :root {
     --papel: #F7F5F1; --tinta: #1F2024; --tinta-suave: #5C5E66; --eucalipto: #7A9E8E; --eucalipto-h: #4F7466;
     --arena: #D9C9AE; --linea: #E4DED3; --blanco: #FFFFFF; --error: #A2453D;
+    --ig-naranja: #FA7E1E; --ig-rosa: #D62976; --ig-morado: #962FBF; --ig-azul: #4F5BD5; --ig-amarillo: #FEDA75;
+    --ig: linear-gradient(135deg, var(--ig-naranja), var(--ig-rosa) 50%, var(--ig-morado));
     --display: 'Cormorant Garamond', Georgia, serif; --texto: 'Inter', system-ui, -apple-system, sans-serif;
   }
   * { box-sizing: border-box; }
@@ -31,9 +33,10 @@
   .idioma { display: flex; gap: 2px; background: var(--blanco); border: 1px solid var(--linea); border-radius: 999px; padding: 3px; }
   .idioma button { font: 600 12px/1 var(--texto); border: 0; background: none; color: var(--tinta-suave); padding: 7px 12px; border-radius: 999px; cursor: pointer; }
   .idioma button[aria-pressed="true"] { background: var(--tinta); color: #fff; }
-  .cabeza { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: center; }
-  .cabeza img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: 50% 18%; border: 2px solid var(--blanco); box-shadow: 0 0 0 2px var(--eucalipto); }
-  .etq { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--eucalipto-h); font-weight: 600; }
+  .cabeza { display: grid; grid-template-columns: 70px 1fr; gap: 14px; align-items: center; }
+  .cabeza .anillo { width: 70px; height: 70px; border-radius: 50%; padding: 3px; background: conic-gradient(from 200deg, var(--ig-amarillo), var(--ig-naranja), var(--ig-rosa), var(--ig-morado), var(--ig-azul), var(--ig-amarillo)); }
+  .cabeza img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: 50% 18%; border: 3px solid var(--blanco); display: block; }
+  .etq { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ig-rosa); font-weight: 600; }
   h1 { font: 600 2rem/1.05 var(--display); margin: 2px 0 0; }
   .intro { margin: 0; color: var(--tinta-suave); }
 
@@ -55,8 +58,8 @@
   .opcion .marca { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--arena); margin-top: 1px; display: grid; place-items: center; }
   .opcion b { display: block; font-weight: 600; font-size: 1rem; }
   .opcion span span { display: block; color: var(--tinta-suave); font-size: .86rem; }
-  .opcion:has(input:checked) { border-color: var(--eucalipto-h); background: #EEF3F0; }
-  .opcion:has(input:checked) .marca { border-color: var(--eucalipto-h); background: radial-gradient(circle, var(--eucalipto-h) 45%, transparent 50%); }
+  .opcion:has(input:checked) { border-color: var(--ig-rosa); background: #FCEFF5; }
+  .opcion:has(input:checked) .marca { border-color: var(--ig-rosa); background: radial-gradient(circle, var(--ig-rosa) 45%, transparent 50%); }
   .opcion:has(input:focus-visible) { outline: 2px solid var(--eucalipto); outline-offset: 2px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip { position: relative; cursor: pointer; }
@@ -65,8 +68,8 @@
   .chip input:checked + span { background: var(--tinta); color: #fff; border-color: var(--tinta); }
   .chip input:focus-visible + span { outline: 2px solid var(--eucalipto); outline-offset: 2px; }
 
-  .enviar { font: 600 1rem var(--texto); background: var(--eucalipto-h); color: #fff; border: 0; border-radius: 999px; padding: 16px 22px; cursor: pointer; width: 100%; }
-  .enviar:hover { background: #42665A; } .enviar:disabled { opacity: .6; cursor: default; }
+  .enviar { font: 600 1rem var(--texto); background: var(--ig); color: #fff; border: 0; border-radius: 999px; padding: 16px 22px; cursor: pointer; width: 100%; }
+  .enviar:hover { filter: brightness(1.06); } .enviar:disabled { opacity: .6; cursor: default; }
   .enviar:focus-visible { outline: 2px solid var(--tinta); outline-offset: 3px; }
   .aviso { margin: 0; font-size: .92rem; } .aviso.error { color: var(--error); } .aviso a { color: var(--eucalipto-h); font-weight: 600; }
   .nota { text-align: center; font-size: .85rem; color: var(--tinta-suave); margin: 0; }
@@ -75,7 +78,7 @@
   .gracias h2 { font: 600 1.9rem/1.1 var(--display); margin: 0; }
   .gracias p { margin: 0; color: var(--tinta-suave); }
   .boton { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font: 600 .95rem var(--texto); border-radius: 999px; padding: 13px 20px; border: 1px solid var(--tinta); color: var(--tinta); }
-  .boton.lleno { background: var(--eucalipto-h); border-color: var(--eucalipto-h); color: #fff; }
+  .boton.lleno { background: var(--ig); border-color: transparent; color: #fff; }
 </style>
 </head>
 <body>
@@ -89,7 +92,7 @@
   </div>
 
   <header class="cabeza">
-    <img id="foto" src="/assets/cotizaciones/karina-retrato.webp" alt="Karina Paz Kennedy" width="64" height="64">
+    <span class="anillo"><img id="foto" src="/assets/cotizaciones/karina-retrato.webp" alt="Karina Paz Kennedy" width="64" height="64"></span>
     <div><div class="etq" data-t="etq">Chef Karina Paz Kennedy</div><h1 id="titulo">Pide tu catering</h1></div>
   </header>
   <p class="intro" id="intro">Cuéntame de tu evento. Reviso tu solicitud y te mando una cotización a tu medida.</p>
