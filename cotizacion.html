@@ -274,6 +274,7 @@
     border-radius: 999px; padding: 8px 20px; white-space: nowrap;
   }
   .pagar:hover { background: #2B2C2E; }
+  button.pagar { border: 0; cursor: pointer; font-size: 0.84rem; }
   .pagar:focus-visible { outline: 2px solid var(--arena-hond); outline-offset: 2px; }
 
   /* ---------- Karina te atiende ----------
@@ -419,9 +420,11 @@
     position: absolute; right: 80px; bottom: 20px; white-space: nowrap; pointer-events: none;
     background: var(--papel); color: var(--tinta); font: 500 0.86rem/1 var(--texto); padding: 10px 14px; border-radius: 999px;
     box-shadow: 0 6px 20px rgba(31,32,36,0.16); opacity: 0; transform: translateX(6px);
-    animation: asoma 0.5s ease 2.5s forwards;
+    animation: asoma 0.5s ease 2.5s forwards, sevai 0.5s ease 9s forwards;
   }
   @keyframes asoma { to { opacity: 1; transform: none; } }
+  @keyframes sevai { to { opacity: 0; transform: translateX(6px); visibility: hidden; } }
+  body.con-k { padding-bottom: 96px; }
   .k-lanzador.abierto .k-teaser { display: none; }
   .k-panel {
     width: min(380px, calc(100vw - 32px)); max-height: min(560px, calc(100vh - 120px)); overflow-y: auto;
@@ -463,7 +466,7 @@
     .k-lanzador { right: 14px; bottom: 14px; }
     .k-boton, .k-boton .halo { width: 60px; height: 60px; }
   }
-  @media (prefers-reduced-motion: reduce) { .k-teaser { animation: none; opacity: 1; transform: none; } .k-panel { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .k-teaser { display: none; } .k-panel { animation: none; } }
 
   .panel { position: fixed; inset: 0; z-index: 40; background: rgba(32,33,35,0.55); display: grid; justify-items: end; }
   .panel-caja {
@@ -603,6 +606,9 @@
       m1: "Pagar con tarjeta", m1d: "Crédito o débito. El cargo se aplica al momento.",
       m2: "Pagar por transferencia", m2d: "SPEI desde tu banco.",
       m3: "Pagar en efectivo", m3d: "En tiendas afiliadas a Mercado Pago.",
+      mOtro: "Pagar en dólares (USD)", mOtrod: "{m} · sin IVA, con invoice. Por Zelle.", mOtroBoton: "Ver en dólares", mOtroIdioma: "en",
+      mFac: "Factura en México (CFDI)", mFacd: "Incluida en el precio en pesos. Mándanos tus datos fiscales y la emitimos.",
+      mFacBoton: "Pedir factura", mFacWa: "Hola Karina, necesito factura (CFDI) del anticipo de",
       resumenCopiado: "Resumen copiado", sinCotizaciones: "Todavía no hay cotizaciones",
       leyenda: "Cotización en pesos mexicanos, con factura.",
       preguntas: "¿Tienes preguntas?", escribe: "Escríbele directo a Karina por WhatsApp",
@@ -634,6 +640,9 @@
       m1: "Pay by card", m1d: "Credit or debit. Charged immediately.",
       m2: "Pay over time", m2d: "Klarna or Affirm, if you qualify at checkout.",
       m3: "Apple Pay or Google Pay", m3d: "On a supported device.",
+      mOtro: "Pay in Mexican pesos (MXN)", mOtrod: "{m} incl. 16% IVA, with a Mexican invoice (CFDI). Card, SPEI transfer or cash.", mOtroBoton: "View in pesos", mOtroIdioma: "es",
+      mFac: "Need an invoice?", mFacd: "We email an invoice for your deposit.",
+      mFacBoton: "Request invoice", mFacWa: "Hi Karina, I need an invoice for the deposit for",
       resumenCopiado: "Summary copied", sinCotizaciones: "No quotes yet",
       leyenda: "Quote in US dollars, with an invoice.",
       preguntas: "Questions?", escribe: "Message Karina directly on WhatsApp",
@@ -911,6 +920,14 @@
     } else if (link) {
       // Dólares: Stripe cobra tarjeta, Klarna/Affirm y Apple/Google Pay en el mismo checkout.
       filas += fila(t9.m1, t9.m1d, irAPagar) + fila(t9.m2, t9.m2d, irAPagar) + fila(t9.m3, t9.m3d, irAPagar);
+    }
+    // La otra moneda y la factura, también aquí abajo: no todos ven el selector de arriba.
+    var tOtro = totales(c, t9.mOtroIdioma);
+    filas += fila(t9.mOtro, t9.mOtrod.replace("{m}", dinero(L === "es" ? tOtro.anticipo : tOtro.anticipoConIva, tOtro.moneda)),
+      '<button type="button" class="pagar" data-cambiar-idioma="' + t9.mOtroIdioma + '">' + esc(t9.mOtroBoton) + "</button>");
+    if (chef.whatsapp) {
+      filas += fila(t9.mFac, t9.mFacd, '<a class="pagar" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
+        encodeURIComponent(t9.mFacWa + " " + tx(c.titulo, L) + " (" + dinero(t.anticipoConIva, t.moneda) + ").") + '">' + esc(t9.mFacBoton) + "</a>");
     }
     // Dólares sin Stripe: Zelle es el camino. Nombre, número, QR y el link que
     // trae el propio QR (abre la app del banco con Karina como destinataria).
@@ -1207,6 +1224,7 @@
   function lanzador(c, t, t9, L, chef, hrefPagar) {
     var viejo = document.getElementById("k-lanzador");
     if (viejo) viejo.remove();
+    document.body.classList.remove("con-k");
     if (esAdmin() || !chef.whatsapp) return;
     var wa = soloDigitos(chef.whatsapp);
     function enlaceWa(m) { return "https://wa.me/" + wa + "?text=" + encodeURIComponent(t9.sobreCot + " " + tx(c.titulo, L) + ": " + m); }
@@ -1251,6 +1269,7 @@
       '<button type="button" class="k-boton" aria-expanded="false" aria-controls="k-panel" aria-label="' + esc(t9.kAbrir) + '">' +
         '<span class="halo">' + retrato + "</span></button>";
     document.body.appendChild(raiz);
+    document.body.classList.add("con-k");
 
     var panel = raiz.querySelector(".k-panel"), boton = raiz.querySelector(".k-boton");
     function ir(v) {
@@ -1312,6 +1331,14 @@
       b.addEventListener("click", function () { abrirPanel(b.getAttribute("data-editar"), b.getAttribute("data-foto-editar")); });
     });
     if (window.Motion) { window.Motion.dinero = dinero; window.Motion.init(hoja); }
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-cambiar-idioma]"), function (b) {
+      b.addEventListener("click", function () {
+        idioma = b.getAttribute("data-cambiar-idioma");
+        pintar();
+        var pago = hoja.querySelector(".pago");
+        if (pago) pago.scrollIntoView({ behavior: QUIETO ? "auto" : "smooth", block: "start" });
+      });
+    });
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-idioma]"), function (b) {
       b.addEventListener("click", function () { idioma = b.getAttribute("data-idioma"); pintar(); });
     });
