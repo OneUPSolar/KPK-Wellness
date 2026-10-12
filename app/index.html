@@ -181,6 +181,18 @@
   .estado { flex: none; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
     border-radius: 999px; padding: 4px 10px; border: 1px solid #4A4A5C; color: var(--muted); }
   .estado.resuelto { border-color: var(--eucalyptus); color: var(--eucalyptus); }
+  .galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin: 18px 0 22px; }
+  .foto-k { background: var(--charcoal-2); border: 1px solid #343447; border-radius: 13px; overflow: hidden; display: grid; }
+  .foto-k.activa { border-color: var(--eucalyptus); }
+  .foto-k .img { position: relative; aspect-ratio: 4 / 5; background: #2E2E3E; }
+  .foto-k img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; display: block; }
+  .foto-k .ia { position: absolute; top: 8px; left: 8px; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em;
+    background: rgba(30,30,46,0.78); color: var(--concrete); padding: 3px 7px; border-radius: 999px; }
+  .foto-k .info { padding: 10px 11px 12px; display: grid; gap: 7px; }
+  .foto-k b { font-size: 0.86rem; font-weight: 600; line-height: 1.25; }
+  .foto-k .usos { font-size: 0.72rem; color: var(--eucalyptus); min-height: 1em; }
+  .foto-k .boton { font-size: 0.78rem; padding: 7px 10px; width: 100%; }
+  .foto-k a.descargar { font-size: 0.76rem; color: var(--muted); text-align: center; }
   .sub-seccion { font-family: var(--serif); font-size: 1.3rem; font-weight: 600; margin: 28px 0 10px; }
   .aviso { margin: 12px 0 0; font-size: 0.9rem; }
   .aviso.ok { color: var(--eucalyptus); }
@@ -231,6 +243,10 @@
       <a class="tarjeta" href="#reportar" id="abrir-reportar">
         <span class="punto"></span>
         <span><b>Reportar</b><small>Una falla o una mejora; Bug-off la atiende</small></span>
+      </a>
+      <a class="tarjeta" href="#fotos" id="abrir-fotos">
+        <span class="punto"></span>
+        <span><b>Mis fotos</b><small>Tus retratos para la tarjeta, las cotizaciones y más</small></span>
       </a>
       <a class="tarjeta" href="/card/">
         <span class="punto"></span>
@@ -284,6 +300,22 @@
     </form>
     <h2 class="sub-seccion">Tus tickets</h2>
     <ul class="tickets" id="lista-tickets"><li class="nota">Cargando…</li></ul>
+  </main>
+  <footer><span></span></footer>
+</div>
+
+<!-- Mis fotos: sus retratos, listos para la tarjeta y las cotizaciones -->
+<div class="envoltura" id="fotos" hidden>
+  <div class="cabeza-panel">
+    <div class="marca-chica">Mis fotos<span>Retratos</span></div>
+    <button type="button" class="boton" id="volver-fotos">← Panel</button>
+  </div>
+  <main>
+    <p class="nota" style="margin-top:0">Elige dónde usar cada foto. Los cambios se ven en el sitio en uno o dos minutos.
+      Las marcadas “IA” son retratos generados a partir de tus fotos.</p>
+    <p class="aviso" id="f-aviso" hidden></p>
+    <div class="galeria" id="galeria"><p class="nota">Cargando…</p></div>
+    <button type="button" class="boton" id="f-tarjeta-original" hidden>Regresar mi tarjeta a su foto de siempre</button>
   </main>
   <footer><span></span></footer>
 </div>
@@ -467,6 +499,63 @@
       .then(function () { $('t-enviar').disabled = false; });
   }
 
+  /* ---------- Mis fotos ---------- */
+  function abrirFotos() { $('panel').hidden = true; $('fotos').hidden = false; cargarFotos(); }
+  function cerrarFotos() { $('fotos').hidden = true; $('panel').hidden = false; }
+  function avisoF(clase, texto) { var p = $('f-aviso'); p.className = 'aviso ' + clase; p.textContent = texto; p.hidden = !texto; }
+  function pintarFotos(m) {
+    var g = $('galeria'); g.innerHTML = '';
+    (m.fotos || []).forEach(function (f) {
+      var enTarjeta = m.tarjeta && f.url && m.tarjeta === f.url;
+      var enCot = m.cotizacion && f.url && m.cotizacion === f.url;
+      var art = document.createElement('article'); art.className = 'foto-k' + (enTarjeta || enCot ? ' activa' : '');
+      var caja = document.createElement('div'); caja.className = 'img';
+      var img = document.createElement('img'); img.loading = 'lazy'; img.alt = f.titulo;
+      // Recién copiada, la foto local tarda un par de minutos en publicarse: mientras, la remota.
+      img.src = f.remota || ('/' + f.url);
+      img.onerror = function () { if (f.url && img.src.indexOf(f.url) < 0) img.src = '/' + f.url; };
+      caja.appendChild(img);
+      if (f.ia) { var ia = document.createElement('span'); ia.className = 'ia'; ia.textContent = 'IA'; caja.appendChild(ia); }
+      var info = document.createElement('div'); info.className = 'info';
+      var b = document.createElement('b'); b.textContent = f.titulo;
+      var usos = document.createElement('div'); usos.className = 'usos';
+      usos.textContent = [enTarjeta ? 'En tu tarjeta' : '', enCot ? 'En cotizaciones' : ''].filter(Boolean).join(' · ');
+      function boton(texto, usar) {
+        var x = document.createElement('button'); x.type = 'button'; x.className = 'boton'; x.textContent = texto;
+        x.addEventListener('click', function () { usarFoto(f.id, usar, x); });
+        return x;
+      }
+      var desc = document.createElement('a'); desc.className = 'descargar'; desc.textContent = 'Abrir / descargar';
+      desc.href = f.remota || ('/' + f.url); desc.target = '_blank'; desc.rel = 'noopener';
+      info.appendChild(b); info.appendChild(usos);
+      info.appendChild(boton('Usar en mi tarjeta', 'tarjeta'));
+      info.appendChild(boton('Usar en cotizaciones', 'cotizacion'));
+      info.appendChild(desc);
+      art.appendChild(caja); art.appendChild(info); g.appendChild(art);
+    });
+    $('f-tarjeta-original').hidden = !m.tarjeta;
+  }
+  function pedirFotos(opciones) {
+    var sesion = leerSesion();
+    var o = opciones || {};
+    o.headers = { authorization: 'Bearer ' + (sesion && sesion.token), 'content-type': 'application/json' };
+    return fetch('/api/fotos', o).then(function (r) { return r.json().then(function (b) { if (!r.ok) throw new Error(b.error || 'Error ' + r.status); return b; }); });
+  }
+  function cargarFotos() {
+    pedirFotos().then(pintarFotos).catch(function (e) { $('galeria').innerHTML = ''; avisoF('error', e.message); });
+  }
+  function usarFoto(id, usar, boton) {
+    if (boton) { boton.disabled = true; boton.textContent = 'Guardando…'; }
+    avisoF('', '');
+    pedirFotos({ method: 'POST', body: JSON.stringify({ id: id, usar: usar }) })
+      .then(function (m) {
+        pintarFotos(m);
+        avisoF('ok', usar === 'tarjeta' ? (id ? 'Listo: es la foto de tu tarjeta. Se verá en uno o dos minutos.' : 'Listo: tu tarjeta regresa a su foto de siempre.')
+          : 'Listo: es tu foto en las cotizaciones. Se verá en uno o dos minutos.');
+      })
+      .catch(function (e) { avisoF('error', e.message); cargarFotos(); });
+  }
+
   function salir() {
     localStorage.removeItem(LLAVE);
     location.reload();
@@ -552,6 +641,9 @@
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('redactar').requestSubmit(); }
   });
   $('abrir-reportar').addEventListener('click', function (e) { e.preventDefault(); abrirReportar(); });
+  $('abrir-fotos').addEventListener('click', function (e) { e.preventDefault(); abrirFotos(); });
+  $('volver-fotos').addEventListener('click', cerrarFotos);
+  $('f-tarjeta-original').addEventListener('click', function () { usarFoto('', 'tarjeta', $('f-tarjeta-original')); });
   $('volver-reportar').addEventListener('click', cerrarReportar);
   $('forma-ticket').addEventListener('submit', enviarTicket);
   Array.prototype.forEach.call($('tipos').children, function (b) {

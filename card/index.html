@@ -446,6 +446,21 @@
     try { saved = localStorage.getItem('kpk-mode') || 'chef'; } catch (e) {}
     setMode(saved);
 
+    // La foto de la tarjeta la elige Karina en su panel (Mis fotos).
+    fetch('/content/fotos-karina.json', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => {
+        const ruta = m && m.tarjeta ? '/' + String(m.tarjeta).replace(/^\/+/, '') : '';
+        if (!ruta) return;
+        const prueba = new Image();
+        prueba.onload = () => {
+          MODES.chef.img = ruta; MODES.chef.pos = '50% 22%';
+          if (body.dataset.mode !== 'yoga') setMode('chef');
+        };
+        prueba.src = ruta;
+      })
+      .catch(() => {});
+
     /* ---------- toast ---------- */
     const toast = document.getElementById('toast');
     let toastTimer;
