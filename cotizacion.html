@@ -509,6 +509,10 @@
   .fac-aviso { margin: 0; font-size: 0.9rem; } .fac-aviso.error { color: #A2453D; } .fac-aviso a { color: var(--eucalipto-h); font-weight: 600; }
   .fac-acciones { display: flex; gap: 8px; justify-content: flex-end; position: sticky; bottom: 0; background: var(--papel); padding-top: 6px; }
   .facturas { display: grid; gap: 8px; }
+  .env-op { display: grid !important; grid-template-columns: auto 1fr; align-items: center; column-gap: 10px; padding: 12px 14px; border: 1px solid var(--linea); border-radius: 12px; background: #fff; font-weight: 600 !important; }
+  .env-op input { width: 20px; height: 20px; accent-color: var(--eucalipto-h); }
+  .env-op small { grid-column: 2; font-weight: 400; color: var(--tinta-sueve); overflow-wrap: anywhere; }
+  .fac-aviso.ok { color: var(--eucalipto-h); }
   .fac-item { padding: 8px 0; border-top: 1px solid var(--linea); font-size: 0.92rem; }
   .fac-item small { color: var(--tinta-sueve); }
   .fac-item .boton { margin-top: 6px; padding: 6px 12px; font-size: 0.8rem; }
@@ -1551,7 +1555,7 @@
       '<select id="sel-cot" aria-label="Cotización a mostrar"></select>' +
       '<span class="crece modo">Vista de administrador · el cliente no ve esta barra ni los lápices</span>' +
       '<button type="button" id="btn-cliente" class="fantasma">Ver como cliente</button>' +
-      '<button type="button" id="btn-enviar" class="fantasma">Enviar por WhatsApp</button>' +
+      '<button type="button" id="btn-enviar" class="fantasma">Enviar cotización</button>' +
       '<button type="button" id="btn-nueva" class="fantasma">Nueva</button>' +
       '<button type="button" id="btn-editar">Editar</button>';
     document.body.insertBefore(barra, document.body.firstChild);
@@ -1608,15 +1612,11 @@
     return "data:text/calendar;charset=utf-8," + encodeURIComponent(lineas.join("\r\n"));
   }
 
+  /* "Enviar cotización": correo (Resend, desde karina@kpk.associates) y
+     WhatsApp (se abre en su teléfono con el mensaje escrito) en un solo paso. */
   function enviarAlCliente() {
     var c = cotizacionActiva();
-    if (!c) return;
-    var tel = soloDigitos(c.telCliente);
-    if (!tel) {
-      brindis("Falta el WhatsApp del cliente. Está en Editar → Evento.");
-      abrirPanel();
-      return;
-    }
+    if (!c || document.querySelector(".env-fondo")) return;
     var L = idioma;
     var nombre = String(c.cliente || "").split(" ")[0];
     var titulo = tx(c.titulo, L);
@@ -1624,8 +1624,59 @@
     var texto = L === "en"
       ? "Hi " + nombre + ", here's the quote for " + titulo + ":\n" + enlace
       : "Hola " + nombre + ", te comparto la cotización para " + titulo + ":\n" + enlace;
-    // Se abre el chat con el mensaje escrito; ella lo revisa y le da enviar.
-    window.open("https://wa.me/" + tel + "?text=" + encodeURIComponent(texto), "_blank", "noopener");
+    var tel = soloDigitos(c.telCliente), correo = String(c.correoCliente || "").trim();
+    var fondo = document.createElement("div");
+    fondo.className = "fac-fondo env-fondo";
+    fondo.innerHTML =
+      '<div class="fac-caja" role="dialog" aria-modal="true" aria-label="Enviar cotización">' +
+        '<div class="fac-cab"><b>Enviar cotización</b><button type="button" class="fac-x" aria-label="Cerrar">×</button></div>' +
+        '<p class="fac-nota">' + esc(c.cliente || "Cliente") + " · " + esc(titulo) + " · en " + (L === "en" ? "inglés (USD)" : "español (MXN)") + "</p>" +
+        '<label class="env-op"><input type="checkbox" name="wa"' + (tel ? " checked" : " disabled") + "> WhatsApp" +
+          "<small>" + (tel ? "+" + esc(tel) : "Falta el WhatsApp del cliente (Editar → Evento)") + "</small></label>" +
+        '<label class="env-op"><input type="checkbox" name="correo"' + (correo ? " checked" : " disabled") + "> Correo" +
+          "<small>" + (correo ? esc(correo) + " · sale desde karina@kpk.associates" : "Falta el correo del cliente (Editar → Evento)") + "</small></label>" +
+        '<label>Mensaje<textarea name="mensaje" rows="4" style="font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--linea);border-radius:10px;width:100%;box-sizing:border-box">' + esc(texto) + "</textarea></label>" +
+        '<p class="fac-nota" style="font-size:.84rem">Si hiciste cambios, guarda antes: el cliente abre la versión publicada.</p>' +
+        '<p class="fac-aviso" role="status" hidden></p>' +
+        '<div class="fac-acciones"><button type="button" class="boton claro fac-volver">← Volver</button>' +
+          '<button type="button" class="boton primario env-enviar">Enviar</button></div>' +
+      "</div>";
+    document.body.appendChild(fondo);
+    var caja = fondo.querySelector(".fac-caja");
+    var q = function (sel) { return caja.querySelector(sel); };
+    var aviso = function (clase, t) { var p = q(".fac-aviso"); p.className = "fac-aviso " + clase; p.textContent = t; p.hidden = !t; };
+    function cerrar() { fondo.remove(); }
+    q(".fac-x").addEventListener("click", cerrar);
+    q(".fac-volver").addEventListener("click", cerrar);
+    fondo.addEventListener("click", function (e) { if (e.target === fondo) cerrar(); });
+    if (!tel || !correo) {
+      var ir = document.createElement("button");
+      ir.type = "button"; ir.className = "boton claro"; ir.textContent = "Completar datos del cliente";
+      ir.addEventListener("click", function () { cerrar(); abrirPanel("evento"); });
+      q(".fac-acciones").insertBefore(ir, q(".env-enviar"));
+    }
+    q(".env-enviar").addEventListener("click", function () {
+      var porWa = q('[name="wa"]').checked, porCorreo = q('[name="correo"]').checked;
+      var msg = q('[name="mensaje"]').value.trim() || texto;
+      if (!porWa && !porCorreo) { aviso("error", "Elige al menos WhatsApp o correo."); return; }
+      // El WhatsApp se abre ya, dentro del toque: si espera al correo, el navegador lo bloquea.
+      if (porWa) window.open("https://wa.me/" + tel + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+      if (!porCorreo) { brindis("WhatsApp abierto con el mensaje. Dale enviar."); cerrar(); return; }
+      var b = q(".env-enviar");
+      b.disabled = true; b.textContent = "Enviando correo…"; aviso("", "");
+      // En el correo va el mensaje sin el enlace: el correo ya trae su botón.
+      var msgCorreo = msg.replace(enlace, "").replace(/[:\s]+$/, "");
+      api("/cotizacion/enviar", { method: "POST", body: JSON.stringify({ cotizacion: c, chef: estado.chef || {}, idioma: L, mensaje: msgCorreo === texto.replace(enlace, "").replace(/[:\s]+$/, "") ? "" : msgCorreo }) })
+        .then(function (r) {
+          aviso("ok", "Correo enviado a " + r.para + "." + (porWa ? " WhatsApp abierto con el mensaje: dale enviar." : ""));
+          b.textContent = "Enviado";
+        })
+        .catch(function (e) {
+          aviso("error", e.message + (porWa ? " El WhatsApp sí se abrió." : ""));
+          b.disabled = false; b.textContent = "Reintentar correo";
+          q('[name="wa"]').checked = false;
+        });
+    });
   }
 
   function llenarSelector() {
