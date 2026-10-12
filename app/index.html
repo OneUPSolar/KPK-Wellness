@@ -163,6 +163,18 @@
     padding: 12px 14px; resize: none; min-height: 48px;
   }
   .redactar textarea:focus { outline: none; border-color: var(--eucalyptus); }
+  .dictado {
+    width: 48px; height: 48px; flex: none; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+    border: 1px solid var(--eucalyptus); background: transparent; color: var(--eucalyptus);
+  }
+  .dictado.escuchando { background: var(--eucalyptus); color: var(--charcoal); animation: late 1.2s ease-in-out infinite; }
+  @keyframes late { 50% { box-shadow: 0 0 0 8px rgba(122,158,142,0.25); } }
+  @media (prefers-reduced-motion: reduce) { .dictado.escuchando { animation: none; } }
+  .con-mic { display: flex; gap: 10px; align-items: flex-start; }
+  .con-mic textarea { flex: 1; }
+  .captura-campo { display: block; text-align: center; border: 1px dashed #4A4A5C; border-radius: 13px; padding: 12px; color: var(--concrete); cursor: pointer; font-size: 0.9rem; }
+  .captura-campo:hover { border-color: var(--eucalyptus); }
+  #t-cap-img { max-height: 180px; max-width: 100%; border-radius: 10px; border: 1px solid #343447; }
   .enviar { background: var(--eucalyptus); color: var(--charcoal); border-color: var(--eucalyptus); }
   .enviar:hover { color: var(--charcoal); }
   .enviar:disabled { opacity: 0.5; cursor: default; }
@@ -202,7 +214,7 @@
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
-<body>
+<body data-bugoff="sin-boton">
 
 <!-- Sin sesión: portada con foto -->
 <div class="portada" id="portada" hidden>
@@ -276,7 +288,8 @@
     <div class="hilo" id="hilo" aria-live="polite"></div>
   </main>
   <form class="redactar" id="redactar">
-    <textarea id="texto" rows="2" placeholder="Describe el platillo…" required></textarea>
+    <textarea id="texto" rows="2" placeholder="Describe el platillo… o dícteselo con el micrófono" required></textarea>
+    <span id="mic-silver"></span>
     <button type="submit" class="boton enviar" id="enviar">Enviar</button>
   </form>
 </div>
@@ -294,7 +307,9 @@
         <button type="button" class="motor" data-tipo="mejora">Mejora</button>
       </div>
       <input class="campo" id="t-titulo" placeholder="En una línea: ¿qué pasa?" maxlength="120" required>
-      <textarea class="campo" id="t-detalle" placeholder="Cuenta más: dónde estabas, qué esperabas, qué pasó…"></textarea>
+      <div class="con-mic"><textarea class="campo" id="t-detalle" placeholder="Cuenta más: dónde estabas, qué esperabas, qué pasó…"></textarea><span id="mic-ticket"></span></div>
+      <label class="captura-campo"><span id="t-cap-txt">Adjuntar captura de pantalla</span><input type="file" id="t-captura" accept="image/*" hidden></label>
+      <img id="t-cap-img" alt="Captura adjunta" hidden>
       <button type="submit" class="boton enviar" id="t-enviar">Enviar ticket</button>
       <p class="aviso" id="t-aviso" hidden></p>
     </form>
@@ -320,6 +335,8 @@
   <footer><span></span></footer>
 </div>
 
+<script src="/js/dictado.js"></script>
+<script src="/js/bugoff.js"></script>
 <script>
 (function () {
   'use strict';
@@ -484,15 +501,16 @@
       method: 'POST',
       headers: { authorization: 'Bearer ' + (sesion && sesion.token), 'content-type': 'application/json' },
       body: JSON.stringify({
-        tipo: tipoTicket, titulo: $('t-titulo').value, detalle: $('t-detalle').value,
+        tipo: tipoTicket, titulo: $('t-titulo').value, detalle: $('t-detalle').value, captura: capturaTicket,
         pagina: document.referrer || '/app', dispositivo: navigator.userAgent
       })
     })
       .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
       .then(function (out) {
         if (!out.ok) { aviso('error', out.b.error || 'No se pudo crear el ticket.'); return; }
-        aviso('ok', 'Ticket #' + out.b.ticket.numero + ' creado. Bug-off ya lo tiene.');
+        aviso(out.b.advertencia ? 'error' : 'ok', 'Ticket #' + out.b.ticket.numero + ' creado. Bug-off ya lo tiene.' + (out.b.advertencia ? ' ' + out.b.advertencia : ''));
         $('t-titulo').value = ''; $('t-detalle').value = '';
+        capturaTicket = ''; $('t-cap-img').hidden = true; $('t-cap-txt').textContent = 'Adjuntar captura de pantalla';
         cargarTickets();
       })
       .catch(function () { aviso('error', 'No se pudo contactar al servidor.'); })
@@ -646,6 +664,21 @@
   $('f-tarjeta-original').addEventListener('click', function () { usarFoto('', 'tarjeta', $('f-tarjeta-original')); });
   $('volver-reportar').addEventListener('click', cerrarReportar);
   $('forma-ticket').addEventListener('submit', enviarTicket);
+  // Captura de pantalla para el ticket: se reduce en el teléfono antes de enviarla.
+  var capturaTicket = '';
+  $('t-captura').addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f || !window.BugOff) return;
+    window.BugOff.reducir(f).then(function (url) {
+      capturaTicket = url; $('t-cap-img').src = url; $('t-cap-img').hidden = false;
+      $('t-cap-txt').textContent = 'Cambiar captura';
+    }).catch(function (err) { aviso('error', err.message); });
+  });
+  // Dictado por voz en Silver y en el detalle del ticket.
+  if (window.Dictado) {
+    $('mic-silver').replaceWith(window.Dictado.boton($('texto'), { aviso: function (t) { burbuja('silver', t); } }));
+    $('mic-ticket').replaceWith(window.Dictado.boton($('t-detalle'), { aviso: function (t) { aviso('', t); } }));
+  }
   Array.prototype.forEach.call($('tipos').children, function (b) {
     b.addEventListener('click', function () {
       tipoTicket = b.getAttribute('data-tipo');

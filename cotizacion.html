@@ -35,7 +35,13 @@
   * { box-sizing: border-box; }
   /* `hidden` manda aunque la clase ponga display: así una caja vacía nunca se asoma. */
   [hidden] { display: none !important; }
+  /* Tapa lo que pasa por debajo de la barra de estado del iPhone al hacer scroll. */
+  body::before {
+    content: ''; position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px);
+    background: var(--tinta); z-index: 45; pointer-events: none;
+  }
   body {
+    padding-top: env(safe-area-inset-top, 0px);
     margin: 0; background: var(--crema); color: var(--tinta);
     font-family: var(--texto); font-size: 15px; line-height: 1.55;
     -webkit-font-smoothing: antialiased;
@@ -475,9 +481,25 @@
   }
   .panel-cabeza {
     position: sticky; top: 0; z-index: 2; background: var(--tinta); color: #fff;
-    padding: 14px 20px; display: flex; gap: 12px; align-items: center; justify-content: space-between;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 20px 14px; display: flex; gap: 12px; align-items: center; justify-content: space-between;
   }
   .panel-cabeza h2 { margin: 0; font-size: 1.05rem; }
+  /* Abajo también: Volver y Guardar quedan a la mano del pulgar. */
+  .panel-pie {
+    position: sticky; bottom: 0; z-index: 2; background: var(--crema); border-top: 1px solid var(--linea);
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 10px; justify-content: space-between;
+  }
+  .tel { display: flex; gap: 6px; min-width: 0; }
+  .par-campos label:has(.tel) { grid-column: 1 / -1; }
+  .tel select { flex: 0 0 auto; max-width: 46%; font: inherit; font-size: 0.88rem; border: 1px solid var(--linea); border-radius: 6px; background: var(--papel); padding: 8px 6px; color: var(--tinta); }
+  .tel .tel-num { flex: 1; }
+  .panel-pie .boton { flex: 1; justify-content: center; text-align: center; }
+  .panel-caja { padding-block-end: 0 !important; }
+  .dictado {
+    width: 44px; height: 44px; flex: none; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+    border: 1px solid var(--eucalipto); background: var(--papel); color: var(--eucalipto-h);
+  }
+  .dictado.escuchando { background: var(--eucalipto); color: #fff; }
   .panel-cuerpo { padding: 18px 20px; display: grid; gap: 20px; }
   fieldset { border: 1px solid var(--linea); border-radius: 8px; padding: 14px 16px; margin: 0; display: grid; gap: 12px; }
   legend { font-family: var(--texto); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arena-hond); padding-inline: 6px; }
@@ -570,6 +592,8 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"></script>
 <script src="js/motion.js"></script>
+<script src="/js/dictado.js"></script>
+<script src="/js/bugoff.js"></script>
 <script>
 (function () {
   "use strict";
@@ -958,7 +982,7 @@
       : L === "en" && chef.zelleLink
         ? '<a class="boton primario" target="_blank" rel="noopener" href="' + esc(chef.zelleLink) + '">' + esc(textoReservar) + "</a>"
       : chef.whatsapp
-        ? '<a class="boton primario" target="_blank" rel="noopener" href="https://wa.me/' + esc(chef.whatsapp) + "?text=" +
+        ? '<a class="boton primario" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
           encodeURIComponent(t9.reservarWa + " " + tx(c.titulo, L) + " (" + tx(c.fecha, L) + ") — " + dinero(t.anticipoConIva, t.moneda)) + '">' +
           esc(textoReservar) + "</a>"
         : "";
@@ -1168,6 +1192,9 @@
   function asistente(c, L) {
     var forma = $("#asis-forma");
     if (!forma) return;
+    if (window.Dictado && !forma.querySelector(".dictado")) {
+      forma.insertBefore(window.Dictado.boton($("#asis-entrada"), { aviso: brindis }), $("#asis-enviar"));
+    }
     if (!asisNombre) {
       api("/silver/chat").then(function (st) {
         var p = st.proveedores && st.proveedores[st.predeterminado];
@@ -1382,6 +1409,7 @@
     barra.className = "barra-admin";
     barra.id = "barra-admin";
     barra.innerHTML =
+      '<button type="button" id="btn-atras" class="fantasma">← Panel</button>' +
       '<span class="etq" style="color:var(--arena)">Cotizador</span>' +
       '<select id="sel-cot" aria-label="Cotización a mostrar"></select>' +
       '<span class="crece modo">Vista de administrador · el cliente no ve esta barra ni los lápices</span>' +
@@ -1398,6 +1426,11 @@
       else { history.replaceState(null, "", location.pathname + location.search); ruta(); }
     });
     $("#btn-editar").addEventListener("click", abrirPanel);
+    // Regresar: de una cotización a la lista; de la lista, al panel de /app.
+    $("#btn-atras").addEventListener("click", function () {
+      if (enCotizacion()) location.href = location.pathname.replace(/\.html$/, "");
+      else location.href = "/app/";
+    });
     $("#btn-cliente").addEventListener("click", function () { vistaCliente(true); });
     document.body.classList.toggle("vista-cliente", VISTA_CLIENTE);
     $("#btn-enviar").addEventListener("click", enviarAlCliente);
@@ -1459,6 +1492,8 @@
   }
 
   function llenarSelector() {
+    var atras = $("#btn-atras");
+    if (atras) atras.textContent = enCotizacion() ? "← Cotizaciones" : "← Panel";
     var sel = $("#sel-cot");
     if (!sel) return;
     var actual = enCotizacion() ? cotizacionActiva() : null;
@@ -1467,6 +1502,52 @@
         var n = tx(c.titulo, "es") + (c.cliente ? " · " + c.cliente : "");
         return '<option value="' + esc(c.slug) + '"' + (actual && c.slug === actual.slug ? " selected" : "") + ">" + esc(n) + "</option>";
       }).join("");
+  }
+
+  /* Teléfonos con país: México y Estados Unidos primero, luego los demás. */
+  var PAISES = [
+    ["52", "México +52"], ["1", "Estados Unidos +1"], ["", "──────────"],
+    ["1", "Canadá +1"], ["34", "España +34"], ["57", "Colombia +57"], ["54", "Argentina +54"], ["56", "Chile +56"],
+    ["51", "Perú +51"], ["502", "Guatemala +502"], ["503", "El Salvador +503"], ["506", "Costa Rica +506"],
+    ["507", "Panamá +507"], ["593", "Ecuador +593"], ["58", "Venezuela +58"], ["55", "Brasil +55"],
+    ["44", "Reino Unido +44"], ["33", "Francia +33"], ["49", "Alemania +49"], ["39", "Italia +39"], ["otro", "Otro país (escribe el código)"]
+  ];
+  /** "+52 664 116 6231" o "5216643640788" → { cod, num }. */
+  function partirTel(valor, porDefecto) {
+    var d = soloDigitos(valor);
+    if (!d) return { cod: porDefecto || "52", num: "" };
+    var codigos = PAISES.map(function (p) { return p[0]; }).filter(function (k) { return /^\d+$/.test(k); })
+      .sort(function (a, b) { return b.length - a.length; });
+    // Sin "+" y con 10 dígitos: número local del país por defecto.
+    if (!/^\s*\+/.test(String(valor)) && d.length === 10) return { cod: porDefecto || "52", num: d };
+    for (var i = 0; i < codigos.length; i++) {
+      if (d.indexOf(codigos[i]) === 0 && d.length - codigos[i].length >= 7) {
+        var num = d.slice(codigos[i].length);
+        // WhatsApp México antiguo: 52 1 + 10 dígitos.
+        if (codigos[i] === "52" && num.length === 11 && num.charAt(0) === "1") num = num.slice(1);
+        return { cod: codigos[i], num: num };
+      }
+    }
+    return { cod: "otro", num: d };
+  }
+  function campoTel(etiqueta, valor, ruta, porDefecto) {
+    var t = partirTel(valor, porDefecto);
+    var opciones = PAISES.map(function (p, i) {
+      if (!p[0]) return '<option disabled>' + p[1] + "</option>";
+      var sel = p[0] === t.cod && (p[0] !== "1" || i === 1) ? " selected" : "";
+      return '<option value="' + p[0] + '"' + sel + ">" + esc(p[1]) + "</option>";
+    }).join("");
+    return '<label>' + esc(etiqueta) + '<span class="tel">' +
+      '<select class="tel-pais" aria-label="País de ' + esc(etiqueta) + '">' + opciones + "</select>" +
+      '<input type="tel" class="tel-num" inputmode="tel" autocomplete="tel-national" value="' + esc(t.num) + '" placeholder="' + (t.cod === "otro" ? "Código y número" : "Número") + '">' +
+      '<input type="hidden" data-ruta="' + esc(ruta) + '" value="' + esc(valor) + '"></span></label>';
+  }
+  function unirTel(caja) {
+    var cod = caja.querySelector(".tel-pais").value, num = soloDigitos(caja.querySelector(".tel-num").value);
+    var oculto = caja.querySelector('input[type="hidden"]');
+    oculto.value = num ? "+" + (cod === "otro" ? "" : cod) + num : "";
+    oculto.dispatchEvent(new Event("input", { bubbles: true }));
+    caja.querySelector(".tel-num").placeholder = cod === "otro" ? "Código y número" : "Número";
   }
 
   function campo(etiqueta, valor, ruta, tipo) {
@@ -1583,7 +1664,7 @@
       '<div class="panel-caja" role="dialog" aria-label="Editar cotización">' +
         '<div class="panel-cabeza"><h2>Editar cotización</h2>' +
           '<div style="display:flex;gap:8px">' +
-            '<button type="button" id="btn-cerrar" class="boton claro" style="color:#fff;border-color:#6A6B6E">Cerrar</button>' +
+            '<button type="button" id="btn-cerrar" class="boton claro" style="color:#fff;border-color:#6A6B6E">← Volver</button>' +
             '<button type="button" id="btn-guardar" class="boton" style="background:var(--arena);color:var(--tinta);border-color:var(--arena)">Guardar</button>' +
           "</div></div>" +
         '<div class="panel-cuerpo">' +
@@ -1591,7 +1672,7 @@
             bi("Título", c.titulo, "titulo") +
             '<div class="par-campos">' +
               campo("Cliente", c.cliente, "cliente") +
-              campo("WhatsApp del cliente", c.telCliente, "telCliente") +
+              campoTel("WhatsApp del cliente", c.telCliente, "telCliente") +
             "</div>" +
             campo("Correo del cliente (recibe la confirmación al pagar)", c.correoCliente, "correoCliente", "email") +
             campo("Enlace (slug)", c.slug, "slug") +
@@ -1657,12 +1738,12 @@
             campo("Nombre", chef.nombre, "chef.nombre") +
             bi("Zona", chef.zona, "chef.zona") +
             '<div class="par-campos">' +
-              campo("Teléfono MX", chef.telMx, "chef.telMx") +
-              campo("Teléfono US", chef.telUs, "chef.telUs") +
+              campoTel("Teléfono MX", chef.telMx, "chef.telMx", "52") +
+              campoTel("Teléfono US", chef.telUs, "chef.telUs", "1") +
             "</div>" +
             '<div class="par-campos">' +
               campo("Correo", chef.correo, "chef.correo") +
-              campo("Tu WhatsApp (solo dígitos)", chef.whatsapp, "chef.whatsapp") +
+              campoTel("Tu WhatsApp", chef.whatsapp, "chef.whatsapp") +
             "</div>" +
             '<div class="par-campos">' +
               campo("Zelle (teléfono o correo)", chef.zelle, "chef.zelle") +
@@ -1684,6 +1765,10 @@
           "</fieldset>" +
 
           '<button type="button" class="agregar" id="btn-borrar" style="border-color:#C79A91;color:#9A5A4F">Eliminar esta cotización</button>' +
+        "</div>" +
+        '<div class="panel-pie">' +
+          '<button type="button" id="btn-cerrar-2" class="boton claro">← Volver</button>' +
+          '<button type="button" id="btn-guardar-2" class="boton primario">Guardar</button>' +
         "</div></div>";
 
     document.body.appendChild(panel);
@@ -1705,6 +1790,8 @@
     panel.addEventListener("click", function (e) { if (e.target === panel) cerrarPanel(); });
     $("#btn-cerrar").addEventListener("click", cerrarPanel);
     $("#btn-guardar").addEventListener("click", guardar);
+    $("#btn-cerrar-2").addEventListener("click", cerrarPanel);
+    $("#btn-guardar-2").addEventListener("click", guardar);
     var bc = $("#btn-cobro-es");
     if (bc) bc.addEventListener("click", function () { generarCobro("es"); });
     var bu = $("#btn-cobro-en");
@@ -1737,6 +1824,10 @@
     }
     panel.addEventListener("input", function (e) {
       if (e.target.dataset.fotoUrl) { ponerFoto(e.target.dataset.fotoUrl, e.target.value.trim()); return; }
+      if (e.target.classList.contains("tel-num")) unirTel(e.target.closest(".tel"));
+    });
+    panel.addEventListener("change", function (e) {
+      if (e.target.classList.contains("tel-pais")) unirTel(e.target.closest(".tel"));
     });
     panel.addEventListener("change", function (e) {
       var el = e.target;
@@ -1902,8 +1993,8 @@
   }
 
   function guardar() {
-    var boton = $("#btn-guardar");
-    if (boton) { boton.disabled = true; boton.textContent = "Guardando…"; }
+    var botones = [$("#btn-guardar"), $("#btn-guardar-2")].filter(Boolean);
+    botones.forEach(function (b) { b.disabled = true; b.textContent = "Guardando…"; });
     actualizarCatalogo();
     api("/commit", {
       method: "POST",
@@ -1920,7 +2011,7 @@
       })
       .catch(function (e) { brindis(e.message); })
       .finally(function () {
-        if (boton && boton.isConnected) { boton.disabled = false; boton.textContent = "Guardar"; }
+        botones.forEach(function (b) { if (b.isConnected) { b.disabled = false; b.textContent = "Guardar"; } });
       });
   }
 

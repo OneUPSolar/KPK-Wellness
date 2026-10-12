@@ -42,13 +42,14 @@ export function correoDe(c, chef, extra) {
 }
 
 /** Manda por Resend. Devuelve { id } o lanza con el motivo. */
-export async function enviarResend(env, { para, asunto, texto, html, responderA }) {
+export async function enviarResend(env, { para, asunto, texto, html, responderA, adjuntos, remitente }) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
     body: JSON.stringify({
-      from: env.CORREO_REMITENTE || 'Karina Paz Kennedy <reservas@kpk.associates>',
-      to: [para],
+      from: remitente || env.CORREO_REMITENTE || 'Karina Paz Kennedy <reservas@kpk.associates>',
+      to: Array.isArray(para) ? para : [para],
+      ...(adjuntos && adjuntos.length ? { attachments: adjuntos } : {}),
       ...(responderA ? { reply_to: responderA } : {}),
       subject: asunto, text: texto, html,
     }),
