@@ -849,6 +849,63 @@
     llenarSelector();
   }
 
+  /* Solicitud de /catering → borrador de cotización con el menú del estilo,
+     sus platillos y precio (content/menus.json). Queda sujeto a que Karina lo
+     revise y guarde; nada se le manda al cliente hasta "Enviar cotización". */
+  function leerSolicitud(b64) {
+    try {
+      var bin = atob(String(b64).replace(/-/g, "+").replace(/_/g, "/"));
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) { return null; }
+  }
+  function fechaBonita(iso, L) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return "";
+    var d = new Date(iso + "T12:00:00");
+    return d.toLocaleDateString(L === "en" ? "en-US" : "es-MX", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+  }
+  function desdeSolicitud(b64) {
+    var sol = leerSolicitud(b64);
+    var limpiar = function (slug) { history.replaceState(null, "", location.pathname + (slug ? "?c=" + encodeURIComponent(slug) : "")); };
+    if (!sol || !sol.nombre) { brindis("No pude leer la solicitud."); limpiar(); pintarLanding(true); return; }
+    var ya = (estado.cotizaciones || []).filter(function (x) { return x.solicitud && x.solicitud.cuando === sol.cuando; })[0];
+    if (ya) { limpiar(ya.slug); estado.activa = ya.slug; pintar(); brindis("Esta solicitud ya tiene su borrador."); return; }
+    fetch("content/menus.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (m) {
+      var t = (m.estilos || {})[sol.estilo] || (m.estilos || {}).otra || {};
+      var copia = function (v) { return v ? JSON.parse(JSON.stringify(v)) : v; };
+      var hoy = new Date().toISOString().slice(0, 10);
+      var base = aSlug((sol.estilo || "evento") + " " + sol.nombre.split(" ").slice(0, 2).join(" "));
+      var slug = base, n = 2;
+      while ((estado.cotizaciones || []).some(function (x) { return x.slug === slug; })) slug = base + "-" + n++;
+      var c = {
+        slug: slug, idioma: sol.idioma === "en" ? "en" : "es",
+        titulo: copia(t.titulo) || { es: "Nueva cotización", en: "New quote" },
+        cliente: sol.nombre, telCliente: sol.tel || "", correoCliente: sol.correo || "",
+        emitida: { es: fechaBonita(hoy, "es"), en: fechaBonita(hoy, "en") },
+        lugar: { es: sol.lugar || "", en: sol.lugar || "" },
+        fecha: { es: fechaBonita(sol.fecha, "es"), en: fechaBonita(sol.fecha, "en") },
+        horario: { es: "", en: "" },
+        invitados: Number(sol.personas) || 0,
+        piezas: copia(t.piezas) || { es: "", en: "" },
+        menu: copia(t.menu) || [], precio: copia(t.precio) || { mxn: 0, usd: 0 },
+        ivaPct: m.ivaPct != null ? m.ivaPct : 16, anticipoPct: m.anticipoPct != null ? m.anticipoPct : 50,
+        incluye: copia(t.incluye) || [], opcionales: copia(m.opcionales) || [], condiciones: copia(m.condiciones) || [],
+        linkMxn: "", linkUsd: "",
+        inicio: sol.fecha ? sol.fecha + "T13:00" : "", fin: sol.fecha ? sol.fecha + "T17:00" : "",
+        solicitud: { cuando: sol.cuando, tipo: sol.tipo, estilo: sol.estilo, otro: sol.otro || "", servicio: sol.servicio || "", clase: sol.clase || "", notas: sol.notas || "" }
+      };
+      estado.cotizaciones.push(c);
+      estado.activa = slug;
+      idioma = c.idioma;
+      limpiar(slug);
+      llenarSelector();
+      pintar();
+      abrirPanel("evento");
+      brindis("Borrador listo desde la solicitud. Revisa menú y precio, y Guarda para aprobarlo.");
+    }).catch(function () { brindis("No pude leer los menús."); limpiar(); pintarLanding(true); });
+  }
+
   function nuevaCotizacion(base, mismoCliente) {
     var copia = base ? JSON.parse(JSON.stringify(base)) : { invitados: 0, precio: { mxn: 0, usd: 0 } };
     copia.slug = aSlug("cotizacion " + Date.now().toString(36));
@@ -1087,6 +1144,10 @@
       "</div>" +
 
       '<div class="cuerpo">' + aprobado +
+        (admin && c.solicitud ? '<section><div class="caja facturas"><div class="etq">Lo que pidió el cliente · sujeto a tu aprobación</div><div class="nota-chica">' +
+          esc([c.solicitud.tipo === "yoga" ? "Evento de yoga" + (c.solicitud.clase ? " · " + c.solicitud.clase : "") : "Menú: " + (c.solicitud.estilo || "") + (c.solicitud.otro ? " (" + c.solicitud.otro + ")" : ""),
+            c.solicitud.servicio ? "Servicio: " + c.solicitud.servicio : "", c.solicitud.notas ? "Comentarios: " + c.solicitud.notas : ""].filter(Boolean).join(" · ")) +
+          "</div></div></section>" : "") +
         (admin ? '<section><div class="caja facturas" id="facturas"><div class="etq">Facturas solicitadas</div><div id="facturas-lista" class="nota-chica">Cargando…</div></div></section>' : "") +
         (menu ? '<section>' + lapiz("menu", "Editar menú") + '<div class="titulo-fila"><h2>' + esc(t9.menu) + "</h2>" +
           (tx(c.piezas, L) ? '<div class="nota-fila">' + esc(tx(c.piezas, L)) + "</div>" : "") +
@@ -2337,11 +2398,18 @@
     // La barra de admin solo aparece con una sesión que el servidor confirme.
     // Un token viejo en el navegador no alcanza.
     var s = sesionGuardada();
-    if (!s) return;
+    var nueva = new URLSearchParams(location.search).get("nueva");
+    // El botón del correo de una solicitud trae ?nueva=…: sin sesión, primero el login y de regreso aquí.
+    if (!s) { if (nueva) location.href = "/app/?volver=" + encodeURIComponent(location.pathname + location.search); return; }
     AUTH = s;
-    api("/session").then(function () { barraAdmin(); if (enCotizacion()) pintar(); else pintarLanding(true); }).catch(function () {
+    api("/session").then(function () {
+      barraAdmin();
+      if (nueva) { desdeSolicitud(nueva); return; }
+      if (enCotizacion()) pintar(); else pintarLanding(true);
+    }).catch(function () {
       AUTH = null;
       localStorage.removeItem("kpk_auth");
+      if (nueva) location.href = "/app/?volver=" + encodeURIComponent(location.pathname + location.search);
     });
   });
 

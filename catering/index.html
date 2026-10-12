@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pide tu catering · Chef Karina Paz Kennedy</title>
+<meta name="description" content="Cuéntale a Chef Karina Paz Kennedy de tu evento y recibe tu cotización. Baja Med, mexicano norteño, saludable o a tu medida.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kpk.associates/catering">
+<meta property="og:title" content="Pide tu catering · Chef Karina Paz Kennedy">
+<meta property="og:description" content="Baja Med, mexicano norteño, saludable o a tu medida. Tijuana · San Diego.">
+<meta property="og:image" content="https://kpk.associates/assets/cotizaciones/portada-rosarito-og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F7F5F1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papel: #F7F5F1; --tinta: #1F2024; --tinta-suave: #5C5E66; --eucalipto: #7A9E8E; --eucalipto-h: #4F7466;
+    --arena: #D9C9AE; --linea: #E4DED3; --blanco: #FFFFFF; --error: #A2453D;
+    --display: 'Cormorant Garamond', Georgia, serif; --texto: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 16px/1.5 var(--texto); -webkit-font-smoothing: antialiased;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(28px + env(safe-area-inset-bottom, 0px)); }
+  main { max-width: 560px; margin: 0 auto; display: grid; gap: 20px; }
+  .arriba { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .volver { font: 600 .9rem var(--texto); color: var(--tinta); text-decoration: none; padding: 9px 2px; }
+  .idioma { display: flex; gap: 2px; background: var(--blanco); border: 1px solid var(--linea); border-radius: 999px; padding: 3px; }
+  .idioma button { font: 600 12px/1 var(--texto); border: 0; background: none; color: var(--tinta-suave); padding: 7px 12px; border-radius: 999px; cursor: pointer; }
+  .idioma button[aria-pressed="true"] { background: var(--tinta); color: #fff; }
+  .cabeza { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: center; }
+  .cabeza img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: 50% 18%; border: 2px solid var(--blanco); box-shadow: 0 0 0 2px var(--eucalipto); }
+  .etq { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--eucalipto-h); font-weight: 600; }
+  h1 { font: 600 2rem/1.05 var(--display); margin: 2px 0 0; }
+  .intro { margin: 0; color: var(--tinta-suave); }
+
+  form { display: grid; gap: 18px; }
+  fieldset { margin: 0; border: 1px solid var(--linea); background: var(--blanco); border-radius: 18px; padding: 16px 16px 18px; display: grid; gap: 14px; min-width: 0; }
+  legend { font: 600 1.25rem var(--display); padding: 0 6px; }
+  label { display: grid; gap: 6px; font-size: .9rem; font-weight: 500; }
+  label small, .ayuda { font-weight: 400; color: var(--tinta-suave); font-size: .82rem; }
+  input, select, textarea { font: 400 16px/1.4 var(--texto); color: var(--tinta); background: var(--papel); border: 1px solid var(--linea); border-radius: 12px; padding: 12px 13px; width: 100%; min-width: 0; }
+  textarea { min-height: 96px; resize: vertical; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--eucalipto); outline-offset: 1px; border-color: var(--eucalipto); }
+  .par { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 420px) { .par { grid-template-columns: 1fr; } }
+  .tel { display: flex; gap: 8px; } .tel select { flex: 0 0 auto; width: auto; max-width: 48%; } .tel input { flex: 1; }
+
+  .opciones { display: grid; gap: 10px; }
+  .opcion { position: relative; display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; padding: 13px 14px; border: 1px solid var(--linea); border-radius: 14px; background: var(--papel); cursor: pointer; font-weight: 400; }
+  .opcion input { position: absolute; opacity: 0; pointer-events: none; }
+  .opcion .marca { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--arena); margin-top: 1px; display: grid; place-items: center; }
+  .opcion b { display: block; font-weight: 600; font-size: 1rem; }
+  .opcion span span { display: block; color: var(--tinta-suave); font-size: .86rem; }
+  .opcion:has(input:checked) { border-color: var(--eucalipto-h); background: #EEF3F0; }
+  .opcion:has(input:checked) .marca { border-color: var(--eucalipto-h); background: radial-gradient(circle, var(--eucalipto-h) 45%, transparent 50%); }
+  .opcion:has(input:focus-visible) { outline: 2px solid var(--eucalipto); outline-offset: 2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; cursor: pointer; }
+  .chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .chip span { display: inline-block; font-size: .9rem; font-weight: 500; border: 1px solid var(--linea); background: var(--papel); border-radius: 999px; padding: 9px 14px; }
+  .chip input:checked + span { background: var(--tinta); color: #fff; border-color: var(--tinta); }
+  .chip input:focus-visible + span { outline: 2px solid var(--eucalipto); outline-offset: 2px; }
+
+  .enviar { font: 600 1rem var(--texto); background: var(--eucalipto-h); color: #fff; border: 0; border-radius: 999px; padding: 16px 22px; cursor: pointer; width: 100%; }
+  .enviar:hover { background: #42665A; } .enviar:disabled { opacity: .6; cursor: default; }
+  .enviar:focus-visible { outline: 2px solid var(--tinta); outline-offset: 3px; }
+  .aviso { margin: 0; font-size: .92rem; } .aviso.error { color: var(--error); } .aviso a { color: var(--eucalipto-h); font-weight: 600; }
+  .nota { text-align: center; font-size: .85rem; color: var(--tinta-suave); margin: 0; }
+
+  .gracias { background: var(--blanco); border: 1px solid var(--linea); border-radius: 18px; padding: 26px 20px; display: grid; gap: 12px; text-align: center; justify-items: center; }
+  .gracias h2 { font: 600 1.9rem/1.1 var(--display); margin: 0; }
+  .gracias p { margin: 0; color: var(--tinta-suave); }
+  .boton { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font: 600 .95rem var(--texto); border-radius: 999px; padding: 13px 20px; border: 1px solid var(--tinta); color: var(--tinta); }
+  .boton.lleno { background: var(--eucalipto-h); border-color: var(--eucalipto-h); color: #fff; }
+</style>
+</head>
+<body>
+<main>
+  <div class="arriba">
+    <a class="volver" href="/links" data-t="volver">← Volver</a>
+    <div class="idioma" role="group" aria-label="Idioma / Language">
+      <button type="button" data-idioma="es" aria-pressed="true">ES</button>
+      <button type="button" data-idioma="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+
+  <header class="cabeza">
+    <img id="foto" src="/assets/cotizaciones/karina-retrato.webp" alt="Karina Paz Kennedy" width="64" height="64">
+    <div><div class="etq" data-t="etq">Chef Karina Paz Kennedy</div><h1 id="titulo">Pide tu catering</h1></div>
+  </header>
+  <p class="intro" id="intro">Cuéntame de tu evento. Reviso tu solicitud y te mando una cotización a tu medida.</p>
+
+  <form id="forma" novalidate>
+    <fieldset>
+      <legend data-t="tusDatos">Tus datos</legend>
+      <label><span data-t="nombre">Nombre</span><input name="nombre" autocomplete="name" required maxlength="120"></label>
+      <label><span data-t="whatsapp">WhatsApp</span>
+        <span class="tel">
+          <select name="pais" aria-label="País">
+            <option value="52">México +52</option><option value="1">Estados Unidos +1</option><option disabled>──────────</option>
+            <option value="1">Canadá +1</option><option value="34">España +34</option><option value="57">Colombia +57</option>
+            <option value="54">Argentina +54</option><option value="56">Chile +56</option><option value="51">Perú +51</option>
+            <option value="502">Guatemala +502</option><option value="506">Costa Rica +506</option><option value="55">Brasil +55</option>
+            <option value="44">Reino Unido +44</option><option value="otro">Otro (escribe el código)</option>
+          </select>
+          <input name="tel" type="tel" inputmode="tel" autocomplete="tel-national" required>
+        </span></label>
+      <label><span data-t="correo">Correo</span><input name="correo" type="email" autocomplete="email" required></label>
+    </fieldset>
+
+    <fieldset>
+      <legend data-t="tuEvento">Tu evento</legend>
+      <div class="par">
+        <label><span data-t="personas">¿Para cuántas personas?</span><input name="personas" type="number" inputmode="numeric" min="1" max="5000" required></label>
+        <label><span data-t="fecha">Fecha</span> <input name="fecha" type="date"></label>
+      </div>
+      <label><span data-t="lugar">Lugar</span> <input name="lugar" maxlength="160" data-ph="lugarPh" placeholder="Ciudad o lugar del evento"></label>
+    </fieldset>
+
+    <fieldset id="bloque-menu">
+      <legend data-t="menu">Tipo de menú</legend>
+      <div class="opciones">
+        <label class="opcion"><input type="radio" name="estilo" value="bajamed"><span class="marca"></span><span><b>Baja Med</b><span data-t="bajamedD">Mariscos y sabores de la costa de Baja, a las brasas.</span></span></label>
+        <label class="opcion"><input type="radio" name="estilo" value="norteno"><span class="marca"></span><span><b data-t="norteno">Mexicano norteño</b><span data-t="nortenoD">Carne asada, tortillas de harina y salsas de molcajete.</span></span></label>
+        <label class="opcion"><input type="radio" name="estilo" value="saludable"><span class="marca"></span><span><b data-t="saludable">Saludable</b><span data-t="saludableD">Ligero, fresco y balanceado.</span></span></label>
+        <label class="opcion"><input type="radio" name="estilo" value="otra"><span class="marca"></span><span><b data-t="otra">Otra sugerencia</b><span data-t="otraD">Cuéntame qué tienes en mente.</span></span></label>
+      </div>
+      <label id="campo-otro" hidden><span data-t="otroL">¿Qué menú te gustaría?</span><textarea name="otro" maxlength="300"></textarea></label>
+      <div><div class="ayuda" style="margin-bottom:8px" data-t="servicio">Estilo de servicio</div>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="servicio" value="buffet"><span data-t="buffet">Buffet</span></label>
+          <label class="chip"><input type="radio" name="servicio" value="estacion"><span data-t="estacion">Estación en vivo / taquiza</span></label>
+          <label class="chip"><input type="radio" name="servicio" value="mesa"><span data-t="mesa">Servicio a la mesa</span></label>
+          <label class="chip"><input type="radio" name="servicio" value="bocadillos"><span data-t="bocadillos">Bocadillos y canapés</span></label>
+        </div></div>
+    </fieldset>
+
+    <fieldset id="bloque-yoga" hidden>
+      <legend data-t="yogaTipo">Tipo de evento</legend>
+      <div class="opciones">
+        <label class="opcion"><input type="radio" name="clase" value="privada"><span class="marca"></span><span><b data-t="privada">Clase privada</b><span data-t="privadaD">Para ti o tu familia, en tu espacio.</span></span></label>
+        <label class="opcion"><input type="radio" name="clase" value="grupo"><span class="marca"></span><span><b data-t="grupo">Grupo o celebración</b><span data-t="grupoD">Cumpleaños, despedidas, amigas.</span></span></label>
+        <label class="opcion"><input type="radio" name="clase" value="empresa"><span class="marca"></span><span><b data-t="empresa">Evento corporativo</b><span data-t="empresaD">Bienestar para tu equipo.</span></span></label>
+        <label class="opcion"><input type="radio" name="clase" value="retiro"><span class="marca"></span><span><b data-t="retiro">Retiro</b><span data-t="retiroD">Yoga, comida consciente y descanso.</span></span></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend data-t="algoMas">¿Algo más?</legend>
+      <label><span class="ayuda" data-t="notasL">Alergias, ideas, horario, lo que quieras contarme.</span><textarea name="notas" maxlength="2000"></textarea></label>
+    </fieldset>
+
+    <input name="web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+    <p class="aviso" id="aviso" role="status" hidden></p>
+    <button type="submit" class="enviar" id="enviar" data-t="enviar">Enviar solicitud</button>
+    <p class="nota" data-t="nota">Sin compromiso. Karina revisa tu solicitud y te manda tu cotización.</p>
+  </form>
+
+  <section class="gracias" id="gracias" hidden aria-live="polite">
+    <h2 id="gracias-t">¡Gracias!</h2>
+    <p id="gracias-p">Recibí tu solicitud. Te mando tu cotización pronto.</p>
+    <a class="boton lleno" id="gracias-wa" target="_blank" rel="noopener" href="#" data-t="hablar">Escribirme por WhatsApp</a>
+    <a class="boton" href="/links" data-t="volverLinks">Volver</a>
+  </section>
+</main>
+<script>
+(function () {
+  'use strict';
+  var WA = '5216643640788';
+  var q = new URLSearchParams(location.search);
+  var yoga = q.get('tipo') === 'yoga';
+  var T = {
+    es: { volver: '← Volver', etq: 'Chef Karina Paz Kennedy', titulo: 'Pide tu catering', tituloYoga: 'Organiza un evento de yoga',
+      intro: 'Cuéntame de tu evento. Reviso tu solicitud y te mando una cotización a tu medida.',
+      introYoga: 'Cuéntame qué tienes en mente. Reviso tu solicitud y te mando una propuesta a tu medida.',
+      tusDatos: 'Tus datos', nombre: 'Nombre', whatsapp: 'WhatsApp', correo: 'Correo', tuEvento: 'Tu evento', personas: '¿Para cuántas personas?',
+      fecha: 'Fecha', lugar: 'Lugar', lugarPh: 'Ciudad o lugar del evento', menu: 'Tipo de menú',
+      bajamedD: 'Mariscos y sabores de la costa de Baja, a las brasas.', norteno: 'Mexicano norteño', nortenoD: 'Carne asada, tortillas de harina y salsas de molcajete.',
+      saludable: 'Saludable', saludableD: 'Ligero, fresco y balanceado.', otra: 'Otra sugerencia', otraD: 'Cuéntame qué tienes en mente.',
+      otroL: '¿Qué menú te gustaría?', servicio: 'Estilo de servicio', buffet: 'Buffet', estacion: 'Estación en vivo / taquiza', mesa: 'Servicio a la mesa',
+      bocadillos: 'Bocadillos y canapés', yogaTipo: 'Tipo de evento', privada: 'Clase privada', privadaD: 'Para ti o tu familia, en tu espacio.',
+      grupo: 'Grupo o celebración', grupoD: 'Cumpleaños, despedidas, amigas.', empresa: 'Evento corporativo', empresaD: 'Bienestar para tu equipo.',
+      retiro: 'Retiro', retiroD: 'Yoga, comida consciente y descanso.', algoMas: '¿Algo más?', notasL: 'Alergias, ideas, horario, lo que quieras contarme.',
+      enviar: 'Enviar solicitud', enviando: 'Enviando…', nota: 'Sin compromiso. Karina revisa tu solicitud y te manda tu cotización.',
+      gracias: '¡Gracias, {n}!', graciasP: 'Recibí tu solicitud. Te mando tu cotización pronto. También te llegó un correo de confirmación.',
+      hablar: 'Escribirme por WhatsApp', volverLinks: 'Volver', waGracias: 'Hola Karina, te acabo de mandar una solicitud desde tu página.',
+      faltaNombre: 'Escribe tu nombre.', faltaTel: 'Escribe tu WhatsApp.', faltaCorreo: 'Escribe un correo válido.', faltaPersonas: '¿Para cuántas personas?',
+      faltaEstilo: 'Elige el tipo de menú.', faltaOtro: 'Cuéntanos qué menú te gustaría.', faltaClase: 'Elige el tipo de evento.',
+      porWa: 'No pudimos enviarla por aquí.', abrirWa: 'Mándamela por WhatsApp' },
+    en: { volver: '← Back', etq: 'Chef Karina Paz Kennedy', titulo: 'Book catering', tituloYoga: 'Plan a yoga event',
+      intro: 'Tell me about your event. I’ll review your request and send you a quote made for you.',
+      introYoga: 'Tell me what you have in mind. I’ll review your request and send you a proposal made for you.',
+      tusDatos: 'Your details', nombre: 'Name', whatsapp: 'WhatsApp', correo: 'Email', tuEvento: 'Your event', personas: 'How many guests?',
+      fecha: 'Date', lugar: 'Place', lugarPh: 'City or venue', menu: 'Menu style',
+      bajamedD: 'Seafood and Baja coast flavors, off the grill.', norteno: 'Northern Mexican', nortenoD: 'Carne asada, flour tortillas and molcajete salsas.',
+      saludable: 'Healthy', saludableD: 'Light, fresh and balanced.', otra: 'Something else', otraD: 'Tell me what you have in mind.',
+      otroL: 'What menu would you like?', servicio: 'Service style', buffet: 'Buffet', estacion: 'Live station / taquiza', mesa: 'Plated service',
+      bocadillos: 'Bites and canapés', yogaTipo: 'Type of event', privada: 'Private class', privadaD: 'For you or your family, at your place.',
+      grupo: 'Group or celebration', grupoD: 'Birthdays, bachelorettes, friends.', empresa: 'Corporate event', empresaD: 'Wellness for your team.',
+      retiro: 'Retreat', retiroD: 'Yoga, mindful food and rest.', algoMas: 'Anything else?', notasL: 'Allergies, ideas, timing, anything you’d like to share.',
+      enviar: 'Send request', enviando: 'Sending…', nota: 'No commitment. Karina reviews your request and sends you a quote.',
+      gracias: 'Thank you, {n}!', graciasP: 'I got your request and will send your quote soon. A confirmation email is on its way too.',
+      hablar: 'Message me on WhatsApp', volverLinks: 'Back', waGracias: 'Hi Karina, I just sent you a request from your page.',
+      faltaNombre: 'Please enter your name.', faltaTel: 'Please enter your WhatsApp.', faltaCorreo: 'Please enter a valid email.', faltaPersonas: 'How many guests?',
+      faltaEstilo: 'Please pick a menu style.', faltaOtro: 'Tell us what menu you’d like.', faltaClase: 'Please pick a type of event.',
+      porWa: 'We couldn’t send it from here.', abrirWa: 'Send it to me on WhatsApp' }
+  };
+  var L = q.get('lang') === 'en' ? 'en' : 'es';
+  try { if (!q.get('lang') && localStorage.getItem('kpk_idioma') === 'en') L = 'en'; } catch (e) {}
+  var $ = function (id) { return document.getElementById(id); };
+  var forma = $('forma');
+
+  function poner(l) {
+    L = l; document.documentElement.lang = l;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-t]'), function (el) { el.textContent = T[l][el.getAttribute('data-t')]; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-ph]'), function (el) { el.placeholder = T[l][el.getAttribute('data-ph')]; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-idioma]'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-idioma') === l)); });
+    $('titulo').textContent = yoga ? T[l].tituloYoga : T[l].titulo;
+    $('intro').textContent = yoga ? T[l].introYoga : T[l].intro;
+    document.title = (yoga ? T[l].tituloYoga : T[l].titulo) + ' · Chef Karina Paz Kennedy';
+    if (l === 'en' && forma.pais.selectedIndex === 0 && !forma.tel.value) forma.pais.selectedIndex = 1;
+    try { localStorage.setItem('kpk_idioma', l); } catch (e) {}
+  }
+  $('bloque-menu').hidden = yoga;
+  $('bloque-yoga').hidden = !yoga;
+  poner(L);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-idioma]'), function (b) { b.addEventListener('click', function () { poner(b.getAttribute('data-idioma')); }); });
+  forma.addEventListener('change', function (e) { if (e.target.name === 'estilo') $('campo-otro').hidden = e.target.value !== 'otra'; });
+
+  function aviso(t, html) { var p = $('aviso'); p.className = 'aviso error'; if (html) p.innerHTML = html; else p.textContent = t; p.hidden = !t && !html; }
+  function valor(n) { var el = forma.querySelector('[name="' + n + '"]:checked'); return el ? el.value : ''; }
+  function telCompleto() {
+    var d = forma.tel.value.replace(/\D/g, ''), cod = forma.pais.value;
+    return d ? '+' + (cod === 'otro' ? '' : cod) + d : '';
+  }
+
+  forma.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var t = T[L];
+    var datos = {
+      tipo: yoga ? 'yoga' : 'catering', nombre: forma.nombre.value.trim(), tel: telCompleto(), correo: forma.correo.value.trim(),
+      personas: forma.personas.value, fecha: forma.fecha.value, lugar: forma.lugar.value.trim(), notas: forma.notas.value.trim(),
+      estilo: valor('estilo'), otro: forma.otro.value.trim(), servicio: valor('servicio'), clase: valor('clase'), idioma: L, web: forma.web.value
+    };
+    var falta = !datos.nombre ? ['faltaNombre', 'nombre'] : datos.tel.replace(/\D/g, '').length < 8 ? ['faltaTel', 'tel']
+      : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.correo) ? ['faltaCorreo', 'correo'] : !(Number(datos.personas) >= 1) ? ['faltaPersonas', 'personas']
+      : yoga ? (!datos.clase ? ['faltaClase', null] : null)
+      : !datos.estilo ? ['faltaEstilo', null] : (datos.estilo === 'otra' && datos.otro.length < 3) ? ['faltaOtro', 'otro'] : null;
+    if (falta) { aviso(t[falta[0]]); if (falta[1]) forma[falta[1]].focus(); return; }
+    aviso('');
+    var b = $('enviar'); b.disabled = true; b.textContent = t.enviando;
+    fetch('/api/solicitud', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(datos) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); })
+      .then(function () {
+        forma.hidden = true; $('intro').hidden = true;
+        $('gracias-t').textContent = t.gracias.replace('{n}', datos.nombre.split(' ')[0]);
+        $('gracias-p').textContent = t.graciasP;
+        $('gracias-wa').href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(t.waGracias);
+        $('gracias').hidden = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      })
+      .catch(function () {
+        b.disabled = false; b.textContent = t.enviar;
+        var resumen = [t[yoga ? 'tituloYoga' : 'titulo'], datos.nombre, datos.tel, datos.correo, datos.personas + ' · ' + (datos.fecha || ''), datos.lugar,
+          datos.estilo || datos.clase, datos.otro, datos.servicio, datos.notas].filter(Boolean).join('\n');
+        aviso('', t.porWa + ' <a target="_blank" rel="noopener" href="https://wa.me/' + WA + '?text=' + encodeURIComponent(resumen) + '">' + t.abrirWa + '</a>');
+      });
+  });
+
+  fetch('/content/fotos-karina.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (m) {
+    if (!m || !m.tarjeta) return;
+    var img = new Image(); img.onload = function () { $('foto').src = img.src; }; img.src = '/' + String(m.tarjeta).replace(/^\/+/, '');
+  }).catch(function () {});
+}());
+</script>
+</body>
+</html>
