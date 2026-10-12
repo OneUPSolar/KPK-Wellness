@@ -275,8 +275,12 @@
   });
 
   fetch('/content/fotos-karina.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (m) {
-    if (!m || !m.tarjeta) return;
-    var img = new Image(); img.onload = function () { $('foto').src = img.src; }; img.src = '/' + String(m.tarjeta).replace(/^\/+/, '');
+    // Foto de perfil (Mis fotos → Usar como foto de perfil); si no hay, la de su tarjeta.
+    var ruta = m && (m.perfil || m.tarjeta);
+    if (!ruta) return;
+    var img = new Image();
+    img.onload = function () { document.getElementById('foto').src = img.src; };
+    img.src = /^https:\/\//.test(ruta) ? ruta : '/' + String(ruta).replace(/^\/+/, '');
   }).catch(function () {});
 }());
 </script>

@@ -526,7 +526,8 @@
     (m.fotos || []).forEach(function (f) {
       var enTarjeta = m.tarjeta && f.url && m.tarjeta === f.url;
       var enCot = m.cotizacion && f.url && m.cotizacion === f.url;
-      var art = document.createElement('article'); art.className = 'foto-k' + (enTarjeta || enCot ? ' activa' : '');
+      var enPerfil = m.perfil && (m.perfil === f.url || m.perfil === f.remota);
+      var art = document.createElement('article'); art.className = 'foto-k' + (enTarjeta || enCot || enPerfil ? ' activa' : '');
       var caja = document.createElement('div'); caja.className = 'img';
       var img = document.createElement('img'); img.loading = 'lazy'; img.alt = f.titulo;
       // Recién copiada, la foto local tarda un par de minutos en publicarse: mientras, la remota.
@@ -537,7 +538,7 @@
       var info = document.createElement('div'); info.className = 'info';
       var b = document.createElement('b'); b.textContent = f.titulo;
       var usos = document.createElement('div'); usos.className = 'usos';
-      usos.textContent = [enTarjeta ? 'En tu tarjeta' : '', enCot ? 'En cotizaciones' : ''].filter(Boolean).join(' · ');
+      usos.textContent = [enPerfil ? 'Foto de perfil' : '', enTarjeta ? 'En tu tarjeta' : '', enCot ? 'En cotizaciones' : ''].filter(Boolean).join(' · ');
       function boton(texto, usar) {
         var x = document.createElement('button'); x.type = 'button'; x.className = 'boton'; x.textContent = texto;
         x.addEventListener('click', function () { usarFoto(f.id, usar, x); });
@@ -548,6 +549,7 @@
       info.appendChild(b); info.appendChild(usos);
       info.appendChild(boton('Usar en mi tarjeta', 'tarjeta'));
       info.appendChild(boton('Usar en cotizaciones', 'cotizacion'));
+      info.appendChild(boton('Usar como foto de perfil', 'perfil'));
       info.appendChild(desc);
       art.appendChild(caja); art.appendChild(info); g.appendChild(art);
     });
@@ -568,7 +570,8 @@
     pedirFotos({ method: 'POST', body: JSON.stringify({ id: id, usar: usar }) })
       .then(function (m) {
         pintarFotos(m);
-        avisoF('ok', usar === 'tarjeta' ? (id ? 'Listo: es la foto de tu tarjeta. Se verá en uno o dos minutos.' : 'Listo: tu tarjeta regresa a su foto de siempre.')
+        avisoF('ok', usar === 'perfil' ? 'Listo: es tu foto de perfil en tu página de links. Se verá en uno o dos minutos.'
+          : usar === 'tarjeta' ? (id ? 'Listo: es la foto de tu tarjeta. Se verá en uno o dos minutos.' : 'Listo: tu tarjeta regresa a su foto de siempre.')
           : 'Listo: es tu foto en las cotizaciones. Se verá en uno o dos minutos.');
       })
       .catch(function (e) { avisoF('error', e.message); cargarFotos(); });
