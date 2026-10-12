@@ -2,6 +2,20 @@
   "tarjeta": "",
   "fotos": [
     {
+      "id": "perfil-bn",
+      "titulo": "Foto de perfil · blanco y negro",
+      "ia": true,
+      "url": "",
+      "remota": "https://d2ol7oe51mr4n9.cloudfront.net/user_3FEaHHOcF04L96gNp2QIPvLVGaA/c1fc69db-b0a8-4582-9283-81c2128a2188.jpg"
+    },
+    {
+      "id": "perfil-instagram-bn",
+      "titulo": "Foto de perfil · Instagram (con degradado)",
+      "ia": true,
+      "url": "",
+      "remota": "https://d2ol7oe51mr4n9.cloudfront.net/user_3FEaHHOcF04L96gNp2QIPvLVGaA/61119063-ccc8-4d35-82ce-d065276ab2cc.jpg"
+    },
+    {
       "id": "perfil-instagram",
       "titulo": "Foto de perfil · Instagram",
       "ia": false,
@@ -85,5 +99,6 @@
       "url": "assets/cotizaciones/karina-retrato.webp",
       "remota": ""
     }
-  ]
+  ],
+  "perfil": "https://d2ol7oe51mr4n9.cloudfront.net/user_3FEaHHOcF04L96gNp2QIPvLVGaA/c1fc69db-b0a8-4582-9283-81c2128a2188.jpg"
 }

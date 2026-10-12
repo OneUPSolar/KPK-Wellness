@@ -2,7 +2,7 @@
  * "Mis fotos" de Karina: la galería de su panel.
  *
  * GET  (admin) → { tarjeta, cotizacion, fotos[] }
- * POST (admin) { id, usar: 'tarjeta' | 'cotizacion' | 'guardar' }
+ * POST (admin) { id, usar: 'tarjeta' | 'cotizacion' | 'perfil' | 'guardar' }
  *   Si la foto vive afuera (Higgsfield), primero se copia al repo en
  *   assets/karina/<id>.webp, para que el sitio no dependa de otro servidor.
  *   Luego se aplica: la foto de su tarjeta digital, o la de sus cotizaciones.
@@ -65,7 +65,7 @@ export async function onRequestPost({ request, env }) {
     await requireAdmin(request, env);
     const body = await readJson(request);
     const usar = String(body?.usar || '');
-    if (!['tarjeta', 'cotizacion', 'guardar'].includes(usar)) return json({ error: 'Acción desconocida.' }, 400);
+    if (!['tarjeta', 'cotizacion', 'perfil', 'guardar'].includes(usar)) return json({ error: 'Acción desconocida.' }, 400);
 
     const m = (await leer(env, MANIFIESTO)) || { tarjeta: '', fotos: [] };
     const id = String(body?.id || '');
@@ -84,7 +84,8 @@ export async function onRequestPost({ request, env }) {
     foto.url = ruta;
 
     if (usar === 'tarjeta') m.tarjeta = ruta;
-    if (copiada || usar === 'tarjeta') await escribir(env, MANIFIESTO, m, `fotos: ${usar} · ${id}`);
+    if (usar === 'perfil') m.perfil = ruta;
+    if (copiada || usar === 'tarjeta' || usar === 'perfil') await escribir(env, MANIFIESTO, m, `fotos: ${usar} · ${id}`);
 
     let cotizacion;
     if (usar === 'cotizacion') {
