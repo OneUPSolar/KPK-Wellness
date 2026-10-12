@@ -3,10 +3,17 @@
   "fotos": [
     {
       "id": "tarjeta-arena",
-      "titulo": "Para tarjeta · fondo arena",
+      "titulo": "Para tarjeta · brazos cruzados",
       "ia": true,
       "url": "",
-      "remota": "https://d8j0ntlcm91z4.cloudfront.net/user_3FEaHHOcF04L96gNp2QIPvLVGaA/hf_20261012_000810_eac615eb-0237-4633-a6bd-7f38eec0889a_min.webp"
+      "remota": "https://d8j0ntlcm91z4.cloudfront.net/user_3FEaHHOcF04L96gNp2QIPvLVGaA/hf_20261012_002716_b84de3e9-14a3-439b-b721-51093d576a8a_min.webp"
+    },
+    {
+      "id": "tarjeta-arena-mano",
+      "titulo": "Para tarjeta · mano en la cintura",
+      "ia": true,
+      "url": "",
+      "remota": "https://d8j0ntlcm91z4.cloudfront.net/user_3FEaHHOcF04L96gNp2QIPvLVGaA/hf_20261012_002718_904a4347-c327-4b45-a2d6-d0ca438e1527_min.webp"
     },
     {
       "id": "estudio-papel",
