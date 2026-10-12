@@ -607,8 +607,9 @@
       m2: "Pagar por transferencia", m2d: "SPEI desde tu banco.",
       m3: "Pagar en efectivo", m3d: "En tiendas afiliadas a Mercado Pago.",
       mOtro: "Pagar en dólares (USD)", mOtrod: "{m} · sin IVA, con invoice. Por Zelle.", mOtroBoton: "Ver en dólares", mOtroIdioma: "en",
-      mFac: "Factura en México (CFDI)", mFacd: "Incluida en el precio en pesos. Mándanos tus datos fiscales y la emitimos.",
-      mFacBoton: "Pedir factura", mFacWa: "Hola Karina, necesito factura (CFDI) del anticipo de",
+      mFac: "Factura para deducir impuestos (CFDI)", mFacd: "Incluida en el precio en pesos. Te pedimos RFC, razón social, régimen fiscal, código postal y uso de CFDI (tipo de deducción).",
+      mFacBoton: "Pedir factura", mFacWa: "Hola Karina, necesito factura (CFDI) para deducir el anticipo de",
+      mFacDatos: "Mis datos fiscales:\nRFC:\nRazón social:\nRégimen fiscal:\nCódigo postal:\nUso de CFDI (tipo de deducción, ej. G03 Gastos en general):\nCorreo para la factura:",
       resumenCopiado: "Resumen copiado", sinCotizaciones: "Todavía no hay cotizaciones",
       leyenda: "Cotización en pesos mexicanos, con factura.",
       preguntas: "¿Tienes preguntas?", escribe: "Escríbele directo a Karina por WhatsApp",
@@ -641,8 +642,9 @@
       m2: "Pay over time", m2d: "Klarna or Affirm, if you qualify at checkout.",
       m3: "Apple Pay or Google Pay", m3d: "On a supported device.",
       mOtro: "Pay in Mexican pesos (MXN)", mOtrod: "{m} incl. 16% IVA, with a Mexican invoice (CFDI). Card, SPEI transfer or cash.", mOtroBoton: "View in pesos", mOtroIdioma: "es",
-      mFac: "Need an invoice?", mFacd: "We email an invoice for your deposit.",
-      mFacBoton: "Request invoice", mFacWa: "Hi Karina, I need an invoice for the deposit for",
+      mFac: "Invoice for tax deduction", mFacd: "For business expenses you want to deduct. Send us your business name, address, tax ID and email.",
+      mFacBoton: "Request invoice", mFacWa: "Hi Karina, I need an invoice to deduct the deposit for",
+      mFacDatos: "My billing details:\nBusiness name:\nAddress:\nTax ID (EIN):\nEmail for the invoice:",
       resumenCopiado: "Summary copied", sinCotizaciones: "No quotes yet",
       leyenda: "Quote in US dollars, with an invoice.",
       preguntas: "Questions?", escribe: "Message Karina directly on WhatsApp",
@@ -927,7 +929,7 @@
       '<button type="button" class="pagar" data-cambiar-idioma="' + t9.mOtroIdioma + '">' + esc(t9.mOtroBoton) + "</button>");
     if (chef.whatsapp) {
       filas += fila(t9.mFac, t9.mFacd, '<a class="pagar" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
-        encodeURIComponent(t9.mFacWa + " " + tx(c.titulo, L) + " (" + dinero(t.anticipoConIva, t.moneda) + ").") + '">' + esc(t9.mFacBoton) + "</a>");
+        encodeURIComponent(t9.mFacWa + " " + tx(c.titulo, L) + " (" + dinero(t.anticipoConIva, t.moneda) + ").\n\n" + t9.mFacDatos) + '">' + esc(t9.mFacBoton) + "</a>");
     }
     // Dólares sin Stripe: Zelle es el camino. Nombre, número, QR y el link que
     // trae el propio QR (abre la app del banco con Karina como destinataria).
