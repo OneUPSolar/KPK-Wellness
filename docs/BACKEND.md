@@ -62,7 +62,7 @@ Environment variables. Las marcadas como secreto quedan cifradas.
 | `ANTHROPIC_API_KEY` | sí | llave de Anthropic de Karina, para Silver en la app |
 | `ANTHROPIC_MODEL` | no | opcional; predeterminado `claude-opus-5-5` |
 | `RESEND_API_KEY` | sí | para el correo de reserva al cliente (Resend, dominio kpk.associates verificado) |
-| `CORREO_REMITENTE` | no | opcional; predeterminado `Karina Paz Kennedy <reservas@kpk.associates>` |
+| `CORREO_REMITENTE` | no | opcional; predeterminado `Karina Paz Kennedy <karina@kpk.associates>` |
 | `STRIPE_SECRET_KEY` | sí | llave secreta de Stripe de Karina (`sk_live_…`), para el lado en dólares. Sin ella, `/api/payments/stripe` responde 503 |
 
 El asistente de recetas de la app se llama **Silver** cuando contesta OpenAI y **Claudio** cuando contesta Claude; funciona con cualquiera de las dos llaves y, con las dos, Karina elige en la app. Sin ninguna, `/api/silver/chat` responde 503.
