@@ -588,5 +588,16 @@
     }
   })();
   </script>
+<script>
+  // Con sesión de administradora, la tarjeta deja regresar al panel (en la app instalada no hay botón atrás).
+  (function () {
+    try { var s = JSON.parse(localStorage.getItem('kpk_auth') || 'null'); if (!s || !s.token) return; } catch (e) { return; }
+    var a = document.createElement('a');
+    a.href = '/app/'; a.textContent = '← Panel';
+    a.setAttribute('style', 'position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:12px;z-index:50;font:600 13px/1 Inter,system-ui,sans-serif;' +
+      'color:#fff;background:rgba(31,32,36,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:9px 13px;border-radius:999px;text-decoration:none');
+    document.body.appendChild(a);
+  }());
+</script>
 </body>
 </html>

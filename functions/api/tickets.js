@@ -9,6 +9,70 @@
  * Contents.
  */
 import { json, readJson, requireAdmin } from '../_lib/responder.js';
+import { enviarResend } from '../_lib/correo.js';
+
+// A quién avisa Bug-off. BUGOFF_CORREOS (separados por coma) lo reemplaza.
+const CORREOS = ['hiacomax@maxify.tech', 'devteam@maxify.tech'];
+const MAX_CAPTURA = 5 * 1024 * 1024;
+
+/** data:image/...;base64,XXXX → { tipo, base64, bytes } o null. */
+export function parseCaptura(v) {
+  const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(String(v || ''));
+  if (!m) return null;
+  const bytes = Math.floor(m[2].length * 3 / 4);
+  if (bytes > MAX_CAPTURA) return { error: 'La captura es demasiado grande.' };
+  return { tipo: m[1], base64: m[2], bytes };
+}
+
+const deBase64 = (b64) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+
+/** Avisos fuera de GitHub: correo y Telegram, con la captura. Nunca tumban el ticket. */
+async function avisar(env, t, issue, captura, quien) {
+  const titulo = `[Bug-off #${issue.number}] ${t.titulo}`;
+  const texto = [
+    `${t.tipo === 'mejora' ? 'Mejora' : 'Falla'} reportada por ${quien}`,
+    '', t.detalle || '(sin más detalle)', '',
+    t.pagina ? `Página: ${t.pagina}` : '', t.dispositivo ? `Dispositivo: ${t.dispositivo}` : '',
+    `Issue: ${issue.html_url}`,
+  ].filter(Boolean).join('\n');
+  const avisos = { correo: false, telegram: false };
+
+  if (env.RESEND_API_KEY) {
+    try {
+      const para = String(env.BUGOFF_CORREOS || '').split(',').map((x) => x.trim()).filter(Boolean);
+      await enviarResend(env, {
+        para: para.length ? para : CORREOS,
+        remitente: env.BUGOFF_REMITENTE || 'Bug-off KPK <bugoff@kpk.associates>',
+        asunto: titulo, texto,
+        adjuntos: captura ? [{ filename: `captura-${issue.number}.${captura.tipo.split('/')[1].replace('jpeg', 'jpg')}`, content: captura.base64 }] : [],
+      });
+      avisos.correo = true;
+    } catch { /* el issue ya existe */ }
+  }
+
+  if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
+    try {
+      const api = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}`;
+      const caption = `${titulo}\n${issue.html_url}`.slice(0, 1000);
+      let r;
+      if (captura) {
+        const f = new FormData();
+        f.append('chat_id', env.TELEGRAM_CHAT_ID);
+        f.append('caption', caption);
+        f.append('photo', new Blob([deBase64(captura.base64)], { type: captura.tipo }), 'captura');
+        r = await fetch(`${api}/sendPhoto`, { method: 'POST', body: f });
+      }
+      if (!r || !r.ok) {
+        r = await fetch(`${api}/sendMessage`, {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: `${caption}\n\n${t.detalle || ''}`.slice(0, 4000) }),
+        });
+      }
+      avisos.telegram = r.ok;
+    } catch { /* idem */ }
+  }
+  return avisos;
+}
 
 const GITHUB_API = 'https://api.github.com';
 const ETIQUETA = 'bug-off';
@@ -35,6 +99,7 @@ function cuerpo(t, quien) {
     `- **Tipo:** ${TIPOS[t.tipo]}`,
     t.pagina ? `- **Página:** ${t.pagina}` : null,
     t.dispositivo ? `- **Dispositivo:** ${t.dispositivo}` : null,
+    t.conCaptura ? '- **Captura:** adjunta en el aviso por correo y Telegram (no se publica aquí: el repo es público).' : null,
     `- **Reportado desde la app por:** ${quien}`,
   ].filter((l) => l !== null).join('\n');
 }
@@ -65,8 +130,13 @@ export async function onRequestPost({ request, env }) {
   try {
     const sesion = await requireAdmin(request, env);
     if (!env.GITHUB_TOKEN) return json({ error: 'GITHUB_TOKEN no configurado.' }, 503);
-    const t = parseTicket(await readJson(request));
+    const body = await readJson(request);
+    const t = parseTicket(body);
     if (t.error) return json({ error: t.error }, 400);
+    const captura = body?.captura ? parseCaptura(body.captura) : null;
+    if (body?.captura && !captura) return json({ error: 'La captura no es una imagen válida.' }, 400);
+    if (captura?.error) return json({ error: captura.error }, 400);
+    t.conCaptura = Boolean(captura);
 
     const res = await fetch(`${GITHUB_API}/repos/${env.REPO}/issues`, {
       method: 'POST',
@@ -83,7 +153,12 @@ export async function onRequestPost({ request, env }) {
       return json({ error: 'GitHub rechazó el ticket: el token necesita permiso de Issues (read & write).' }, 502);
     }
     if (!res.ok) return json({ error: out.message || `GitHub respondió ${res.status}.` }, 502);
-    return json({ success: true, ticket: resumen(out) }, 201);
+    const avisos = await avisar(env, t, out, captura, sesion.email || 'admin');
+    const sinAviso = captura && !avisos.correo && !avisos.telegram;
+    return json({
+      success: true, ticket: resumen(out), avisos,
+      ...(sinAviso ? { advertencia: 'El ticket quedó, pero la captura no se pudo enviar: falta configurar el correo o Telegram de Bug-off.' } : {}),
+    }, 201);
   } catch (res) {
     return res instanceof Response ? res : json({ error: 'No se pudo crear el ticket.' }, 500);
   }
