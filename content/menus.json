@@ -1,0 +1,370 @@
+{
+  "_nota": "Plantillas para el borrador que se arma desde una solicitud de catering. Karina revisa, ajusta y aprueba antes de enviar. precio.mxn = 0 significa 'por definir'.",
+  "estilos": {
+    "bajamed": {
+      "nombre": {
+        "es": "Baja Med",
+        "en": "Baja Med"
+      },
+      "titulo": {
+        "es": "Evento Baja Med",
+        "en": "Baja Med Event"
+      },
+      "piezas": {
+        "es": "4 piezas por persona",
+        "en": "4 pieces per guest"
+      },
+      "precio": {
+        "mxn": 650,
+        "usd": 0
+      },
+      "menu": [
+        {
+          "nombre": {
+            "es": "Burrito de machaca de langosta",
+            "en": "Lobster machaca burrito"
+          },
+          "detalle": {
+            "es": "Con frijoles.",
+            "en": "With beans."
+          },
+          "imagen": "assets/cotizaciones/burrito-machaca-langosta.webp"
+        },
+        {
+          "nombre": {
+            "es": "Quesadilla de marlin a las brasas",
+            "en": "Grilled marlin quesadilla"
+          },
+          "detalle": {
+            "es": "Marlín ahumado en tortilla de maíz.",
+            "en": "Smoked marlin in a corn tortilla."
+          },
+          "imagen": "assets/cotizaciones/quesadilla-marlin.webp"
+        },
+        {
+          "nombre": {
+            "es": "Taco gobernador a las brasas",
+            "en": "Grilled gobernador taco"
+          },
+          "detalle": {
+            "es": "Guiso de camarón estilo Mazatlán.",
+            "en": "Mazatlán-style shrimp."
+          },
+          "imagen": "assets/cotizaciones/taco-gobernador.webp"
+        },
+        {
+          "nombre": {
+            "es": "Tostada de atún estilo Baja",
+            "en": "Baja-style tuna tostada"
+          },
+          "detalle": {
+            "es": "Con mayonesa de chipotle y poro frito.",
+            "en": "With chipotle mayo and fried leek."
+          },
+          "imagen": "assets/cotizaciones/tostada-atun-baja.webp"
+        }
+      ],
+      "incluye": [
+        {
+          "es": "Tiempo de servicio: 2 horas",
+          "en": "Two hours of service"
+        },
+        {
+          "es": "Asador con preparación en vivo",
+          "en": "Grill with live preparation"
+        },
+        {
+          "es": "Carpa y mesa de servicio",
+          "en": "Tent and service table"
+        },
+        {
+          "es": "Servicio en desechables",
+          "en": "Disposable serviceware"
+        },
+        {
+          "es": "Barra de salsas y complementos",
+          "en": "Salsa and condiment bar"
+        },
+        {
+          "es": "Flete",
+          "en": "Delivery"
+        }
+      ]
+    },
+    "norteno": {
+      "nombre": {
+        "es": "Mexicano norteño",
+        "en": "Northern Mexican"
+      },
+      "titulo": {
+        "es": "Evento mexicano norteño",
+        "en": "Northern Mexican Event"
+      },
+      "piezas": {
+        "es": "Por definir",
+        "en": "To be confirmed"
+      },
+      "precio": {
+        "mxn": 0,
+        "usd": 0
+      },
+      "menu": [
+        {
+          "nombre": {
+            "es": "Arrachera a las brasas",
+            "en": "Grilled arrachera"
+          },
+          "detalle": {
+            "es": "Con cebollitas cambray.",
+            "en": "With grilled spring onions."
+          }
+        },
+        {
+          "nombre": {
+            "es": "Frijoles charros",
+            "en": "Charro beans"
+          },
+          "detalle": {
+            "es": "",
+            "en": ""
+          }
+        },
+        {
+          "nombre": {
+            "es": "Tortillas de harina",
+            "en": "Flour tortillas"
+          },
+          "detalle": {
+            "es": "Hechas al momento.",
+            "en": "Made to order."
+          }
+        },
+        {
+          "nombre": {
+            "es": "Salsas de molcajete",
+            "en": "Molcajete salsas"
+          },
+          "detalle": {
+            "es": "Roja y verde.",
+            "en": "Red and green."
+          }
+        }
+      ],
+      "incluye": [
+        {
+          "es": "Tiempo de servicio: 2 horas",
+          "en": "Two hours of service"
+        },
+        {
+          "es": "Asador con preparación en vivo",
+          "en": "Grill with live preparation"
+        },
+        {
+          "es": "Carpa y mesa de servicio",
+          "en": "Tent and service table"
+        },
+        {
+          "es": "Servicio en desechables",
+          "en": "Disposable serviceware"
+        },
+        {
+          "es": "Barra de salsas y complementos",
+          "en": "Salsa and condiment bar"
+        },
+        {
+          "es": "Flete",
+          "en": "Delivery"
+        }
+      ]
+    },
+    "saludable": {
+      "nombre": {
+        "es": "Saludable",
+        "en": "Healthy"
+      },
+      "titulo": {
+        "es": "Evento saludable",
+        "en": "Healthy Event"
+      },
+      "piezas": {
+        "es": "Por definir",
+        "en": "To be confirmed"
+      },
+      "precio": {
+        "mxn": 0,
+        "usd": 0
+      },
+      "menu": [
+        {
+          "nombre": {
+            "es": "Bowl de quinoa y vegetales asados",
+            "en": "Quinoa and roasted vegetable bowl"
+          },
+          "detalle": {
+            "es": "",
+            "en": ""
+          }
+        },
+        {
+          "nombre": {
+            "es": "Ensalada de temporada",
+            "en": "Seasonal salad"
+          },
+          "detalle": {
+            "es": "Con aderezo de cítricos.",
+            "en": "With citrus dressing."
+          }
+        },
+        {
+          "nombre": {
+            "es": "Proteína a la parrilla",
+            "en": "Grilled protein"
+          },
+          "detalle": {
+            "es": "Pollo, pescado o tofu.",
+            "en": "Chicken, fish or tofu."
+          }
+        },
+        {
+          "nombre": {
+            "es": "Fruta fresca",
+            "en": "Fresh fruit"
+          },
+          "detalle": {
+            "es": "",
+            "en": ""
+          }
+        }
+      ],
+      "incluye": [
+        {
+          "es": "Tiempo de servicio: 2 horas",
+          "en": "Two hours of service"
+        },
+        {
+          "es": "Asador con preparación en vivo",
+          "en": "Grill with live preparation"
+        },
+        {
+          "es": "Carpa y mesa de servicio",
+          "en": "Tent and service table"
+        },
+        {
+          "es": "Servicio en desechables",
+          "en": "Disposable serviceware"
+        },
+        {
+          "es": "Barra de salsas y complementos",
+          "en": "Salsa and condiment bar"
+        },
+        {
+          "es": "Flete",
+          "en": "Delivery"
+        }
+      ]
+    },
+    "otra": {
+      "nombre": {
+        "es": "Otra sugerencia",
+        "en": "Something else"
+      },
+      "titulo": {
+        "es": "Evento a la medida",
+        "en": "Custom Event"
+      },
+      "piezas": {
+        "es": "Por definir",
+        "en": "To be confirmed"
+      },
+      "precio": {
+        "mxn": 0,
+        "usd": 0
+      },
+      "menu": [],
+      "incluye": [
+        {
+          "es": "Tiempo de servicio: 2 horas",
+          "en": "Two hours of service"
+        },
+        {
+          "es": "Asador con preparación en vivo",
+          "en": "Grill with live preparation"
+        },
+        {
+          "es": "Carpa y mesa de servicio",
+          "en": "Tent and service table"
+        },
+        {
+          "es": "Servicio en desechables",
+          "en": "Disposable serviceware"
+        },
+        {
+          "es": "Barra de salsas y complementos",
+          "en": "Salsa and condiment bar"
+        },
+        {
+          "es": "Flete",
+          "en": "Delivery"
+        }
+      ]
+    },
+    "yoga": {
+      "nombre": {
+        "es": "Evento de yoga",
+        "en": "Yoga event"
+      },
+      "titulo": {
+        "es": "Evento de yoga",
+        "en": "Yoga Event"
+      },
+      "piezas": {
+        "es": "",
+        "en": ""
+      },
+      "precio": {
+        "mxn": 0,
+        "usd": 0
+      },
+      "menu": [],
+      "incluye": []
+    }
+  },
+  "condiciones": [
+    {
+      "es": "Precios en pesos mexicanos + IVA.",
+      "en": "Prices in US dollars. Mexican VAT does not apply."
+    },
+    {
+      "es": "Anticipo del 50% para apartar la fecha.",
+      "en": "A 50% deposit holds the date."
+    },
+    {
+      "es": "En caso de cancelación, se reembolsará el 50% del anticipo.",
+      "en": "If cancelled, 50% of the deposit is refunded."
+    }
+  ],
+  "opcionales": [
+    {
+      "nombre": {
+        "es": "Meseros: $1,500 c/u",
+        "en": "Servers: $1,500 MXN each"
+      },
+      "detalle": {
+        "es": "Sugerimos 2 para 50 personas.",
+        "en": "We suggest 2 for 50 guests."
+      }
+    },
+    {
+      "nombre": {
+        "es": "Decoración temática surf",
+        "en": "Surf-themed décor"
+      },
+      "detalle": {
+        "es": "Con costo adicional, se cotiza aparte.",
+        "en": "Quoted separately."
+      }
+    }
+  ],
+  "anticipoPct": 50,
+  "ivaPct": 16
+}

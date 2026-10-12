@@ -44,6 +44,7 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/factura` | POST público · GET admin | datos para factura (CFDI): RFC, razón social, régimen, CP, uso de CFDI, correo y constancia. Se guardan en el bucket privado R2 `kpk-privado` (binding `PRIVADO`), nunca en el repo. Avisa a Karina por correo (Resend) con la constancia adjunta. No detiene el pago |
 | `/api/cotizacion/enviar` | POST admin | "Enviar cotización": manda el correo con portada, datos, anticipo y botón a `?c=slug-view` por Resend desde `karina@kpk.associates` (respuesta a `chef.correo`). El WhatsApp lo abre la página al mismo tiempo |
 | `/api/estado` | GET público | diagnóstico: qué integraciones están conectadas (solo sí/no, nunca valores). Prueba la llave de Resend sin mandar correo |
+| `/api/solicitud` | POST público | solicitud de catering o evento de yoga desde `/catering`. No cotiza: le escribe a Karina con un botón "Crear borrador de cotización" (`/cotizacion?nueva=…`, arma el borrador con `content/menus.json`) y le confirma al cliente. Los datos del cliente no se guardan en el repo |
 
 ## Variables del proyecto
 
