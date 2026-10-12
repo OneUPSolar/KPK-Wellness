@@ -2,6 +2,13 @@
   "tarjeta": "",
   "fotos": [
     {
+      "id": "perfil-instagram",
+      "titulo": "Foto de perfil · Instagram",
+      "ia": false,
+      "url": "assets/karina/perfil-instagram.jpg",
+      "remota": ""
+    },
+    {
       "id": "tarjeta-arena",
       "titulo": "Para tarjeta · brazos cruzados",
       "ia": true,
