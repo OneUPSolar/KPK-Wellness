@@ -6,13 +6,13 @@
 <meta name="robots" content="noindex, nofollow">
 <title>KPK Admin</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#1E1E2E">
+<meta name="theme-color" content="#1E1E2E" id="color-tema">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* La app es la misma marca que el sitio: Cormorant para el nombre, navy y
      eucalipto, y una foto suya de fondo en la entrada. Una pantalla de login
@@ -22,6 +22,10 @@
     --navy: #2B3A5C; --eucalyptus: #7A9E8E;
     --white: #FAFAFA; --off-white: #F5F4F2; --concrete: #E8E6E3;
     --muted: #9A97A6; --linea: rgba(250,250,250,0.14);
+    /* La marca, para la entrada: papel, tinta, eucalipto y arena. tinta-2 y
+       eucalipto-tinta son las versiones que alcanzan 4.5:1 sobre el papel. */
+    --papel: #F7F5F1; --tinta: #1F2024; --tinta-2: #57554F; --arena: #D9C9AE;
+    --eucalipto-tinta: #4C7061; --error: #9A3A34;
     --serif: 'Cormorant Garamond', Georgia, serif;
     --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color-scheme: dark;
@@ -37,59 +41,108 @@
   }
 
   /* ---------- entrada ---------- */
+  /* La entrada es de la marca, no del panel: papel y tinta junto a su
+     amanecer, sin el lavado oscuro que apagaba la foto. Una sola cosa que
+     leer, una sola cosa que tocar.
+     color-scheme: light no es estética: con la página en dark, el navegador le
+     pinta fondo blanco opaco al iframe del botón de Google y la píldora salía
+     dentro de un marco blanco. Con el mismo esquema que el iframe, queda
+     transparente. */
+  html.en-entrada { padding: 0; background: var(--papel); }
+  html.en-entrada body { background: var(--papel); }
   .portada {
-    min-height: 100svh; display: grid; grid-template-rows: 1fr auto;
-    position: relative; isolation: isolate;
+    color-scheme: light;
+    min-height: 100svh; background: var(--papel); color: var(--tinta);
+    display: grid; grid-template-rows: minmax(210px, 38svh) 1fr;
+    overflow-x: clip;
   }
-  .portada::before {
-    content: ''; position: absolute; inset: 0; z-index: -2;
-    background: url('fondo.webp') center/cover no-repeat;
+  .portada ::selection { background: var(--arena); color: var(--tinta); }
+  .foto {
+    background: #E5CEC8 url('fondo.webp') center 64% / cover no-repeat;
+    animation: amanecer 2.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
-  /* El degradado deja ver la foto arriba y asienta el texto abajo. */
-  /* Dos capas: una oscurece parejo para que el nombre se lea sobre el cielo,
-     la otra asienta el bloque de abajo. Con una sola, o el texto flota o la
-     foto se apaga entera. */
-  .portada::after {
-    content: ''; position: absolute; inset: 0; z-index: -1;
-    background:
-      linear-gradient(180deg, rgba(20,20,32,0.62) 0%, rgba(20,20,32,0.20) 26%,
-                      rgba(20,20,32,0.74) 68%, rgba(20,20,32,0.97) 100%),
-      linear-gradient(90deg, rgba(20,20,32,0.55) 0%, rgba(20,20,32,0) 62%);
+  /* Instalada en iPhone, la barra de estado (texto blanco) cae sobre el cielo claro. */
+  @media (display-mode: standalone) {
+    .foto { background-image: linear-gradient(rgba(31,32,36,0.34), rgba(31,32,36,0) 96px), url('fondo.webp'); }
   }
-  .portada-arriba { padding: 40px 26px 0; }
-  /* El acceso vive en una tarjeta de vidrio centrada sobre la foto, no suelto
-     en una esquina: en escritorio la pantalla es enorme y el ojo necesita un
-     lugar a dónde ir. */
-  .portada-abajo {
-    align-self: center; width: min(440px, 100% - 32px); margin-block: auto 56px;
-    background: rgba(30,30,46,0.52); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.14); border-radius: 22px; padding: 30px 28px 28px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+  .hoja {
+    position: relative; z-index: 1; margin-top: -24px;
+    background: var(--papel); border-radius: 24px 24px 0 0;
+    box-shadow: 0 -8px 30px rgba(31,32,36,0.10);
+    padding: 28px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+    display: flex; flex-direction: column; gap: 30px;
+    animation: subir 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
   }
-  @media (min-width: 720px) { .portada-abajo { margin-block: auto; } }
-  /* En pantalla alta el bloque no debe quedar pegado hasta abajo. */
-  .portada { display: flex; flex-direction: column; }
-
+  .marca-hoja { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; line-height: 1; }
+  .marca-hoja span {
+    display: block; font-family: var(--sans); font-size: 0.6875rem; font-weight: 600;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--eucalipto-tinta); margin-top: 7px;
+  }
+  .entrada { margin-block: auto; }
   /* El filo de eucalipto es el mismo detalle que lleva la marca en el sitio. */
-  .filo { width: 44px; height: 2px; background: var(--eucalyptus); margin-bottom: 20px; }
+  .filo { width: 40px; height: 2px; background: var(--eucalyptus); margin-bottom: 22px; }
+  .saludo-entrada {
+    font-family: var(--serif); font-weight: 500;
+    font-size: clamp(2.4rem, 3.2vw + 1.5rem, 3.6rem); line-height: 1.02;
+    letter-spacing: -0.015em; margin: 0 0 14px; text-wrap: balance;
+  }
+  .saludo-entrada em { font-style: italic; }
+  .lema { color: var(--tinta-2); font-size: 1rem; line-height: 1.5; margin: 0 0 30px; max-width: 34ch; text-wrap: pretty; }
 
-  .marca { font-family: var(--serif); font-size: clamp(2.1rem, 9vw, 2.9rem); font-weight: 700; line-height: 1.02; }
-  .marca { text-shadow: 0 2px 20px rgba(0,0,0,0.45); }
-  .marca span {
-    display: block; font-family: var(--sans); font-size: 0.64rem; font-weight: 600;
-    letter-spacing: 0.26em; text-transform: uppercase; color: var(--eucalyptus); margin-top: 10px;
-    text-shadow: none;
+  .acciones { width: min(100%, 360px); display: grid; gap: 14px; }
+  .llave {
+    height: 52px; width: 100%; border: 0; border-radius: 999px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--tinta); color: var(--papel);
+    font-family: var(--sans); font-size: 0.98rem; font-weight: 600; letter-spacing: -0.005em;
+    box-shadow: 0 10px 22px -12px rgba(31,32,36,0.55);
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
   }
-  .lema {
-    font-family: var(--serif); font-weight: 600;
-    font-size: clamp(1.9rem, 7.4vw, 2.5rem); line-height: 1.12;
-    letter-spacing: -0.012em; margin: 0 0 12px; text-wrap: balance;
-    text-shadow: 0 2px 24px rgba(0,0,0,0.5);
+  .llave svg { width: 21px; height: 21px; flex: none; }
+  .llave:hover { background: #33343A; }
+  .llave:active { transform: scale(0.985); }
+  .llave[aria-busy="true"] { opacity: 0.72; cursor: progress; }
+  .portada :focus-visible { outline: 2px solid var(--eucalipto-tinta); outline-offset: 3px; }
+  .o {
+    display: flex; align-items: center; gap: 12px; margin: 2px 0;
+    color: var(--tinta-2); font-size: 0.8rem;
   }
-  .sub { color: var(--concrete); font-size: 0.95rem; margin: 0 0 28px; max-width: 34ch; }
-  #gbtn { min-height: 44px; display: flex; justify-content: flex-start; }
-  #gbtn > div { width: 100% !important; }
-  #gbtn iframe { width: 100% !important; }
+  .o::before, .o::after { content: ''; flex: 1; height: 1px; background: var(--arena); }
+  /* Google pinta su botón en un iframe; aquí solo se le guarda el lugar para
+     que nada brinque mientras carga. */
+  .gbtn { min-height: 40px; }
+  .gbtn:empty::before {
+    content: ''; display: block; height: 40px; border-radius: 999px;
+    background: rgba(255,255,255,0.6); border: 1px solid #E4DED3;
+  }
+  .portada .error { color: var(--error); font-size: 0.9rem; margin: 16px 0 0; max-width: 36ch; }
+  .portada .nota { color: var(--tinta-2); }
+  .pie-hoja { margin: 0; color: var(--tinta-2); font-size: 0.8rem; line-height: 1.5; }
+  .pie-hoja a {
+    color: var(--tinta); text-decoration: underline; text-decoration-color: var(--arena);
+    text-underline-offset: 3px; text-decoration-thickness: 1px; white-space: nowrap;
+  }
+  .pie-hoja a:hover { text-decoration-color: var(--eucalipto-tinta); }
+
+  /* Solo transform: un blur animado sobre media pantalla traba teléfonos modestos. */
+  @keyframes amanecer { from { transform: scale(1.07); } }
+  @keyframes subir { from { transform: translateY(22px); opacity: 0.3; } }
+
+  /* Escritorio: la foto a la izquierda, el papel a la derecha de alto completo. */
+  @media (min-width: 760px) {
+    .portada { grid-template-rows: none; grid-template-columns: minmax(0, 1fr) clamp(400px, 38vw, 600px); }
+    .foto { background-position: center 58%; }
+    .hoja {
+      margin: 0; border-radius: 0; box-shadow: -1px 0 0 rgba(31,32,36,0.06);
+      padding: 52px clamp(44px, 5vw, 84px) 40px; gap: 40px;
+      animation-name: deslizar;
+    }
+    .marca-hoja { font-size: 1.55rem; }
+    @keyframes deslizar { from { transform: translateX(18px); opacity: 0.3; } }
+  }
+  @media (prefers-reduced-motion: reduce) { .foto, .hoja { animation: none; } }
+
   .error { color: #E8B4B4; font-size: 0.9rem; margin-top: 16px; }
   .nota { color: var(--muted); font-size: 0.82rem; margin-top: 18px; }
 
@@ -127,6 +180,19 @@
   }
   .boton:hover { border-color: var(--eucalyptus); color: var(--white); }
   .boton:focus-visible, a:focus-visible { outline: 2px solid var(--eucalyptus); outline-offset: 3px; }
+
+  /* Se ofrece una vez, arriba del mosaico, y se va: no es una sección del panel. */
+  .oferta { border: 1px solid #3A3F44; border-radius: 13px; padding: 16px 18px; margin-bottom: 22px; }
+  .oferta p { margin: 0; font-size: 0.92rem; color: var(--concrete); }
+  .oferta b { display: block; color: var(--white); font-weight: 600; margin-bottom: 2px; }
+  .oferta-botones { display: flex; gap: 8px; margin-top: 14px; }
+  .oferta .aviso { margin-top: 12px; }
+  .enlace {
+    background: none; border: 0; padding: 4px 0; cursor: pointer;
+    font: inherit; color: var(--muted); text-decoration: underline; text-underline-offset: 3px;
+  }
+  .enlace:hover { color: var(--concrete); }
+  .enlace:focus-visible { outline: 2px solid var(--eucalyptus); outline-offset: 3px; }
 
   footer { margin-top: auto; padding-block: 26px 36px; color: var(--muted); font-size: 0.8rem;
            display: flex; flex-wrap: wrap; gap: 10px 16px; justify-content: space-between; align-items: center; }
@@ -204,19 +270,28 @@
 </head>
 <body>
 
-<!-- Sin sesión: portada con foto -->
+<!-- Sin sesión: la entrada, papel junto a su amanecer -->
 <div class="portada" id="portada" hidden>
-  <div class="portada-arriba">
-    <div class="marca">KPK Wellness<span>Panel</span></div>
-  </div>
-  <div class="portada-abajo">
-    <div class="filo"></div>
-    <p class="lema">Tus cotizaciones, tus recetas y tus eventos.</p>
-    <p class="sub">Entra con tu cuenta de Google.</p>
-    <div id="gbtn"></div>
-    <p class="error" id="error" hidden></p>
-    <p class="nota" id="nota-config" hidden></p>
-  </div>
+  <div class="foto" aria-hidden="true"></div>
+  <main class="hoja">
+    <div class="marca-hoja" translate="no">KPK Wellness<span>Panel</span></div>
+    <div class="entrada">
+      <div class="filo"></div>
+      <h1 class="saludo-entrada" id="saludo-entrada">Hola.</h1>
+      <p class="lema">Tus cotizaciones, tus recetas y tus eventos.</p>
+      <div class="acciones">
+        <button type="button" class="llave" id="btn-llave" hidden>
+          <svg id="icono-llave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
+          <span id="btn-llave-texto">Entrar con Face ID</span>
+        </button>
+        <p class="o" id="o-google" hidden>o con Google</p>
+        <div class="gbtn" id="gbtn"></div>
+      </div>
+      <p class="error" id="error" role="alert" hidden></p>
+      <p class="nota" id="nota-config" hidden></p>
+    </div>
+    <p class="pie-hoja">Solo entran las cuentas autorizadas. <a href="/">Ir a kpk.associates</a></p>
+  </main>
 </div>
 
 <!-- Con sesión -->
@@ -227,6 +302,15 @@
   <main>
     <h1 class="saludo" id="saludo">Hola</h1>
     <div class="correo" id="correo"></div>
+    <section class="oferta" id="oferta-llave" aria-labelledby="oferta-titulo" hidden>
+      <p><b id="oferta-titulo">Entra con Face ID la próxima vez.</b>
+        <span id="oferta-texto">Sin elegir cuenta: solo tu cara, en este dispositivo.</span></p>
+      <div class="oferta-botones">
+        <button type="button" class="boton enviar" id="activar-llave">Activar</button>
+        <button type="button" class="boton" id="omitir-llave">Ahora no</button>
+      </div>
+      <p class="aviso" id="oferta-aviso" role="status" hidden></p>
+    </section>
     <nav class="mosaico">
       <a class="tarjeta" href="/cotizacion.html">
         <span class="punto"></span>
@@ -259,6 +343,7 @@
     </p>
   </main>
   <footer>
+    <button type="button" class="enlace" id="olvidar-llave" hidden>Quitar Face ID de este dispositivo</button>
     <span></span>
     <button type="button" class="boton" id="salir">Cerrar sesión</button>
   </footer>
@@ -340,11 +425,202 @@
     e.hidden = false;
   }
 
+  /* ---------- Face ID (llaves de acceso) ----------
+     El servidor no guarda credenciales: al activar, firma un registro con la
+     llave pública y este dispositivo lo guarda. Ver functions/_lib/webauthn.js. */
+  var LLAVE_PK = 'kpk_llave';          // { registro, id, email } del Face ID de este dispositivo
+  var NOMBRE = 'kpk_nombre';           // solo el primer nombre, para saludar en la entrada
+  var OMITIDA = 'kpk_llave_omitida';   // cuándo dijo "Ahora no"; se vuelve a ofrecer a los 30 días
+
+  function leerLocal(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function guardarLocal(k, v) {
+    try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* sin memoria */ }
+  }
+  function aB64u(buf) {
+    var b = new Uint8Array(buf), s = '';
+    for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+    return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function deB64u(str) {
+    var s = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); });
+  }
+  function pedir(url, opciones) {
+    return fetch(url, opciones).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (b) {
+        if (r.ok) return b;
+        var e = new Error(b.error || 'Error ' + r.status); e.cuerpo = b; throw e;
+      });
+    });
+  }
+
+  // Cómo se llama la llave en este dispositivo, y su ícono.
+  var ICONOS = {
+    cara: '<path d="M4 8V6.5A2.5 2.5 0 0 1 6.5 4H8M16 4h1.5A2.5 2.5 0 0 1 20 6.5V8M20 16v1.5a2.5 2.5 0 0 1-2.5 2.5H16M8 20H6.5A2.5 2.5 0 0 1 4 17.5V16"/><path d="M9 9.5v1.2M15 9.5v1.2M12 9.5v3.6h-.9M9.4 15.6a3.7 3.7 0 0 0 5.2 0"/>',
+    huella: '<path d="M7.6 12.2a4.4 4.4 0 0 1 8.8 0v1.3M12 12.2v3.4c0 1.3.4 2.5 1 3.5M4.8 10.4a7.6 7.6 0 0 1 14.6-1.6M19.6 12.4v1.1c0 1.2-.2 2.3-.6 3.4M9.6 15.2a9.6 9.6 0 0 0 1.5 5.3M5 15.6c.4-1 .6-2.1.6-3.4"/>',
+    llave: '<circle cx="8" cy="15" r="4"/><path d="M10.9 12.1 20 3M16.5 6.5l2.5 2.5M14.2 8.8l2 2"/>'
+  };
+  var BIO = (function () {
+    var ua = navigator.userAgent;
+    if (/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return { nombre: 'Face ID', icono: 'cara', texto: 'solo tu cara' };
+    if (/Macintosh/.test(ua)) return { nombre: 'Touch ID', icono: 'huella', texto: 'solo tu huella' };
+    if (/Android/.test(ua)) return { nombre: 'tu huella', icono: 'huella', texto: 'solo tu huella' };
+    if (/Windows/.test(ua)) return { nombre: 'Windows Hello', icono: 'llave', texto: 'tu cara, tu huella o tu PIN' };
+    return { nombre: 'tu llave de acceso', icono: 'llave', texto: 'tu llave de acceso' };
+  }());
+  function hayLlaves() {
+    var P = window.PublicKeyCredential;
+    if (!P || !P.isUserVerifyingPlatformAuthenticatorAvailable) return Promise.resolve(false);
+    return P.isUserVerifyingPlatformAuthenticatorAvailable().catch(function () { return false; });
+  }
+
+  function pintarEntrada() {
+    var h = new Date().getHours();
+    var saludo = h < 12 ? 'Buenos\u00a0días' : h < 19 ? 'Buenas\u00a0tardes' : 'Buenas\u00a0noches';
+    var nombre = leerLocal(NOMBRE);
+    var el = $('saludo-entrada');
+    el.textContent = saludo + (nombre ? ', ' : '.');
+    if (nombre) {
+      var em = document.createElement('em'); em.textContent = nombre;
+      el.appendChild(em); el.appendChild(document.createTextNode('.'));
+    }
+    var usar = Boolean(leerLocal(LLAVE_PK) && window.PublicKeyCredential);
+    $('icono-llave').innerHTML = ICONOS[BIO.icono];
+    $('btn-llave-texto').textContent = 'Entrar con ' + BIO.nombre;
+    $('btn-llave').hidden = !usar;
+    $('o-google').hidden = !usar;
+  }
+
+  function entrarConLlave() {
+    var pk = leerLocal(LLAVE_PK);
+    var btn = $('btn-llave');
+    if (!pk || btn.getAttribute('aria-busy') === 'true') return;
+    btn.setAttribute('aria-busy', 'true');
+    $('btn-llave-texto').textContent = 'Verificando…';
+    $('error').hidden = true;
+    pedir('/api/auth/passkey/reto?uso=entrada')
+      .then(function (r) {
+        return navigator.credentials.get({ publicKey: {
+          challenge: new TextEncoder().encode(r.reto), rpId: r.rpId, timeout: 60000,
+          allowCredentials: [{ type: 'public-key', id: deB64u(pk.id) }],
+          userVerification: 'required'
+        } });
+      })
+      .then(function (cred) {
+        return pedir('/api/auth/passkey/entrada', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            registro: pk.registro, id: aB64u(cred.rawId),
+            clientDataJSON: aB64u(cred.response.clientDataJSON),
+            authenticatorData: aB64u(cred.response.authenticatorData),
+            signature: aB64u(cred.response.signature)
+          })
+        });
+      })
+      .then(function (b) {
+        var sesion = { token: b.token, email: b.email, name: leerLocal(NOMBRE) || '' };
+        localStorage.setItem(LLAVE, JSON.stringify(sesion));
+        entrar(sesion);
+      })
+      .catch(function (e) {
+        // Cancelar el Face ID no es un error que haya que anunciar.
+        if (e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) return;
+        if (e && e.cuerpo && e.cuerpo.olvidar) {
+          guardarLocal(LLAVE_PK, null); pintarEntrada();
+          mostrarError(e.message + ' Entra con Google y vuelve a activar ' + BIO.nombre + '.');
+          return;
+        }
+        mostrarError('No se pudo entrar con ' + BIO.nombre + (e && e.message ? ': ' + e.message : '.') + ' Puedes entrar con Google.');
+      })
+      .then(function () {
+        btn.removeAttribute('aria-busy');
+        $('btn-llave-texto').textContent = 'Entrar con ' + BIO.nombre;
+      });
+  }
+
+  function ofrecerLlave() {
+    $('olvidar-llave').textContent = 'Quitar ' + BIO.nombre + ' de este dispositivo';
+    $('olvidar-llave').hidden = !leerLocal(LLAVE_PK);
+    var omitida = leerLocal(OMITIDA);
+    if (leerLocal(LLAVE_PK) || (omitida && Date.now() - omitida < 30 * 864e5)) return;
+    hayLlaves().then(function (si) {
+      if (!si) return;
+      $('oferta-titulo').textContent = 'Entra con ' + BIO.nombre + ' la próxima vez.';
+      $('oferta-texto').textContent = 'Sin elegir cuenta: ' + BIO.texto + ', en este dispositivo.';
+      $('oferta-llave').hidden = false;
+    });
+  }
+
+  function avisoOferta(clase, texto) { var p = $('oferta-aviso'); p.className = 'aviso ' + clase; p.textContent = texto; p.hidden = !texto; }
+
+  function activarLlave() {
+    var s = leerSesion();
+    var btn = $('activar-llave');
+    if (!s || btn.disabled) return;
+    btn.disabled = true; btn.textContent = 'Activando…'; avisoOferta('', '');
+    var rawId;
+    Promise.all([
+      pedir('/api/auth/passkey/reto?uso=alta'),
+      // Mismo user.id para el mismo correo: activar otra vez reemplaza la llave
+      // en el llavero en vez de juntar duplicados.
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(s.email).toLowerCase()))
+    ])
+      .then(function (x) {
+        return navigator.credentials.create({ publicKey: {
+          challenge: new TextEncoder().encode(x[0].reto),
+          rp: { id: x[0].rpId, name: 'KPK Wellness' },
+          user: { id: new Uint8Array(x[1]).slice(0, 16), name: s.email, displayName: s.name || s.email },
+          pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+          authenticatorSelection: { authenticatorAttachment: 'platform', residentKey: 'preferred', userVerification: 'required' },
+          attestation: 'none', timeout: 60000
+        } });
+      })
+      .then(function (cred) {
+        rawId = aB64u(cred.rawId);
+        return pedir('/api/auth/passkey/alta', {
+          method: 'POST',
+          headers: { authorization: 'Bearer ' + s.token, 'content-type': 'application/json' },
+          body: JSON.stringify({
+            id: rawId,
+            clientDataJSON: aB64u(cred.response.clientDataJSON),
+            attestationObject: aB64u(cred.response.attestationObject)
+          })
+        });
+      })
+      .then(function (b) {
+        guardarLocal(LLAVE_PK, { registro: b.registro, id: rawId, email: s.email });
+        $('oferta-llave').querySelector('.oferta-botones').hidden = true;
+        avisoOferta('ok', 'Listo. La próxima vez, entra con ' + BIO.nombre + '.');
+        $('olvidar-llave').hidden = false;
+        setTimeout(function () { $('oferta-llave').hidden = true; }, 4000);
+      })
+      .catch(function (e) {
+        if (e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) return;
+        avisoOferta('error', 'No se pudo activar' + (e && e.message ? ': ' + e.message : '.'));
+      })
+      .then(function () { btn.disabled = false; btn.textContent = 'Activar'; });
+  }
+
+  function omitirLlave() { guardarLocal(OMITIDA, Date.now()); $('oferta-llave').hidden = true; }
+
+  // Sin confirmación a propósito: la oferta reaparece en el acto y sirve de deshacer.
+  function olvidarLlave() {
+    guardarLocal(LLAVE_PK, null);
+    guardarLocal(OMITIDA, null);
+    $('oferta-llave').querySelector('.oferta-botones').hidden = false;
+    avisoOferta('', '');
+    ofrecerLlave();
+  }
+
   function entrar(sesion) {
     var volver = new URLSearchParams(location.search).get('volver') || '';
     if (/^\/(?!\/)/.test(volver) && !/[\\]/.test(volver)) { location.replace(volver); return; }
+    document.documentElement.classList.remove('en-entrada');
+    $('color-tema').content = '#1E1E2E';
     $('portada').hidden = true;
     $('panel').hidden = false;
+    ofrecerLlave();
     $('correo').textContent = sesion.email || '';
     var nombre = (sesion.name || sesion.email || '').split(/[ @]/)[0];
     $('saludo').textContent = nombre ? 'Hola, ' + nombre : 'Hola';
@@ -562,6 +838,9 @@
   }
 
   function pedirLogin() {
+    document.documentElement.classList.add('en-entrada');
+    $('color-tema').content = '#E5CEC8'; // el cielo de la foto, arriba
+    pintarEntrada();
     $('portada').hidden = false;
     fetch('/api/auth/config')
       .then(function (r) { return r.json(); })
@@ -594,14 +873,18 @@
             .then(function (out) {
               if (!out.ok) throw new Error(out.b.error || 'No se pudo entrar.');
               localStorage.setItem(LLAVE, JSON.stringify(out.b));
+              guardarLocal(NOMBRE, String(out.b.name || '').split(' ')[0] || null);
               entrar(out.b);
             })
             .catch(function (e) { mostrarError(e.message); });
         },
       });
+      // outline: la píldora blanca de Google se asienta sobre el papel; el
+      // ancho lo da la columna de acciones (Google acepta de 200 a 400 px).
       window.google.accounts.id.renderButton($('gbtn'), {
-        theme: 'filled_black', size: 'large', text: 'continue_with', shape: 'pill', locale: 'es',
-        width: Math.min(360, $('gbtn').clientWidth || 360),
+        theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill',
+        logo_alignment: 'left', locale: 'es',
+        width: Math.max(200, Math.min(400, $('gbtn').clientWidth || 360)),
       });
     };
     s.onerror = function () { mostrarError('No se pudo cargar el acceso de Google.'); };
@@ -609,6 +892,10 @@
   }
 
   $('salir').addEventListener('click', salir);
+  $('btn-llave').addEventListener('click', entrarConLlave);
+  $('activar-llave').addEventListener('click', activarLlave);
+  $('omitir-llave').addEventListener('click', omitirLlave);
+  $('olvidar-llave').addEventListener('click', olvidarLlave);
 
   // Un token guardado no basta: se le pregunta al servidor si sigue vivo.
   var sesion = leerSesion();
