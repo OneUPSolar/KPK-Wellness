@@ -9,10 +9,10 @@
 const TTL_SECONDS = 60 * 60 * 12;
 const enc = new TextEncoder();
 
-const b64url = (bytes) =>
+export const b64url = (bytes) =>
   btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
-function fromB64url(str) {
+export function fromB64url(str) {
   const pad = str.length % 4 ? '='.repeat(4 - (str.length % 4)) : '';
   const bin = atob(str.replace(/-/g, '+').replace(/_/g, '/') + pad);
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
@@ -28,15 +28,27 @@ function equal(a, b) {
   return diff === 0;
 }
 
-export async function mintSessionToken(email, secret) {
-  const payload = { email, typ: 'admin', exp: Math.floor(Date.now() / 1000) + TTL_SECONDS };
+/** `body.sig` over any JSON payload. The caller owns `typ` and `exp`. */
+export async function signPayload(payload, secret) {
   const body = b64url(enc.encode(JSON.stringify(payload)));
   const sig = new Uint8Array(await crypto.subtle.sign('HMAC', await keyFor(secret), enc.encode(body)));
   return `${body}.${b64url(sig)}`;
 }
 
+export async function mintSessionToken(email, secret) {
+  return signPayload({ email, typ: 'admin', exp: Math.floor(Date.now() / 1000) + TTL_SECONDS }, secret);
+}
+
 /** Returns the payload, or null. Never throws on malformed input. */
 export async function verifySessionToken(token, secret) {
+  const payload = await verifyPayload(token, secret);
+  if (!payload || payload.typ !== 'admin') return null;
+  if (!payload.exp || Math.floor(Date.now() / 1000) > payload.exp) return null;
+  return payload;
+}
+
+/** Checks the signature only; the caller checks `typ` and `exp`. Never throws. */
+export async function verifyPayload(token, secret) {
   const [body, sig] = String(token || '').split('.', 2);
   if (!body || !sig) return null;
   const expected = new Uint8Array(await crypto.subtle.sign('HMAC', await keyFor(secret), enc.encode(body)));
@@ -53,9 +65,7 @@ export async function verifySessionToken(token, secret) {
   } catch {
     return null;
   }
-  if (payload.typ !== 'admin') return null;
-  if (!payload.exp || Math.floor(Date.now() / 1000) > payload.exp) return null;
-  return payload;
+  return payload && typeof payload === 'object' ? payload : null;
 }
 
 /** The pre-Google token, kept so an existing logged-in session is not evicted mid-edit. */
