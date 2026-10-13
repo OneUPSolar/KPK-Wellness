@@ -846,6 +846,7 @@
       .then(function (r) { return r.json(); })
       .then(function (cfg) {
         if (!cfg.clientId) {
+          $('gbtn').hidden = true;
           $('nota-config').textContent =
             'Falta configurar GOOGLE_CLIENT_ID en las variables del proyecto.';
           $('nota-config').hidden = false;
@@ -887,7 +888,7 @@
         width: Math.max(200, Math.min(400, $('gbtn').clientWidth || 360)),
       });
     };
-    s.onerror = function () { mostrarError('No se pudo cargar el acceso de Google.'); };
+    s.onerror = function () { $('gbtn').hidden = true; mostrarError('No se pudo cargar el acceso de Google.'); };
     document.head.appendChild(s);
   }
 
