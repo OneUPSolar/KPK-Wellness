@@ -31,18 +31,19 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/auth/google` | POST | pública — cambia el ID token de Google por sesión |
 | `/api/login` | POST | pública — solo si `ADMIN_PASSWORD` sigue puesta |
 | `/api/session` | GET | admin — ¿sigue viva la sesión? |
-| `/api/commit` | POST | admin — guarda un archivo en el repo |
+| `/api/commit` | POST | admin — guarda un archivo en el repo. Si es `content/cotizaciones.json` y trae datos del cliente, los pasa al bucket privado y los quita antes del commit (sin bucket, no guarda) |
 | `/api/recipe-config` | GET · POST | admin — configuración del recetario |
 | `/api/register` | POST | pública — registro a eventos |
 | `/api/agent/recipe` | GET · POST | agente — Silver (GPT en ChatGPT) publica una receta |
 | `/api/silver/chat` | GET · POST | admin — Silver dentro de la app, con las llaves de OpenAI y Anthropic de Karina |
 | `/api/payments/stripe` | POST | admin — cobro en dólares con Stripe Checkout (tarjeta, Apple Pay, Klarna/Affirm) |
-| `/api/pagado` | POST público | al volver de Mercado Pago aprobado: verifica el pago con MP, lo registra en la cotización y manda el correo de reserva |
+| `/api/pagado` | POST público | al volver de Mercado Pago aprobado: verifica el pago con MP, lo registra en la cotización y manda el correo de reserva (a la dirección del bucket privado; en el JSON solo queda si se mandó, sin la dirección) |
 | `/api/silver/imagen` | POST | admin — Silver edita o genera una foto (OpenAI gpt-image-1) y la commitea en assets/cotizaciones/ |
 | `/api/tickets` | GET · POST | admin — tickets de fallas y mejoras, como issues `bug-off`; la captura opcional va por correo y Telegram (ver `docs/BUG-OFF.md`) |
 | `/api/fotos` | GET · POST | admin — "Mis fotos": galería de retratos (`content/fotos-karina.json`). POST `{id, usar: tarjeta|cotizacion}` copia la foto de Higgsfield a `assets/karina/` y la aplica a la tarjeta digital o a `chef.foto` |
 | `/api/factura` | POST público · GET admin | datos para factura (CFDI): RFC, razón social, régimen, CP, uso de CFDI, correo y constancia. Se guardan en el bucket privado R2 `kpk-privado` (binding `PRIVADO`), nunca en el repo. Avisa a Karina por correo (Resend) con la constancia adjunta. No detiene el pago |
-| `/api/cotizacion/enviar` | POST admin | "Enviar cotización": manda el correo con portada, datos, anticipo y botón a `?c=slug-view` por Resend desde `karina@kpk.associates` (respuesta a `chef.correo`). El WhatsApp lo abre la página al mismo tiempo |
+| `/api/cotizacion/enviar` | POST admin | "Enviar cotización": manda el correo con portada, datos, anticipo y botón a `?c=slug-view` por Resend desde `karina@kpk.associates` (respuesta a `chef.correo`). La dirección del cliente la lee del bucket privado, no de lo que manda la página. El WhatsApp lo abre la página al mismo tiempo |
+| `/api/cotizacion/privado` | GET · PUT admin | datos de contacto del cliente por cotización — `telCliente`, `correoCliente` y `solicitud` (con sus notas: alergias, comentarios). Viven en R2 `kpk-privado` (binding `PRIVADO`) como `clientes/<slug>.json`, nunca en `content/cotizaciones.json`. Ver "Datos del cliente" abajo |
 | `/api/estado` | GET público | diagnóstico: qué integraciones están conectadas (solo sí/no, nunca valores). Prueba la llave de Resend sin mandar correo |
 | `/api/solicitud` | POST público | solicitud de catering o evento de yoga desde `/catering`. No cotiza: le escribe a Karina con un botón "Crear borrador de cotización" (`/cotizacion?nueva=…`, arma el borrador con `content/menus.json`) y le confirma al cliente. Los datos del cliente no se guardan en el repo |
 
@@ -73,6 +74,32 @@ El asistente de recetas de la app se llama **Silver** cuando contesta OpenAI y *
 Sin `SESSION_SECRET` nadie puede entrar: las rutas responden 503 en vez de
 dejar pasar. Es a propósito — una configuración incompleta no debe abrir el
 panel.
+
+## Datos del cliente
+
+`content/cotizaciones.json` es público dos veces: el repo es público y el
+sitio lo sirve en `/content/cotizaciones.json` (la página del cliente lo lee
+desde el navegador). Por eso **nada que identifique o contacte al cliente va
+ahí**, salvo el nombre que sale impreso en la cotización (`cliente`).
+
+| campo | dónde vive |
+|---|---|
+| `telCliente`, `correoCliente`, `solicitud` (y sus `notas`) | R2 `kpk-privado` → `clientes/<slug>.json` |
+| datos de factura y constancia | R2 `kpk-privado` → `facturas/<slug>/…` |
+| copia de cada solicitud de `/catering` | R2 `kpk-privado` → `solicitudes/…` |
+
+El bucket se conecta al proyecto de Pages como binding R2 **`PRIVADO`**:
+Workers & Pages → kpk-wellness → Settings → Bindings → R2 bucket →
+nombre `PRIVADO`, bucket `kpk-privado` (en Production y en Preview).
+`/api/estado` dice si está conectado (`almacenPrivado`).
+
+El editor (`cotizacion.html`) los trae con `GET /api/cotizacion/privado`
+después de confirmar la sesión, y al **Guardar** primero los manda con `PUT`
+y luego commitea el JSON sin ellos. Si no los pudo leer y hay datos del
+cliente en pantalla, no guarda: mejor un error que perderlos o publicarlos.
+
+El historial de git conserva lo que alguna vez se commiteó. Quitarlo del
+archivo no lo borra de los commits viejos.
 
 ## Apagar el Worker viejo
 
