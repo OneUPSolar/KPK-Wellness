@@ -9,6 +9,7 @@
  */
 import { ghRead, ghWrite, json, readJson } from '../../_lib/responder.js';
 import { enviarResend } from '../../_lib/correo.js';
+import { avisarCrm } from '../../_lib/crm.js';
 
 const RUTA = 'content/cotizaciones.json';
 const tx = (v, L) => (v == null ? '' : typeof v === 'string' ? v : String(v[L] || v[L === 'es' ? 'en' : 'es'] || ''));
@@ -63,6 +64,7 @@ ${tel ? `<p style="margin:12px 0 0"><a href="https://wa.me/${tel}" style="color:
         });
       } catch { /* la aceptación ya está guardada */ }
     }
+    await avisarCrm(env, c, 'aceptada', { crearSiFalta: true, texto: `${nombre} aceptó la cotización en línea.` });
     return json({ success: true, aceptada }, 201);
   } catch (res) {
     return res instanceof Response ? res : json({ error: 'No se pudo registrar la aceptación.' }, 500);

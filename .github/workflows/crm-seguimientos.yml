@@ -1,0 +1,27 @@
+# Seguimientos del CRM: cada mañana le llega a Karina un correo con a quién
+# escribirle hoy (solicitudes nuevas, cotizaciones sin respuesta, anticipos
+# pendientes, eventos por confirmar). El correo lo arma /api/crm/seguimientos;
+# aquí solo se toca la puerta.
+#
+# Necesita el secreto CRM_TOKEN en el repo (el mismo valor que la variable
+# CRM_TOKEN de Cloudflare Pages). Sin él, el job no hace nada.
+name: CRM · seguimientos del día
+on:
+  schedule:
+    - cron: '7 15 * * *' # 8:07 am en Tijuana (7:07 en horario de verano)
+  workflow_dispatch:
+
+jobs:
+  resumen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pedir el resumen
+        env:
+          CRM_TOKEN: ${{ secrets.CRM_TOKEN }}
+        run: |
+          if [ -z "$CRM_TOKEN" ]; then
+            echo "Falta el secreto CRM_TOKEN; no se manda nada."
+            exit 0
+          fi
+          curl -sS --fail-with-body -X POST "https://kpk.associates/api/crm/seguimientos" \
+            -H "authorization: Bearer $CRM_TOKEN" -H "x-agente: resumen-diario"

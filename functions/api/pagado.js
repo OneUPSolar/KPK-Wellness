@@ -8,6 +8,7 @@
  */
 import { ghRead, ghWrite, json, readJson } from '../_lib/responder.js';
 import { correoDe, enviarResend } from '../_lib/correo.js';
+import { avisarCrm } from '../_lib/crm.js';
 
 const RUTA = 'content/cotizaciones.json';
 const MP_API = 'https://api.mercadopago.com';
@@ -55,6 +56,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     await ghWrite(env, { path: RUTA, content: JSON.stringify(datos, null, 2) + '\n', message: `pagado: ${slug} · ${paymentId}` });
+    await avisarCrm(env, c, 'anticipo', { crearSiFalta: true, texto: `Anticipo pagado con Mercado Pago: $${monto.toLocaleString('es-MX')} ${c.pagado.moneda} (pago ${paymentId}).` });
     return json({ success: true, correoEnviado: Boolean(correo && correo.id), correoError: correo && correo.error ? correo.error : null }, 201);
   } catch (res) {
     return res instanceof Response ? res : json({ error: 'No se pudo registrar el pago.' }, 500);

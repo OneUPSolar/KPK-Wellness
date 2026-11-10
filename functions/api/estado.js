@@ -27,5 +27,7 @@ export async function onRequestGet({ env }) {
     github: env.GITHUB_TOKEN ? 'ok' : 'falta',
     silver: env.OPENAI_API_KEY ? 'ok' : 'falta',
     claudio: env.ANTHROPIC_API_KEY ? 'ok' : 'falta',
+    crm: env.CRM ? 'ok' : 'falta',
+    crmIa: env.CRM_TOKEN ? 'ok' : 'falta',
   });
 }

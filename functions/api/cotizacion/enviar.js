@@ -9,6 +9,7 @@
 import { json, readJson, requireAdmin } from '../../_lib/responder.js';
 import { correoCotizacion, enviarResend } from '../../_lib/correo.js';
 import { montoAnticipo } from '../../pagar.js';
+import { avisarCrm } from '../../_lib/crm.js';
 
 const esCorreo = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim());
 
@@ -46,6 +47,12 @@ export async function onRequestPost({ request, env }) {
       para,
       asunto: m.asunto, texto: m.texto, html: m.html,
       responderA: esCorreo(chef.correo) ? chef.correo : undefined,
+    });
+    // Al CRM: la solicitud pasa a "cotizada" (o se crea, si fue cotización directa).
+    const precio = Number((c.precio || {})[L === 'en' ? 'usd' : 'mxn']) || 0;
+    await avisarCrm(env, c, 'cotizada', {
+      crearSiFalta: true, autor: 'karina', texto: `Cotización enviada por correo a ${para}.`,
+      monto: precio && c.invitados ? precio * Number(c.invitados) : null, moneda: L === 'en' ? 'USD' : 'MXN',
     });
     return json({ success: true, id: out.id, para }, 201);
   } catch (res) {
