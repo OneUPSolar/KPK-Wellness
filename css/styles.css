@@ -120,6 +120,8 @@ p { color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; font-size:
   font-weight: 600; color: var(--text-muted); cursor: pointer; transition: var(--trans);
 }
 .lang-btn:hover, .lang-btn .active { color: var(--navy); }
+.nav-entrar { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); padding: 10px 4px; transition: color .2s; }
+.nav-entrar:hover { color: var(--navy); }
 .nav-mobile-btn { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
 .nav-mobile-btn span { display: block; width: 22px; height: 1.5px; background: var(--charcoal); margin: 5px 0; transition: var(--trans); }
 
@@ -546,6 +548,13 @@ body.lang-es .chatbot-bubble-text span[lang="es"] { display: block; }
 @media (max-width: 600px) {
   .nav-links, .nav-right .btn { display: none; }
   .nav-mobile-btn { display: block; }
+  .nav-right { gap: 10px; margin-left: auto; margin-right: 12px; }
+  .navbar.menu-abierto .nav-links {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+    position: absolute; top: 72px; left: 0; right: 0; padding: 8px 24px 16px;
+    background: #fff; border-bottom: 1px solid var(--border); box-shadow: 0 12px 24px rgba(30,30,46,.08);
+  }
+  .navbar.menu-abierto .nav-links a { display: block; padding: 12px 0; font-size: 0.9rem; }
   .section { padding: 72px 0; }
   h1 { font-size: 2.6rem; }
   .exp-grid, .footer-grid, .loc-grid, .gallery-grid, .profile-cards { grid-template-columns: 1fr; }

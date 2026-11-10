@@ -31,7 +31,7 @@
 <header class="navbar" id="navbar">
 <div class="container nav-inner">
   <a href="#" class="nav-logo"><span class="nav-logo-main">KPK Wellness</span><span class="nav-logo-sub">Associates</span></a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="navLinks">
     <li><a href="#experiences" lang="en">Experiences</a><a href="#experiences" lang="es">Experiencias</a></li>
     <li><a href="recipes.html" lang="en">Recipes</a><a href="recipes.html" lang="es">Recetas</a></li>
     <li><a href="#philosophy" lang="en">Philosophy</a><a href="#philosophy" lang="es">Filosofía</a></li>
@@ -40,11 +40,12 @@
     <li><a href="#contact" lang="en">Contact</a><a href="#contact" lang="es">Contacto</a></li>
   </ul>
   <div class="nav-right">
+    <a href="/app/" class="nav-entrar"><span lang="en">Log in</span><span lang="es">Entrar</span></a>
     <button id="langToggle" class="lang-btn"><span id="lbl-en" class="active">EN</span> | <span id="lbl-es">ES</span></button>
     <a href="#contact" class="btn btn-primary btn-sm" lang="en">Book Experience</a>
     <a href="#contact" class="btn btn-primary btn-sm" lang="es">Reservar</a>
   </div>
-  <button class="nav-mobile-btn" id="mobileMenuBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+  <button class="nav-mobile-btn" id="mobileMenuBtn" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
 </div>
 </header>
 
@@ -460,6 +461,7 @@
       <div class="footer-legal">
         <a href="#" lang="en">Privacy</a><a href="#" lang="es">Privacidad</a>
         <a href="#" lang="en">Terms</a><a href="#" lang="es">Términos</a>
+        <a href="/app/" lang="en">Karina's login</a><a href="/app/" lang="es">Acceso de Karina</a>
       </div>
     </div>
   </div>
