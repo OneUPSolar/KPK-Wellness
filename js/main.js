@@ -147,3 +147,13 @@ window.handleLeadMagnet = function(e) {
     });
   }
 });
+
+// Menú en el celular: el botón de tres rayas abre y cierra los links.
+(function () {
+  const btn = document.getElementById('mobileMenuBtn');
+  const nav = document.getElementById('navbar');
+  if (!btn || !nav) return;
+  const poner = (abierto) => { nav.classList.toggle('menu-abierto', abierto); btn.setAttribute('aria-expanded', String(abierto)); };
+  btn.addEventListener('click', () => poner(!nav.classList.contains('menu-abierto')));
+  document.querySelectorAll('#navLinks a').forEach((a) => a.addEventListener('click', () => poner(false)));
+})();

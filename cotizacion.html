@@ -833,7 +833,12 @@
         filas + "</section>";
     }).join("");
     hoja.innerHTML = '<div class="cuerpo landing">' + cab +
-      '<div class="acciones"><button type="button" class="agregar" id="btn-nueva-landing">Nueva cotización</button></div></section>' +
+      '<p style="margin:18px 0 8px">Nueva cotización por persona:</p>' +
+      '<div class="acciones" style="flex-wrap:wrap">' + ESTILOS.map(function (e) {
+        return '<button type="button" class="agregar" data-estilo="' + e[0] + '">' + esc(e[1]) + "</button>";
+      }).join("") +
+      (estado.cotizaciones.length ? '<button type="button" class="agregar chica" id="btn-nueva-landing">Copiar la última</button>' : "") +
+      "</div></section>" +
       (cuerpo || '<section><p>Todavía no hay cotizaciones.</p></section>') + "</div>";
   }
 
@@ -871,17 +876,30 @@
     if (!sol || !sol.nombre) { brindis("No pude leer la solicitud."); limpiar(); pintarLanding(true); return; }
     var ya = (estado.cotizaciones || []).filter(function (x) { return x.solicitud && x.solicitud.cuando === sol.cuando; })[0];
     if (ya) { limpiar(ya.slug); estado.activa = ya.slug; pintar(); brindis("Esta solicitud ya tiene su borrador."); return; }
+    borrador(sol, false);
+  }
+
+  /* Cotización directa, sin formulario: Karina elige el estilo y el borrador
+     sale con el menú y el precio por persona de content/menus.json. */
+  var ESTILOS = [["bajamed", "Baja Med"], ["norteno", "Norteño"], ["saludable", "Saludable"], ["yoga", "Yoga"], ["otra", "En blanco"]];
+  function cotizarDirecto(estilo) {
+    if (!ESTILOS.some(function (e) { return e[0] === estilo; })) estilo = "otra";
+    borrador({ nombre: "", estilo: estilo, tipo: estilo === "yoga" ? "yoga" : "catering", idioma: "es" }, true);
+  }
+
+  function borrador(sol, directo) {
+    var limpiar = function (slug) { history.replaceState(null, "", location.pathname + (slug ? "?c=" + encodeURIComponent(slug) : "")); };
     fetch("content/menus.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (m) {
       var t = (m.estilos || {})[sol.estilo] || (m.estilos || {}).otra || {};
       var copia = function (v) { return v ? JSON.parse(JSON.stringify(v)) : v; };
       var hoy = new Date().toISOString().slice(0, 10);
-      var base = aSlug((sol.estilo || "evento") + " " + sol.nombre.split(" ").slice(0, 2).join(" "));
+      var base = aSlug((sol.estilo || "evento") + " " + (sol.nombre ? sol.nombre.split(" ").slice(0, 2).join(" ") : Date.now().toString(36)));
       var slug = base, n = 2;
       while ((estado.cotizaciones || []).some(function (x) { return x.slug === slug; })) slug = base + "-" + n++;
       var c = {
         slug: slug, idioma: sol.idioma === "en" ? "en" : "es",
         titulo: copia(t.titulo) || { es: "Nueva cotización", en: "New quote" },
-        cliente: sol.nombre, telCliente: sol.tel || "", correoCliente: sol.correo || "",
+        cliente: sol.nombre || "", telCliente: sol.tel || "", correoCliente: sol.correo || "",
         emitida: { es: fechaBonita(hoy, "es"), en: fechaBonita(hoy, "en") },
         lugar: { es: sol.lugar || "", en: sol.lugar || "" },
         fecha: { es: fechaBonita(sol.fecha, "es"), en: fechaBonita(sol.fecha, "en") },
@@ -893,7 +911,7 @@
         incluye: copia(t.incluye) || [], opcionales: copia(m.opcionales) || [], condiciones: copia(m.condiciones) || [],
         linkMxn: "", linkUsd: "",
         inicio: sol.fecha ? sol.fecha + "T13:00" : "", fin: sol.fecha ? sol.fecha + "T17:00" : "",
-        solicitud: { cuando: sol.cuando, tipo: sol.tipo, estilo: sol.estilo, otro: sol.otro || "", servicio: sol.servicio || "", clase: sol.clase || "", notas: sol.notas || "" }
+        solicitud: directo ? undefined : { cuando: sol.cuando, tipo: sol.tipo, estilo: sol.estilo, otro: sol.otro || "", servicio: sol.servicio || "", clase: sol.clase || "", notas: sol.notas || "" }
       };
       estado.cotizaciones.push(c);
       estado.activa = slug;
@@ -902,7 +920,10 @@
       llenarSelector();
       pintar();
       abrirPanel("evento");
-      brindis("Borrador listo desde la solicitud. Revisa menú y precio, y Guarda para aprobarlo.");
+      if (directo) delete c.solicitud;
+      brindis(directo
+        ? "Borrador listo. Pon cliente, personas, fecha y horario; el precio por persona está en Editar precios. Luego Guardar."
+        : "Borrador listo desde la solicitud. Revisa menú y precio, y Guarda para aprobarlo.");
     }).catch(function () { brindis("No pude leer los menús."); limpiar(); pintarLanding(true); });
   }
 
@@ -2389,6 +2410,8 @@
     ruta();
     window.addEventListener("hashchange", ruta);
     hoja.addEventListener("click", function (e) {
+      var est = e.target.closest ? e.target.closest("[data-estilo]") : null;
+      if (est && AUTH) { cotizarDirecto(est.dataset.estilo); return; }
       var b = e.target.closest ? e.target.closest("[data-nueva-para],#btn-nueva-landing") : null;
       if (!b || !AUTH) return;
       var ref = b.dataset.nuevaPara ? estado.cotizaciones.filter(function (c) { return c.slug === b.dataset.nuevaPara; })[0] : null;
@@ -2399,17 +2422,19 @@
     // Un token viejo en el navegador no alcanza.
     var s = sesionGuardada();
     var nueva = new URLSearchParams(location.search).get("nueva");
+    var nuevo = new URLSearchParams(location.search).get("nuevo");
     // El botón del correo de una solicitud trae ?nueva=…: sin sesión, primero el login y de regreso aquí.
-    if (!s) { if (nueva) location.href = "/app/?volver=" + encodeURIComponent(location.pathname + location.search); return; }
+    if (!s) { if (nueva || nuevo) location.href = "/app/?volver=" + encodeURIComponent(location.pathname + location.search); return; }
     AUTH = s;
     api("/session").then(function () {
       barraAdmin();
       if (nueva) { desdeSolicitud(nueva); return; }
+      if (nuevo) { cotizarDirecto(nuevo); return; }
       if (enCotizacion()) pintar(); else pintarLanding(true);
     }).catch(function () {
       AUTH = null;
       localStorage.removeItem("kpk_auth");
-      if (nueva) location.href = "/app/?volver=" + encodeURIComponent(location.pathname + location.search);
+      if (nueva || nuevo) location.href = "/app/?volver=" + encodeURIComponent(location.pathname + location.search);
     });
   });
 
