@@ -16,3 +16,8 @@ This project has design skills in `.claude/skills/`: impeccable, frontend-design
 ## Marca
 
 Cormorant Garamond (display) + Inter (texto). Papel `#F7F5F1`, tinta `#1F2024`, eucalipto `#7A9E8E`, arena `#D9C9AE`. La misma en el sitio, `/app` y el cotizador.
+
+## Quién configura qué
+
+Karina usa este repo con su propio Claude para pedir cambios al sitio, sus QR (`/qr/`), su panel y sus cotizaciones.
+Todo lo que requiera Cloudflare (variables y secretos de Pages, bindings R2/KV, DNS, dominios, redeploys) o cuentas externas (Resend, Mercado Pago, Telegram) lo configura **Manny (Maxify Technologies)**, no Karina: no le pidas esos pasos a ella. Termina el código, déjalo en un PR y di claramente qué tiene que hacer Manny en Cloudflare para que funcione.
