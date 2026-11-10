@@ -372,6 +372,38 @@
   .aprobado b { font-family: var(--display); font-size: 1.35rem; display: block; color: var(--eucalipto-h); }
   .aprobado span { color: var(--tinta-sueve); font-size: 0.92rem; }
 
+  /* ---------- aceptar y transferencia ---------- */
+  .aceptar, .transfer { display: grid; gap: 10px; border: 1px solid var(--linea); border-radius: 12px; background: #fff; padding: 16px; }
+  .aceptar p { margin: 0; font-size: 0.93rem; color: var(--tinta-sueve); }
+  .t-titulo { font-family: var(--display); font-size: 1.35rem; font-weight: 600; }
+  .a-campo { display: grid; gap: 6px; font-size: 0.85rem; color: var(--tinta-sueve); }
+  .a-campo input { font: inherit; font-size: 16px; color: var(--tinta); padding: 12px 14px; border: 1px solid var(--linea); border-radius: 10px; background: #fff; }
+  .a-check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.93rem; cursor: pointer; }
+  .a-check input { width: 20px; height: 20px; margin: 1px 0 0; flex: none; accent-color: var(--eucalipto-h, #4F7466); }
+  .aceptar .boton { justify-self: start; }
+  .aceptada { font-weight: 600; color: var(--eucalipto-h, #4F7466); font-size: 0.95rem; }
+  .t-fila { display: grid; grid-template-columns: 9.5em 1fr auto; gap: 10px; align-items: center; border-top: 1px solid var(--linea); padding-top: 8px; font-size: 0.93rem; }
+  .t-fila span { color: var(--tinta-sueve); }
+  .t-fila b { font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .t-copiar { font: 600 0.8rem/1 var(--texto); border: 1px solid var(--linea); background: var(--papel); border-radius: 999px; padding: 8px 12px; cursor: pointer; min-height: 36px; }
+  @media (max-width: 480px) { .t-fila { grid-template-columns: 1fr auto; } .t-fila span { grid-column: 1 / -1; font-size: 0.8rem; } }
+  .solo-pdf { display: none; }
+  .pdf-velo { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: rgba(247,245,241,.97); font: 600 1rem/1 var(--texto); color: var(--tinta); }
+  /* El PDF: misma hoja, sin botones, carrusel en rejilla, ancho de hoja carta. */
+  .modo-pdf .barra-admin, .modo-pdf #k-lanzador, .modo-pdf .lapiz, .modo-pdf .flechas, .modo-pdf .puntos,
+  .modo-pdf .karina, .modo-pdf .bo-boton { display: none !important; }
+  .modo-pdf .switch .derecha { display: none !important; }
+  /* html2canvas pinta debajo del padre lo que tiene z-index negativo: en el PDF
+     las fotos van en la capa 0 y el texto encima. */
+  .modo-pdf .cabeza .foto { z-index: 0; transform: none; animation: none; }
+  .modo-pdf .cabeza::before { z-index: 1; }
+  .modo-pdf .cabeza > *:not(.foto) { position: relative; z-index: 2; }
+  .modo-pdf .platillo .foto .img { z-index: 0; transform: none; }
+  .modo-pdf .platillo .foto > *:not(.img) { position: relative; z-index: 1; }
+  .modo-pdf .carrusel { margin-inline: 0; overflow: visible; }
+  .modo-pdf .pista { display: grid; grid-template-columns: 1fr 1fr; overflow: visible; padding: 0; }
+  .modo-pdf .solo-pdf { display: block; margin: 4px 0 0; font-size: 0.85rem; color: var(--tinta-sueve); overflow-wrap: anywhere; }
+
   /* ---------- Zelle ---------- */
   .zelle { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; border-top: 1px solid var(--linea); padding-top: 16px; }
   .zelle-qr { width: 128px; height: 128px; flex: none; border: 1px solid var(--linea); border-radius: 10px; background: #fff; padding: 6px; image-rendering: pixelated; }
@@ -678,7 +710,14 @@
       sobreCot: "Hola Karina, sobre la cotización", preguntarWa: "Preguntar esto por WhatsApp",
       tuPregunta: "Escribe tu pregunta…", enviarWa: "Enviar por WhatsApp",
       descuento: "{d}% de descuento", conDescuento: "Transferencia o efectivo: {m} ({d}% de descuento)",
-      zelleTitulo: "", zelleCuerpo: "", zelleBoton: "", zelleWa: "", zelleDespues: ""
+      zelleTitulo: "", zelleCuerpo: "", zelleBoton: "", zelleWa: "", zelleDespues: "",
+      aceptarTitulo: "Acepta tu cotización", aceptarTexto: "Confirmas el menú, el número de personas y las condiciones. En seguida te mostramos los datos para pagar el anticipo.",
+      aceptarNombre: "Tu nombre completo", aceptarCheck: "Acepto la cotización y sus condiciones", aceptarBoton: "Aceptar cotización",
+      aceptando: "Un momento…", aceptadaPor: "Cotización aceptada por {n} · {f}",
+      transTitulo: "Transferencia bancaria (SPEI)", banco: "Banco", beneficiario: "Beneficiario", clabe: "CLABE", cuenta: "Cuenta",
+      montoAnticipo: "Monto del anticipo", concepto: "Concepto", copiar: "Copiar", copiado: "Copiado",
+      yaPague: "Ya pagué: mandar comprobante", waComprobante: "Hola Karina, ya hice el pago del anticipo de {e} por {m}. Te mando el comprobante.",
+      pdf: "Descargar PDF", pdfListo: "Preparando tu PDF…", pdfLinea: "Acepta y paga en línea:", tarjeta: "Pagar con tarjeta"
     },
     en: {
       cotizacion: "Quote", para: "For:", lugar: "Location", fecha: "Date",
@@ -714,7 +753,14 @@
       tuPregunta: "Type your question…", enviarWa: "Send on WhatsApp",
       descuento: "{d}% off", conDescuento: "",
       zelleTitulo: "Pay with Zelle", zelleCuerpo: "Send {m} to {n} at {z}, or scan the code in your banking app.",
-      zelleBoton: "Open Zelle", zelleWa: "I sent the deposit by Zelle", zelleDespues: "Then confirm on WhatsApp so Karina holds your date."
+      zelleBoton: "Open Zelle", zelleWa: "I sent the deposit by Zelle", zelleDespues: "Then confirm on WhatsApp so Karina holds your date.",
+      aceptarTitulo: "Accept your quote", aceptarTexto: "You confirm the menu, guest count and terms. Right after, you'll see how to pay the deposit.",
+      aceptarNombre: "Your full name", aceptarCheck: "I accept this quote and its terms", aceptarBoton: "Accept quote",
+      aceptando: "One moment…", aceptadaPor: "Quote accepted by {n} · {f}",
+      transTitulo: "Bank transfer (Mexico, SPEI)", banco: "Bank", beneficiario: "Beneficiary", clabe: "CLABE", cuenta: "Account",
+      montoAnticipo: "Deposit amount", concepto: "Reference", copiar: "Copy", copiado: "Copied",
+      yaPague: "I paid: send my receipt", waComprobante: "Hi Karina, I just paid the deposit for {e} ({m}). Here's my receipt.",
+      pdf: "Download PDF", pdfListo: "Preparing your PDF…", pdfLinea: "Accept and pay online:", tarjeta: "Pay by card"
     }
   };
 
@@ -771,6 +817,15 @@
     var existe = (estado.cotizaciones || []).some(function (c) { return c.slug === s; });
     return existe ? s : s.replace(/-view$/, "");
   }
+
+  /* Aceptación del cliente: la guarda el servidor en la cotización; mientras se
+     publica (un par de minutos), el navegador del cliente la recuerda. */
+  function aceptada(c) {
+    if (c && c.aceptada && c.aceptada.nombre) return c.aceptada;
+    try { var a = JSON.parse(localStorage.getItem("kpk_acept_" + (c && c.slug)) || "null"); if (a && a.nombre) return a; } catch (e) {}
+    return null;
+  }
+  var modoPdf = false;
 
   /** Mercado Pago vuelve a back_url con collection_status=approved cuando el pago entró. */
   function pagoAprobado() {
@@ -984,7 +1039,7 @@
   function pintar() {
     var c = cotizacionActiva();
     var L = idioma, t9 = T[L], chef = estado.chef || {};
-    var admin = esAdmin();
+    var admin = esAdmin() && !modoPdf;
 
     if (!c) {
       hoja.innerHTML = '<div class="cuerpo"><section><h2>' + esc(t9.sinCotizaciones) + "</h2></section></div>";
@@ -1067,7 +1122,9 @@
     var zelle = "";
     if (L === "en" && chef.zelle && t9.zelleTitulo) {
       var cuerpoZ = t9.zelleCuerpo.replace("{m}", dinero(t.anticipo, t.moneda)).replace("{n}", chef.zelleNombre || chef.nombre || "").replace("{z}", chef.zelle);
-      zelle = '<div class="zelle">' +
+      if (modoPdf) zelle = '<div class="zelle">' + (chef.zelleQr ? '<img class="zelle-qr" alt="Zelle QR" src="' + esc(chef.zelleQr) + '">' : "") +
+        '<div class="zelle-txt"><b>' + esc(t9.zelleTitulo) + "</b><p>" + esc(cuerpoZ) + "</p></div></div>";
+      else zelle = '<div class="zelle">' +
         (chef.zelleQr ? '<img class="zelle-qr" alt="Zelle QR" src="' + esc(chef.zelleQr) + '">' : "") +
         '<div class="zelle-txt"><b>' + esc(t9.zelleTitulo) + "</b><p>" + esc(cuerpoZ) + "</p>" +
           '<div class="acciones">' +
@@ -1079,10 +1136,48 @@
     var nota = tx(c.notaPago, L);
     if (nota) filas += fila(nota, "", "");
 
+    // Transferencia directa a la cuenta de Karina (CLABE). En pesos aplica el
+    // descuento por transferencia, igual que en Mercado Pago.
+    var acept = aceptada(c);
+    var montoTrans = L === "es" ? t.anticipoEfectivo : t.anticipoConIva;
+    var dato2 = function (etq, val, copiable) {
+      if (!val) return "";
+      return '<div class="t-fila"><span>' + esc(etq) + "</span><b>" + esc(val) + "</b>" +
+        (copiable && !modoPdf ? '<button type="button" class="t-copiar" data-copiar-valor="' + esc(String(val).replace(/\s/g, "")) + '">' + esc(t9.copiar) + "</button>" : "") + "</div>";
+    };
+    var waComprobante = chef.whatsapp
+      ? '<a class="boton primario con-ico" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
+        encodeURIComponent(t9.waComprobante.replace("{e}", tx(c.titulo, L)).replace("{m}", dinero(montoTrans, t.moneda))) + '">' + WA_SVG + esc(t9.yaPague) + "</a>"
+      : "";
+    // En dólares la CLABE solo aparece si no hay Zelle.
+    var transferencia = chef.clabe && (L === "es" || !chef.zelle)
+      ? '<div class="transfer"><b class="t-titulo">' + esc(t9.transTitulo) + "</b>" +
+          dato2(t9.banco, chef.banco) + dato2(t9.beneficiario, chef.titular || chef.nombre) +
+          dato2(t9.clabe, chef.clabe, true) + dato2(t9.cuenta, chef.cuenta, true) +
+          dato2(t9.montoAnticipo, dinero(montoTrans, t.moneda) + (L === "es" && t.descuentoPct ? " (" + t9.descuento.replace("{d}", t.descuentoPct) + ")" : ""), false) +
+          dato2(t9.concepto, c.slug.toUpperCase(), true) +
+          (modoPdf ? "" : '<div class="acciones">' + waComprobante + "</div>") +
+        "</div>"
+      : "";
+    var mostrarPago = admin || modoPdf || Boolean(acept) || pagoAprobado();
+    var aceptarHtml = (!admin && !modoPdf && !acept && !pagoAprobado())
+      ? '<form class="aceptar" id="aceptar" data-aceptar novalidate>' +
+          '<b class="t-titulo">' + esc(t9.aceptarTitulo) + "</b><p>" + esc(t9.aceptarTexto) + "</p>" +
+          '<label class="a-campo">' + esc(t9.aceptarNombre) +
+            '<input name="nombre" autocomplete="name" required maxlength="120" value="' + esc(c.cliente || "") + '"></label>' +
+          '<label class="a-check"><input type="checkbox" name="ok" required> ' + esc(t9.aceptarCheck) + "</label>" +
+          '<button type="submit" class="boton primario">' + esc(t9.aceptarBoton) + "</button>" +
+        "</form>"
+      : "";
+    var estadoAcept = acept
+      ? '<div class="aceptada">✓ ' + esc(t9.aceptadaPor.replace("{n}", acept.nombre).replace("{f}", fechaCorta(acept.cuando, L))) + "</div>"
+      : admin ? '<div class="nota-chica">El cliente todavía no la acepta. Al aceptarla te llega un correo.</div>' : "";
+    var botonPdf = modoPdf ? "" : '<button class="boton claro" type="button" data-pdf>' + esc(t9.pdf) + "</button>";
+
     // El botón principal siempre está. Con link de cobro va al checkout; sin él,
     // va al WhatsApp de Karina con la intención ya escrita.
     var textoReservar = t9.reservar + " · " + dinero(t.anticipoConIva, t.moneda);
-    var hrefReservar = pagoAprobado() ? "" : link || (L === "en" && chef.zelleLink) || (chef.whatsapp ? "https://wa.me/" + soloDigitos(chef.whatsapp) + "?text=" +
+    var hrefReservar = pagoAprobado() ? "" : (!esAdmin() && !aceptada(c)) ? "#aceptar" : link || (L === "en" && chef.zelleLink) || (chef.whatsapp ? "https://wa.me/" + soloDigitos(chef.whatsapp) + "?text=" +
       encodeURIComponent(t9.reservarWa + " " + tx(c.titulo, L) + " (" + tx(c.fecha, L) + ") — " + dinero(t.anticipoConIva, t.moneda)) : "");
     var reservar = link
       ? '<a class="boton primario" target="_blank" rel="noopener" href="' + esc(link) + '">' + esc(textoReservar) + "</a>"
@@ -1207,13 +1302,15 @@
                 : "") +
               "</div>" +
           "</div>" +
-          '<div class="pago-cuerpo">' +
-            '<div class="acciones">' + (pagoAprobado() ? waPagado : reservar + calendario) +
-              '<button class="boton claro" type="button" data-copiar-resumen>' + esc(t9.copiarResumen) + "</button>" +
-            "</div>" +
-            zelle +
-            (filas ? '<details class="formas"><summary>' + esc(t9.formasDePago) + "</summary>" +
-                     '<div class="lista">' + filas + "</div></details>" : "") +
+          '<div class="pago-cuerpo">' + estadoAcept + aceptarHtml +
+            (mostrarPago
+              ? transferencia + zelle +
+                (modoPdf ? "" : '<div class="acciones">' + (pagoAprobado() ? waPagado : reservar.replace(esc(textoReservar), esc((transferencia ? t9.tarjeta + " · " : "") + textoReservar)) + calendario) +
+                  '<button class="boton claro" type="button" data-copiar-resumen>' + esc(t9.copiarResumen) + "</button>" + botonPdf + "</div>") +
+                (filas && !modoPdf ? '<details class="formas"><summary>' + esc(t9.formasDePago) + "</summary>" +
+                     '<div class="lista">' + filas + "</div></details>" : "")
+              : '<div class="acciones">' + botonPdf + '<button class="boton claro" type="button" data-copiar-resumen>' + esc(t9.copiarResumen) + "</button></div>") +
+            (modoPdf ? '<p class="solo-pdf">' + esc(t9.pdfLinea) + " " + esc(enlacePublico(c.slug)) + "</p>" : "") +
           "</div>" +
         "</div></section>" +
         pregunta +
@@ -1574,7 +1671,16 @@
   }
 
   function cablear(c, t, t9, L, iva, hrefReservar) {
+    if (modoPdf) return;
     carrusel(); parallax(); lanzador(c, t, t9, L, estado.chef || {}, hrefReservar); asistente(c, L); registrarPago(c);
+    var formaA = hoja.querySelector("[data-aceptar]");
+    if (formaA) formaA.addEventListener("submit", function (e) { e.preventDefault(); aceptarCotizacion(c, t9, formaA); });
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-copiar-valor]"), function (b) {
+      b.addEventListener("click", function () { copiar(b.getAttribute("data-copiar-valor"), function () { brindis(t9.copiado); }); });
+    });
+    Array.prototype.forEach.call(hoja.querySelectorAll("[data-pdf]"), function (b) {
+      b.addEventListener("click", function () { descargarPdf(); });
+    });
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-editar]"), function (b) {
       b.addEventListener("click", function () { abrirPanel(b.getAttribute("data-editar"), b.getAttribute("data-foto-editar")); });
     });
@@ -1616,6 +1722,74 @@
     }
   }
 
+  function fechaCorta(iso, L) {
+    var d = new Date(iso || Date.now());
+    return isNaN(d) ? "" : d.toLocaleDateString(L === "en" ? "en-US" : "es-MX", { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  /** El cliente acepta: queda registrado (nombre y hora) y a Karina le llega un correo. */
+  function aceptarCotizacion(c, t9, forma) {
+    var nombre = String(forma.nombre.value || "").trim().replace(/\s+/g, " ");
+    if (nombre.length < 3) { forma.nombre.focus(); brindis(t9.aceptarNombre); return; }
+    if (!forma.ok.checked) { forma.ok.focus(); brindis(t9.aceptarCheck); return; }
+    var boton = forma.querySelector("button[type=submit]");
+    boton.disabled = true; boton.textContent = t9.aceptando;
+    var a = { nombre: nombre, cuando: new Date().toISOString(), idioma: idioma };
+    fetch("/api/cotizacion/aceptar", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ c: c.slug, nombre: nombre, idioma: idioma })
+    }).then(function (r) { return r.json().catch(function () { return {}; }); })
+      .catch(function () { return {}; })
+      .then(function (out) {
+        if (out && out.aceptada) a = out.aceptada;
+        try { localStorage.setItem("kpk_acept_" + c.slug, JSON.stringify(a)); } catch (e) {}
+        pintar();
+        var pago = hoja.querySelector(".pago");
+        if (pago) pago.scrollIntoView({ behavior: QUIETO ? "auto" : "smooth", block: "start" });
+      });
+  }
+
+  /* PDF: se arma con la misma página, sin botones ni animaciones, a ancho de
+     hoja carta. html2pdf solo se descarga cuando alguien lo pide. */
+  var HTML2PDF = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+  function cargarScript(src) {
+    return new Promise(function (ok, mal) {
+      if (window.html2pdf) return ok();
+      var s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = mal; document.head.appendChild(s);
+    });
+  }
+  function descargarPdf() {
+    var c = cotizacionActiva();
+    if (!c || modoPdf) return;
+    var t9 = T[idioma];
+    var velo = document.createElement("div"); velo.className = "pdf-velo"; velo.textContent = t9.pdfListo;
+    document.body.appendChild(velo);
+    var y = window.scrollY;
+    cargarScript(HTML2PDF).then(function () {
+      modoPdf = true;
+      document.body.classList.add("modo-pdf");
+      pintar();
+      window.scrollTo(0, 0);
+      var nombre = (c.slug + (idioma === "en" ? "-quote" : "-cotizacion")) + ".pdf";
+      return new Promise(function (r) { setTimeout(r, 350); }).then(function () {
+        return window.html2pdf().set({
+          margin: [6, 6, 8, 6], filename: nombre,
+          image: { type: "jpeg", quality: 0.92 },
+          html2canvas: { scale: 2, useCORS: true, backgroundColor: "#F7F5F1", windowWidth: 771, scrollY: 0 },
+          jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
+          pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+        }).from(hoja).save();
+      });
+    }).catch(function () { brindis("No se pudo crear el PDF. Intenta de nuevo."); })
+      .then(function () {
+        modoPdf = false;
+        document.body.classList.remove("modo-pdf");
+        velo.remove();
+        pintar();
+        window.scrollTo(0, y);
+      });
+  }
+
   /* ---------- editor ---------- */
 
   /** Con sesión, alterna entre la vista de administrador y la del cliente. */
@@ -1638,6 +1812,7 @@
       '<span class="crece modo">Vista de administrador · el cliente no ve esta barra ni los lápices</span>' +
       '<button type="button" id="btn-cliente" class="fantasma">Ver como cliente</button>' +
       '<button type="button" id="btn-enviar" class="fantasma">Enviar cotización</button>' +
+      '<button type="button" id="btn-pdf" class="fantasma">PDF</button>' +
       '<button type="button" id="btn-nueva" class="fantasma">Nueva</button>' +
       '<button type="button" id="btn-editar">Editar</button>';
     document.body.insertBefore(barra, document.body.firstChild);
@@ -1657,6 +1832,7 @@
     $("#btn-cliente").addEventListener("click", function () { vistaCliente(true); });
     document.body.classList.toggle("vista-cliente", VISTA_CLIENTE);
     $("#btn-enviar").addEventListener("click", enviarAlCliente);
+    $("#btn-pdf").addEventListener("click", descargarPdf);
     $("#btn-nueva").addEventListener("click", function () { nuevaCotizacion(cotizacionActiva(), false); });
   }
 
@@ -1704,8 +1880,8 @@
     var titulo = tx(c.titulo, L);
     var enlace = enlacePublico(c.slug);
     var texto = L === "en"
-      ? "Hi " + nombre + ", here's the quote for " + titulo + ":\n" + enlace
-      : "Hola " + nombre + ", te comparto la cotización para " + titulo + ":\n" + enlace;
+      ? "Hi " + nombre + ", here's the quote for " + titulo + ". You can accept it and pay the deposit right there:\n" + enlace + "\n\nPDF: " + enlace + "&pdf=1"
+      : "Hola " + nombre + ", te comparto la cotización para " + titulo + ". Ahí mismo la aceptas y ves cómo pagar el anticipo:\n" + enlace + "\n\nPDF: " + enlace + "&pdf=1";
     var tel = soloDigitos(c.telCliente), correo = String(c.correoCliente || "").trim();
     var fondo = document.createElement("div");
     fondo.className = "fac-fondo env-fondo";
@@ -2020,6 +2196,17 @@
               campo("Nombre en Zelle", chef.zelleNombre, "chef.zelleNombre") +
             "</div>" +
             campo("Link de Zelle (el que trae tu QR)", chef.zelleLink, "chef.zelleLink") +
+            '<div class="marca">Transferencia bancaria (lo ve el cliente al aceptar la cotización)</div>' +
+            '<div class="par-campos">' +
+              campo("Banco", chef.banco, "chef.banco") +
+              campo("Beneficiario (a nombre de)", chef.titular, "chef.titular") +
+            "</div>" +
+            '<div class="par-campos">' +
+              campo("CLABE (18 dígitos)", chef.clabe, "chef.clabe") +
+              campo("Número de cuenta (opcional)", chef.cuenta, "chef.cuenta") +
+            "</div>" +
+            '<div class="aviso">Con CLABE, el cliente ve banco, beneficiario, CLABE, monto y concepto para copiar, ' +
+              "y un botón para mandarte el comprobante por WhatsApp. El pago con tarjeta (Mercado Pago) sigue disponible.</div>" +
             '<div class="marca">QR de Zelle</div>' + fotoCampo(chef.zelleQr, "chef.zelleQr") +
             '<div class="marca">Correo de reserva (se manda solo cuando entra el anticipo)</div>' +
             bi("Asunto", (chef.correoReserva || {}).asunto, "chef.correoReserva.asunto") +
@@ -2408,6 +2595,8 @@
 
   cargarDatos().then(function () {
     ruta();
+    // El link del PDF (?pdf=1) baja el archivo solo, sin que el cliente busque el botón.
+    if (new URLSearchParams(location.search).get("pdf") === "1" && enCotizacion()) setTimeout(descargarPdf, 700);
     window.addEventListener("hashchange", ruta);
     hoja.addEventListener("click", function (e) {
       var est = e.target.closest ? e.target.closest("[data-estilo]") : null;
