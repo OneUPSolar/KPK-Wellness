@@ -29,6 +29,9 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/cotizacion` | GET | pública — sirve la página estática con meta Open Graph por cotización (`?c=slug`), para el preview en WhatsApp |
 | `/api/auth/config` | GET · POST | pública — qué métodos de entrada hay |
 | `/api/auth/google` | POST | pública — cambia el ID token de Google por sesión |
+| `/api/auth/passkey/reto` | GET | pública — reto firmado (3 min) para Face ID / llave de acceso, `?uso=alta\|entrada` |
+| `/api/auth/passkey/alta` | POST | admin — registra la llave de este dispositivo; devuelve un registro firmado que el dispositivo guarda |
+| `/api/auth/passkey/entrada` | POST | pública — registro + firma del autenticador → misma sesión que Google |
 | `/api/login` | POST | pública — solo si `ADMIN_PASSWORD` sigue puesta |
 | `/api/session` | GET | admin — ¿sigue viva la sesión? |
 | `/api/commit` | POST | admin — guarda un archivo en el repo |
@@ -69,6 +72,21 @@ Environment variables. Las marcadas como secreto quedan cifradas.
 | `STRIPE_SECRET_KEY` | sí | llave secreta de Stripe de Karina (`sk_live_…`), para el lado en dólares. Sin ella, `/api/payments/stripe` responde 503 |
 
 El asistente de recetas de la app se llama **Silver** cuando contesta OpenAI y **Claudio** cuando contesta Claude; funciona con cualquiera de las dos llaves y, con las dos, Karina elige en la app. Sin ninguna, `/api/silver/chat` responde 503.
+
+## Face ID (llaves de acceso)
+
+No necesita variables nuevas ni base de datos. Después de entrar con Google,
+el panel ofrece "Entra con Face ID la próxima vez". El servidor verifica la
+llave nueva y le devuelve al dispositivo un **registro firmado** con
+`SESSION_SECRET` (correo + llave pública); el dispositivo lo guarda y lo trae
+en cada entrada. Detalles y límites en `functions/_lib/webauthn.js`.
+
+- Cada dispositivo se activa una vez (un teléfono nuevo entra con Google la
+  primera vez).
+- Quitar un correo de `ALLOWED_EMAILS` revoca sus llaves al instante.
+- Cambiar `SESSION_SECRET` invalida todas las llaves y todas las sesiones.
+- El RP ID es el dominio: una llave hecha en `kpk.associates` no sirve en un
+  preview `*.pages.dev`, y viceversa.
 
 Sin `SESSION_SECRET` nadie puede entrar: las rutas responden 503 en vez de
 dejar pasar. Es a propósito — una configuración incompleta no debe abrir el
