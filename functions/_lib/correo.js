@@ -52,17 +52,17 @@ export function correoCotizacion(c, chef, { L = 'es', enlace, imagen, anticipo, 
   const T = L === 'en'
     ? { asunto: `Your catering quote: ${titulo}`, hola: nombre ? `Hi ${nombre},` : 'Hi,',
         intro: `Here is the quote for ${titulo}. It has the menu, what's included and how to book your date.`,
-        ver: 'See the quote', anticipo: 'Deposit to book the date', dudas: 'Questions? Just reply to this email or message me on WhatsApp.',
+        ver: 'See and accept the quote', pdf: 'Download as PDF', anticipo: 'Deposit to book the date', dudas: 'Questions? Just reply to this email or message me on WhatsApp.',
         etq: 'Catering quote', lugar: 'Place', fecha: 'Date', horario: 'Time', invitados: 'Guests' }
     : { asunto: `Tu cotización de catering: ${titulo}`, hola: nombre ? `Hola ${nombre},` : 'Hola,',
         intro: `Te comparto la cotización para ${titulo}. Ahí está el menú, lo que incluye y cómo apartar tu fecha.`,
-        ver: 'Ver la cotización', anticipo: 'Anticipo para apartar la fecha', dudas: '¿Dudas? Responde este correo o escríbeme por WhatsApp.',
+        ver: 'Ver y aceptar la cotización', pdf: 'Descargar en PDF', anticipo: 'Anticipo para apartar la fecha', dudas: '¿Dudas? Responde este correo o escríbeme por WhatsApp.',
         etq: 'Cotización de catering', lugar: 'Lugar', fecha: 'Fecha', horario: 'Horario', invitados: 'Invitados' };
   const filas = [[T.lugar, tx(c.lugar, L)], [T.fecha, tx(c.fecha, L)], [T.horario, tx(c.horario, L)],
     [T.invitados, c.invitados ? String(c.invitados) : '']].filter((f) => f[1]);
   const extra = String(mensaje || '').trim();
   const texto = [T.hola, '', extra || T.intro, '', ...filas.map((f) => `${f[0]}: ${f[1]}`),
-    anticipo ? `${T.anticipo}: ${anticipo}` : '', '', `${T.ver}: ${enlace}`, '', T.dudas, '', firma].filter((l) => l !== null).join('\n');
+    anticipo ? `${T.anticipo}: ${anticipo}` : '', '', `${T.ver}: ${enlace}`, `${T.pdf}: ${enlace}&pdf=1`, '', T.dudas, '', firma].filter((l) => l !== null).join('\n');
   const html = `<!doctype html><html><body style="margin:0;background:#F7F5F1;font-family:Inter,-apple-system,Helvetica,Arial,sans-serif;color:#1F2024">
 <div style="max-width:600px;margin:0 auto;padding:24px 16px">
   <div style="background:#fff;border:1px solid #E6E1D8;border-radius:16px;overflow:hidden">
@@ -77,6 +77,7 @@ export function correoCotizacion(c, chef, { L = 'es', enlace, imagen, anticipo, 
         ${anticipo ? `<tr><td style="padding:7px 0;border-top:1px solid #EFEBE4;color:#6B6D72">${esc(T.anticipo)}</td><td style="padding:7px 0;border-top:1px solid #EFEBE4;font-weight:600">${esc(anticipo)}</td></tr>` : ''}
       </table>
       <a href="${esc(enlace)}" style="display:inline-block;background:#4F7466;color:#fff;text-decoration:none;font-weight:600;padding:14px 26px;border-radius:999px;font-size:15px">${esc(T.ver)}</a>
+      <p style="margin:12px 0 0"><a href="${esc(enlace)}&pdf=1" style="color:#4F7566;font-weight:600;font-size:14px">${esc(T.pdf)}</a></p>
       <p style="font-size:14px;color:#55565B;margin:22px 0 0">${esc(T.dudas)}</p>
       <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;margin:18px 0 0">${esc(firma)}</p>
       <p style="font-size:12px;color:#8A8B90;margin:4px 0 0">kpk.associates</p>
