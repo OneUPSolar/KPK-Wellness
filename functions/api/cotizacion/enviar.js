@@ -4,11 +4,14 @@
  * Resend desde karina@kpk.associates, con respuesta a su correo.
  *
  * POST (admin) { cotizacion, chef, idioma, mensaje? }
- *   Se manda lo que Karina ve en pantalla (aunque no haya guardado).
+ *   Se manda lo que Karina ve en pantalla (aunque no haya guardado). La
+ *   dirección del cliente sale del bucket privado (la página la guarda ahí
+ *   antes de llamar), nunca del JSON público.
  */
 import { json, readJson, requireAdmin } from '../../_lib/responder.js';
 import { correoCotizacion, enviarResend } from '../../_lib/correo.js';
 import { montoAnticipo } from '../../pagar.js';
+import { contactoDe, sinPrivados } from '../../_lib/privado.js';
 
 const esCorreo = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim());
 
@@ -19,7 +22,10 @@ export async function onRequestPost({ request, env }) {
     const c = body?.cotizacion;
     const chef = body?.chef || {};
     if (!c || !/^[a-z0-9-]{1,80}$/.test(String(c.slug || ''))) return json({ error: 'Falta la cotización.' }, 400);
-    const para = String(c.correoCliente || '').trim();
+    // El correo del cliente se lee del bucket privado, no de lo que manda la
+    // página: la página lo guarda ahí justo antes de llamar aquí.
+    if (!env.PRIVADO) return json({ error: 'Falta conectar el almacenamiento privado (PRIVADO) en Cloudflare.', sinAlmacen: true }, 503);
+    const para = String((await contactoDe(env, sinPrivados(c))).correoCliente || '').trim();
     if (!esCorreo(para)) return json({ error: 'Falta el correo del cliente (Editar → Evento).' }, 400);
     if (!env.RESEND_API_KEY) return json({ error: 'El correo aún no está activado: falta RESEND_API_KEY en Cloudflare.' }, 503);
 

@@ -910,7 +910,8 @@
     var copia = base ? JSON.parse(JSON.stringify(base)) : { invitados: 0, precio: { mxn: 0, usd: 0 } };
     copia.slug = aSlug("cotizacion " + Date.now().toString(36));
     copia.titulo = { es: "Nueva cotización", en: "New quote" };
-    if (!mismoCliente) { copia.cliente = ""; copia.telCliente = ""; }
+    if (!mismoCliente) { copia.cliente = ""; copia.telCliente = ""; copia.correoCliente = ""; }
+    delete copia.solicitud; // la solicitud es de la cotización original, no de esta
     copia.linkMxn = "";
     copia.linkUsd = "";
     estado.cotizaciones.push(copia);
@@ -1317,7 +1318,8 @@
     api("/silver/chat", {
       method: "POST",
       body: JSON.stringify({ messages: hiloAdmin, proveedor: asisMotor || undefined,
-        contexto: { cotizacion: c, chef: estado.chef || {}, idioma: L } }),
+        // Al modelo no le hacen falta el WhatsApp ni el correo del cliente; las notas (alergias) sí.
+        contexto: { cotizacion: Object.assign({}, c, { telCliente: undefined, correoCliente: undefined }), chef: estado.chef || {}, idioma: L } }),
     })
       .then(function (out) {
         hiloAdmin.push({ role: "assistant", content: out.reply || "" });
@@ -1727,7 +1729,11 @@
       b.disabled = true; b.textContent = "Enviando correo…"; aviso("", "");
       // En el correo va el mensaje sin el enlace: el correo ya trae su botón.
       var msgCorreo = msg.replace(enlace, "").replace(/[:\s]+$/, "");
-      api("/cotizacion/enviar", { method: "POST", body: JSON.stringify({ cotizacion: c, chef: estado.chef || {}, idioma: L, mensaje: msgCorreo === texto.replace(enlace, "").replace(/[:\s]+$/, "") ? "" : msgCorreo }) })
+      // El servidor toma el correo del bucket privado: primero se guarda ahí el que está en pantalla.
+      guardarPrivado(c.slug)
+        .then(function () {
+          return api("/cotizacion/enviar", { method: "POST", body: JSON.stringify({ cotizacion: sinPrivados(c), chef: estado.chef || {}, idioma: L, mensaje: msgCorreo === texto.replace(enlace, "").replace(/[:\s]+$/, "") ? "" : msgCorreo }) });
+        })
         .then(function (r) {
           aviso("ok", "Correo enviado a " + r.para + "." + (porWa ? " WhatsApp abierto con el mensaje: dale enviar." : ""));
           b.textContent = "Enviado";
@@ -2241,18 +2247,87 @@
     });
   }
 
+  /*
+   * Datos del cliente: el WhatsApp, el correo y la solicitud (con sus notas,
+   * como alergias) no van en content/cotizaciones.json, que es público. Viven
+   * en el bucket privado y solo se leen y escriben con sesión de admin.
+   */
+  var CAMPOS_PRIVADOS = ["telCliente", "correoCliente", "solicitud"];
+  var privadoBase = null; // slug → lo último leído o guardado; null si no se pudo leer
+
+  function privadosDe(c) {
+    var p = {};
+    CAMPOS_PRIVADOS.forEach(function (k) {
+      var v = c[k];
+      if (v == null || v === "" || (typeof v === "object" && !Object.keys(v).length)) return;
+      p[k] = v;
+    });
+    return p;
+  }
+  function sinPrivados(c) {
+    var out = Object.assign({}, c);
+    CAMPOS_PRIVADOS.forEach(function (k) { delete out[k]; });
+    return out;
+  }
+
+  /** Trae los datos de todos los clientes y los pone en sus cotizaciones (lo guardado gana). */
+  function cargarPrivado() {
+    return api("/cotizacion/privado").then(function (r) {
+      var clientes = r.clientes || {};
+      privadoBase = {};
+      (estado.cotizaciones || []).forEach(function (c) {
+        var p = clientes[c.slug] || {};
+        CAMPOS_PRIVADOS.forEach(function (k) { if (p[k] != null) c[k] = p[k]; });
+        privadoBase[c.slug] = JSON.stringify(privadosDe(p));
+      });
+    });
+  }
+
+  /**
+   * Guarda en el bucket lo que cambió (o solo la cotización `soloSlug`). Si
+   * al abrir no se pudieron leer y hay datos del cliente en pantalla, no se
+   * guarda nada: se perderían o se pisarían los que ya estaban.
+   */
+  function guardarPrivado(soloSlug) {
+    var lista = (estado.cotizaciones || []).filter(function (c) { return !soloSlug || c.slug === soloSlug; });
+    if (privadoBase === null) {
+      var hay = lista.some(function (c) { return Object.keys(privadosDe(c)).length; });
+      return hay ? Promise.reject(new Error("No pude leer los datos del cliente; recarga la página e intenta de nuevo.")) : Promise.resolve();
+    }
+    var cambios = {}, n = 0;
+    lista.forEach(function (c) {
+      var p = privadosDe(c);
+      if (JSON.stringify(p) !== (privadoBase[c.slug] || "{}")) { cambios[c.slug] = p; n++; }
+    });
+    // Si un slug cambió, sus datos se van con el nuevo y el archivo viejo se borra.
+    if (!soloSlug) {
+      Object.keys(privadoBase).forEach(function (slug) {
+        var sigue = (estado.cotizaciones || []).some(function (c) { return c.slug === slug; });
+        if (!sigue && privadoBase[slug] !== "{}") { cambios[slug] = {}; n++; }
+      });
+    }
+    if (!n) return Promise.resolve();
+    return api("/cotizacion/privado", { method: "PUT", body: JSON.stringify({ clientes: cambios }) }).then(function () {
+      Object.keys(cambios).forEach(function (slug) { privadoBase[slug] = JSON.stringify(cambios[slug]); });
+    });
+  }
+
   function guardar() {
     var botones = [$("#btn-guardar"), $("#btn-guardar-2")].filter(Boolean);
     botones.forEach(function (b) { b.disabled = true; b.textContent = "Guardando…"; });
     actualizarCatalogo();
-    api("/commit", {
-      method: "POST",
-      body: JSON.stringify({
-        path: RUTA_DATOS,
-        content: JSON.stringify(estado, null, 2) + "\n",
-        message: "cotizaciones: " + (cotizacionActiva() || {}).slug,
-      }),
-    })
+    guardarPrivado()
+      .then(function () {
+        var publico = Object.assign({}, estado, { cotizaciones: (estado.cotizaciones || []).map(sinPrivados) });
+        return api("/commit", {
+          method: "POST",
+          body: JSON.stringify({
+            path: RUTA_DATOS,
+            content: JSON.stringify(publico, null, 2) + "\n",
+            message: "cotizaciones: " + (cotizacionActiva() || {}).slug,
+          }),
+        });
+      })
       .then(function () {
         // El sitio se reconstruye con el commit; el cambio tarda un momento
         // en verse en la dirección pública.
@@ -2403,6 +2478,9 @@
     if (!s) { if (nueva) location.href = "/app/?volver=" + encodeURIComponent(location.pathname + location.search); return; }
     AUTH = s;
     api("/session").then(function () {
+      // Antes de pintar: la landing agrupa por WhatsApp y una solicitud se reconoce por sus datos.
+      return cargarPrivado().catch(function (e) { brindis("No pude leer los datos de los clientes: " + e.message); });
+    }).then(function () {
       barraAdmin();
       if (nueva) { desdeSolicitud(nueva); return; }
       if (enCotizacion()) pintar(); else pintarLanding(true);

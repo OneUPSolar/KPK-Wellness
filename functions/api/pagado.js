@@ -8,6 +8,7 @@
  */
 import { ghRead, ghWrite, json, readJson } from '../_lib/responder.js';
 import { correoDe, enviarResend } from '../_lib/correo.js';
+import { contactoDe } from '../_lib/privado.js';
 
 const RUTA = 'content/cotizaciones.json';
 const MP_API = 'https://api.mercadopago.com';
@@ -34,28 +35,32 @@ export async function onRequestPost({ request, env }) {
     if (!c) return json({ error: 'Cotización no encontrada.' }, 404);
 
     if (c.pagado && String(c.pagado.payment_id) === paymentId) {
-      return json({ success: true, yaRegistrado: true, correoEnviado: Boolean(c.pagado.correo) });
+      return json({ success: true, yaRegistrado: true, correoEnviado: Boolean(c.pagado.correo?.id) });
     }
 
     const monto = Number(pago.transaction_amount) || 0;
     c.pagado = { payment_id: paymentId, monto, moneda: pago.currency_id || 'MXN', cuando: new Date().toISOString() };
 
     // El correo es lo que Karina decide; si no hay correo del cliente o no hay
-    // Resend, el pago igual queda registrado.
-    let correo = null;
-    if (c.correoCliente && env.RESEND_API_KEY) {
+    // Resend, el pago igual queda registrado. El correo del cliente vive en el
+    // bucket privado; aquí, en el JSON público, solo queda si se mandó.
+    let correo = null, correoError = null, para = '';
+    try { para = (await contactoDe(env, c)).correoCliente || ''; } catch { /* sin bucket, sin correo */ }
+    if (para && env.RESEND_API_KEY) {
       try {
         const m = correoDe(c, datos.chef || {}, { anticipo: `$${monto.toLocaleString('es-MX')} ${c.pagado.moneda}` });
-        const out = await enviarResend(env, { para: c.correoCliente, ...m, responderA: datos.chef?.correo });
-        correo = { id: out.id, cuando: new Date().toISOString(), para: c.correoCliente };
+        const out = await enviarResend(env, { para, ...m, responderA: datos.chef?.correo });
+        correo = { id: out.id, cuando: new Date().toISOString() };
       } catch (e) {
-        correo = { error: String(e.message || e) };
+        correoError = String(e.message || e);
+        correo = { error: true, cuando: new Date().toISOString() };
       }
       c.pagado.correo = correo;
     }
 
     await ghWrite(env, { path: RUTA, content: JSON.stringify(datos, null, 2) + '\n', message: `pagado: ${slug} · ${paymentId}` });
-    return json({ success: true, correoEnviado: Boolean(correo && correo.id), correoError: correo && correo.error ? correo.error : null }, 201);
+    // Ruta pública: el detalle de Resend puede traer la dirección; no se devuelve.
+    return json({ success: true, correoEnviado: Boolean(correo && correo.id), correoError: correoError ? 'No se pudo enviar el correo de confirmación.' : null }, 201);
   } catch (res) {
     return res instanceof Response ? res : json({ error: 'No se pudo registrar el pago.' }, 500);
   }
