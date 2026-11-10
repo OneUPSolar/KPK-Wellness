@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mis códigos QR · Karina Paz Kennedy</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F7F5F1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papel: #F7F5F1; --tinta: #1F2024; --tinta-suave: #5C5E66; --eucalipto: #7A9E8E; --eucalipto-h: #4F7466;
+    --arena: #D9C9AE; --linea: #E4DED3; --blanco: #FFFFFF;
+    --display: 'Cormorant Garamond', Georgia, serif; --texto: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--papel); color: var(--tinta);
+    font: 400 16px/1.5 var(--texto); -webkit-font-smoothing: antialiased;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+  .cabeza { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: 980px; margin: 0 auto 20px; }
+  h1 { font: 600 32px/1.1 var(--display); margin: 0; }
+  .boton {
+    appearance: none; border: 1px solid var(--linea); background: var(--blanco); color: var(--tinta);
+    font: 500 15px/1 var(--texto); padding: 12px 16px; border-radius: 999px; cursor: pointer; text-decoration: none;
+    min-height: 44px; display: inline-flex; align-items: center; gap: 8px; touch-action: manipulation;
+  }
+  .boton:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--eucalipto-h); outline-offset: 2px; }
+  .boton.principal { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
+  .rejilla { display: grid; gap: 24px; max-width: 980px; margin: 0 auto; }
+  @media (min-width: 820px) { .rejilla { grid-template-columns: 1fr 380px; align-items: start; } }
+  .vista { background: var(--blanco); border: 1px solid var(--linea); border-radius: 20px; padding: 16px; }
+  canvas { width: 100%; height: auto; display: block; border-radius: 12px; }
+  form { display: grid; gap: 14px; }
+  label { display: grid; gap: 6px; font-size: 14px; color: var(--tinta-suave); }
+  input, textarea, select {
+    font: 400 16px/1.4 var(--texto); color: var(--tinta); background: var(--blanco);
+    border: 1px solid var(--linea); border-radius: 12px; padding: 12px 14px; width: 100%;
+  }
+  textarea { resize: vertical; min-height: 64px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips button { appearance: none; border: 1px solid var(--linea); background: var(--blanco); border-radius: 999px; padding: 10px 14px; font: 500 14px/1 var(--texto); cursor: pointer; min-height: 40px; color: var(--tinta); }
+  .chips button[aria-pressed="true"] { background: var(--eucalipto-h); border-color: var(--eucalipto-h); color: var(--blanco); }
+  .nota { font-size: 13px; color: var(--tinta-suave); margin: 0; }
+  .acciones {
+    position: fixed; left: 0; right: 0; bottom: 0; display: flex; gap: 10px; justify-content: center;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: rgba(247,245,241,.94);
+    border-top: 1px solid var(--linea); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .estado { font-size: 14px; color: var(--eucalipto-h); min-height: 1.5em; margin: 0; }
+  .estado.error { color: #A33A2B; }
+</style>
+</head>
+<body data-bugoff="sin-boton">
+<div class="cabeza">
+  <h1>Mis códigos QR</h1>
+  <a class="boton" href="/app/">← Panel</a>
+</div>
+
+<div class="rejilla">
+  <div class="vista"><canvas id="lienzo" width="1080" height="1350" role="img" aria-label="Vista previa del póster con el código QR"></canvas></div>
+
+  <form id="forma" autocomplete="off">
+    <div>
+      <p class="nota" style="margin-bottom:8px">¿A dónde lleva el QR?</p>
+      <div class="chips" id="destinos"></div>
+    </div>
+    <label>Link
+      <input id="f-link" type="url" inputmode="url" spellcheck="false" required>
+    </label>
+    <label>Arriba (pequeño)
+      <input id="f-arriba" maxlength="40">
+    </label>
+    <label>Título
+      <input id="f-titulo" maxlength="28">
+    </label>
+    <label>Debajo del título
+      <input id="f-sub" maxlength="48">
+    </label>
+    <label>Línea de abajo
+      <input id="f-pie" maxlength="64">
+    </label>
+    <label style="grid-template-columns:auto 1fr;align-items:center;gap:10px;color:var(--tinta)">
+      <input id="f-foto" type="checkbox" checked style="width:20px;height:20px">
+      Mi foto en el centro del QR
+    </label>
+    <p class="estado" id="estado" aria-live="polite"></p>
+    <p class="nota">El QR se revisa solo: si deja de leerse (link muy largo con foto), te avisa aquí.
+      Imprímelo de al menos 3 × 3 cm.</p>
+  </form>
+</div>
+
+<div class="acciones">
+  <button type="button" class="boton principal" id="b-descargar">Descargar PNG</button>
+  <button type="button" class="boton" id="b-compartir" hidden>Compartir</button>
+</div>
+
+<script src="/card/qrcode.js"></script>
+<script src="/js/bugoff.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var W = 1080, H = 1350;
+  var PAPEL = '#F7F5F1', TINTA = '#1F2024', EUC = '#4F7466', SUAVE = '#5C5E66';
+  var IG = ['#FEDA75', '#FA7E1E', '#D62976', '#962FBF', '#4F5BD5'];
+  var ZONA = 'Baja California · San Diego · de 10 a 100 personas';
+
+  // Los destinos de siempre. "Otro" deja escribir cualquier link.
+  var DESTINOS = [
+    { id: 'catering', nombre: 'Catering', link: 'https://kpk.associates/catering',
+      arriba: 'CHEF KARINA PAZ KENNEDY', titulo: 'Pide tu catering', sub: 'Escanea y cuéntame de tu evento', pie: ZONA },
+    { id: 'yoga', nombre: 'Yoga', link: 'https://kpk.associates/catering?tipo=yoga',
+      arriba: 'KARINA PAZ KENNEDY', titulo: 'Organiza tu yoga', sub: 'Escanea y cuéntame de tu grupo', pie: 'Clases privadas, grupos, empresas y retiros' },
+    { id: 'links', nombre: 'Mis links', link: 'https://kpk.associates/links',
+      arriba: 'KARINA PAZ KENNEDY', titulo: 'Mira mis links', sub: 'Catering, yoga, mi tarjeta y WhatsApp', pie: 'Tijuana · San Diego' },
+    { id: 'tarjeta', nombre: 'Mi tarjeta', link: 'https://kpk.associates/card/',
+      arriba: 'CHEF KARINA PAZ KENNEDY', titulo: 'Guarda mi contacto', sub: 'Escanea mi tarjeta digital', pie: 'karina@kpk.associates' },
+    { id: 'catering-en', nombre: 'Catering (EN)', link: 'https://kpk.associates/catering?lang=en',
+      arriba: 'CHEF KARINA PAZ KENNEDY', titulo: 'Book your catering', sub: 'Scan and tell me about your event', pie: 'Baja California · San Diego · 10 to 100 guests' },
+    { id: 'otro', nombre: 'Otro link', link: 'https://kpk.associates/',
+      arriba: 'KARINA PAZ KENNEDY', titulo: 'Escanéame', sub: '', pie: '' }
+  ];
+
+  var campos = ['link', 'arriba', 'titulo', 'sub', 'pie'];
+  var foto = new Image(); var fotoLista = false;
+  foto.onload = function () { fotoLista = true; pintar(); };
+  foto.src = '/assets/cotizaciones/karina-retrato.webp';
+
+  function hacerChips() {
+    var c = $('destinos');
+    DESTINOS.forEach(function (d) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = d.nombre; b.dataset.id = d.id;
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', function () { elegir(d.id); });
+      c.appendChild(b);
+    });
+  }
+  function elegir(id) {
+    var d = DESTINOS.filter(function (x) { return x.id === id; })[0] || DESTINOS[0];
+    campos.forEach(function (k) { $('f-' + k).value = d[k]; });
+    [].forEach.call($('destinos').children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.id === d.id)); });
+    try { history.replaceState(null, '', '?para=' + d.id); } catch (e) {}
+    pintar();
+  }
+
+  function redondo(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function centrado(ctx, texto, y, fuente, color) {
+    if (!texto) return; ctx.font = fuente; ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillText(texto, W / 2, y, W - 96);
+  }
+
+  function pintar() {
+    var ctx = $('lienzo').getContext('2d');
+    var link = $('f-link').value.trim() || 'https://kpk.associates/';
+    var conFoto = $('f-foto').checked;
+    var qr;
+    try { qr = qrcode(0, conFoto ? 'H' : 'M'); qr.addData(link); qr.make(); }
+    catch (e) { estado('Ese link es demasiado largo para un QR.', true); return; }
+
+    ctx.fillStyle = PAPEL; ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '2px';
+    centrado(ctx, $('f-arriba').value.toUpperCase(), 78, '600 30px Inter, sans-serif', EUC);
+    ctx.restore();
+    centrado(ctx, $('f-titulo').value, 128, '700 84px Inter, sans-serif', TINTA);
+    centrado(ctx, $('f-sub').value, 238, '400 36px Inter, sans-serif', SUAVE);
+
+    // Marco con el degradado de Instagram y el QR en blanco
+    var lado = 640, M = lado + 120, x0 = (W - M) / 2, y0 = 320;
+    var g = ctx.createLinearGradient(x0, y0 + M, x0 + M, y0);
+    IG.forEach(function (c, i) { g.addColorStop(i / (IG.length - 1), c); });
+    ctx.fillStyle = g; redondo(ctx, x0, y0, M, M, 56); ctx.fill();
+    ctx.fillStyle = '#FFFFFF'; redondo(ctx, x0 + 14, y0 + 14, M - 28, M - 28, 44); ctx.fill();
+
+    var n = qr.getModuleCount(), celda = lado / n;
+    ctx.fillStyle = TINTA;
+    for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) {
+      if (qr.isDark(r, c)) ctx.fillRect(Math.floor(x0 + 60 + c * celda), Math.floor(y0 + 60 + r * celda), Math.ceil(celda), Math.ceil(celda));
+    }
+    if (conFoto && fotoLista) {
+      var cx = W / 2, cy = y0 + M / 2, rf = 59;
+      ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.arc(cx, cy, rf + 10, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, rf, 0, Math.PI * 2); ctx.clip();
+      var s = Math.min(foto.naturalWidth, foto.naturalHeight);
+      ctx.drawImage(foto, (foto.naturalWidth - s) / 2, (foto.naturalHeight - s) / 2, s, s, cx - rf, cy - rf, rf * 2, rf * 2);
+      ctx.restore();
+    }
+    var corto = link.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    centrado(ctx, corto, y0 + M + 44, '600 46px Inter, sans-serif', TINTA);
+    centrado(ctx, $('f-pie').value, y0 + M + 110, '400 30px Inter, sans-serif', SUAVE);
+    // Con nivel H y la foto cubriendo menos del 3 % del código, el QR sigue leyéndose.
+    estado(n > 45 && conFoto ? 'Link largo: si no lo lee tu cámara, quita la foto.' : 'Listo para descargar.', n > 45 && conFoto);
+  }
+  function estado(t, error) { var p = $('estado'); p.textContent = t; p.className = 'estado' + (error ? ' error' : ''); }
+
+  function nombreArchivo() {
+    var d = ($('destinos').querySelector('[aria-pressed="true"]') || {}).dataset || {};
+    return 'qr-' + (d.id || 'kpk') + '.png';
+  }
+  function comoBlob(cb) { $('lienzo').toBlob(cb, 'image/png'); }
+
+  $('b-descargar').addEventListener('click', function () {
+    comoBlob(function (blob) {
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombreArchivo();
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    });
+  });
+  if (navigator.canShare) {
+    $('b-compartir').hidden = false;
+    $('b-compartir').addEventListener('click', function () {
+      comoBlob(function (blob) {
+        var archivo = new File([blob], nombreArchivo(), { type: 'image/png' });
+        if (navigator.canShare({ files: [archivo] })) navigator.share({ files: [archivo] }).catch(function () {});
+        else estado('Tu teléfono no deja compartir la imagen; usa Descargar.', true);
+      });
+    });
+  }
+
+  $('forma').addEventListener('input', pintar);
+  $('forma').addEventListener('submit', function (e) { e.preventDefault(); });
+  hacerChips();
+  var pedido = new URLSearchParams(location.search).get('para');
+  elegir(pedido || 'catering');
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(pintar);
+})();
+</script>
+</body>
+</html>
