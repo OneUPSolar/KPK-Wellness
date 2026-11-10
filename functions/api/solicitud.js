@@ -10,6 +10,7 @@
  */
 import { json, readJson } from '../_lib/responder.js';
 import { enviarResend } from '../_lib/correo.js';
+import { db, registrarSolicitud } from '../_lib/crm.js';
 
 export const ESTILOS = { bajamed: 'Baja Med', norteno: 'Mexicano norteño', saludable: 'Saludable', otra: 'Otra sugerencia' };
 export const SERVICIOS = { buffet: 'Buffet', estacion: 'Estación en vivo / taquiza', mesa: 'Servicio a la mesa', bocadillos: 'Bocadillos y canapés' };
@@ -64,7 +65,11 @@ export async function onRequestPost({ request, env }) {
   try { const r = await env.ASSETS.fetch(new URL('/content/cotizaciones.json', origin)); if (r.ok) chef = (await r.json()).chef || {}; } catch { /* sigue */ }
   const karina = chef.correo || 'karina@kpk.associates';
 
-  const borrador = `${origin}/cotizacion?nueva=${b64url({ ...s, cuando: new Date().toISOString() })}`;
+  // Al CRM primero: así el borrador ya sabe a qué solicitud pertenece.
+  let crm = null;
+  try { const d = await db(env); if (d) crm = (await registrarSolicitud(d, s, { origen: 'formulario' })).solicitud.id; } catch { /* el correo es lo principal */ }
+  const borrador = `${origin}/cotizacion?nueva=${b64url({ ...s, cuando: new Date().toISOString(), ...(crm ? { crm } : {}) })}`;
+  const enCrm = crm ? `${origin}/app/clientes/#s=${crm}` : '';
   const que = s.tipo === 'yoga' ? `Evento de yoga · ${YOGA[s.clase]}` : `Catering · ${ESTILOS[s.estilo]}${s.otro ? ` (${s.otro})` : ''}`;
   const filas = [
     ['Qué', que], ['Nombre', s.nombre], ['WhatsApp', s.tel], ['Correo', s.correo], ['Personas', String(s.personas)],
@@ -84,14 +89,14 @@ export async function onRequestPost({ request, env }) {
       remitente: 'KPK · Solicitudes <solicitudes@kpk.associates>',
       responderA: s.correo,
       asunto: `Nueva solicitud: ${que} · ${s.personas} personas · ${s.nombre}`,
-      texto: [...filas.map((f) => `${f[0]}: ${f[1]}`), '', `Crear el borrador de la cotización: ${borrador}`, `WhatsApp del cliente: ${wa}`].join('\n'),
+      texto: [...filas.map((f) => `${f[0]}: ${f[1]}`), '', `Crear el borrador de la cotización: ${borrador}`, `WhatsApp del cliente: ${wa}`, enCrm ? `En tus clientes: ${enCrm}` : ''].filter(Boolean).join('\n'),
       html: `<!doctype html><html><body style="margin:0;background:#F7F5F1;font-family:Inter,-apple-system,Helvetica,Arial,sans-serif;color:#1F2024">
 <div style="max-width:560px;margin:0 auto;padding:24px 16px"><div style="background:#fff;border:1px solid #E6E1D8;border-radius:16px;padding:24px">
 <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#4F7566;font-weight:600">Nueva solicitud</div>
 <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:600;margin:6px 0 16px">${esc(que)}</div>
 <table role="presentation" style="width:100%;border-collapse:collapse;font-size:15px">${filas.map((f) => `<tr><td style="padding:7px 0;border-top:1px solid #EFEBE4;color:#6B6D72;width:38%;vertical-align:top">${esc(f[0])}</td><td style="padding:7px 0;border-top:1px solid #EFEBE4;white-space:pre-wrap">${esc(f[1])}</td></tr>`).join('')}</table>
 <p style="margin:22px 0 0"><a href="${esc(borrador)}" style="display:inline-block;background:#4F7466;color:#fff;text-decoration:none;font-weight:600;padding:13px 22px;border-radius:999px">Crear borrador de cotización</a></p>
-<p style="margin:12px 0 0"><a href="${esc(wa)}" style="color:#4F7566;font-weight:600">Escribirle por WhatsApp</a></p>
+<p style="margin:12px 0 0"><a href="${esc(wa)}" style="color:#4F7566;font-weight:600">Escribirle por WhatsApp</a>${enCrm ? ` · <a href="${esc(enCrm)}" style="color:#4F7566;font-weight:600">Ver en Clientes</a>` : ''}</p>
 <p style="font-size:13px;color:#6B6D72;margin:18px 0 0">El borrador sale con el menú del estilo elegido, sus platillos y precio. Nada se envía al cliente hasta que tú lo revises, guardes y toques "Enviar cotización".</p>
 </div></div></body></html>`,
     });

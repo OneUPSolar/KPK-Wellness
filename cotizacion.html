@@ -966,7 +966,7 @@
         incluye: copia(t.incluye) || [], opcionales: copia(m.opcionales) || [], condiciones: copia(m.condiciones) || [],
         linkMxn: "", linkUsd: "",
         inicio: sol.fecha ? sol.fecha + "T13:00" : "", fin: sol.fecha ? sol.fecha + "T17:00" : "",
-        solicitud: directo ? undefined : { cuando: sol.cuando, tipo: sol.tipo, estilo: sol.estilo, otro: sol.otro || "", servicio: sol.servicio || "", clase: sol.clase || "", notas: sol.notas || "" }
+        solicitud: directo ? undefined : { crm: sol.crm || undefined, cuando: sol.cuando, tipo: sol.tipo, estilo: sol.estilo, otro: sol.otro || "", servicio: sol.servicio || "", clase: sol.clase || "", notas: sol.notas || "" }
       };
       estado.cotizaciones.push(c);
       estado.activa = slug;

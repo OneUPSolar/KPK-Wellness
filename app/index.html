@@ -119,6 +119,8 @@
   .punto { width: 10px; height: 10px; border-radius: 50%; background: var(--eucalyptus); flex: none; }
   .tarjeta b { font-weight: 600; font-size: 1.02rem; display: block; letter-spacing: -0.01em; }
   .tarjeta small { color: var(--muted); font-size: 0.85rem; }
+  .tarjeta .crece { flex: 1; min-width: 0; }
+  .pendientes { flex: none; min-width: 28px; height: 28px; padding: 0 9px; border-radius: 999px; background: var(--eucalyptus); color: #fff; font-weight: 600; font-size: 0.85rem; display: grid; place-items: center; }
 
   .boton {
     font-family: var(--sans); font-weight: 600; font-size: 0.92rem;
@@ -240,6 +242,11 @@
     <h1 class="saludo" id="saludo">Hola</h1>
     <div class="correo" id="correo"></div>
     <nav class="mosaico">
+      <a class="tarjeta" href="/app/clientes/">
+        <span class="punto"></span>
+        <span class="crece"><b>Clientes</b><small id="clientes-txt">Solicitudes, seguimientos y la historia de cada cliente</small></span>
+        <span class="pendientes" id="clientes-n" hidden></span>
+      </a>
       <a class="tarjeta" href="/cotizacion">
         <span class="punto"></span>
         <span><b>Cotizar</b><small>Nueva cotización por persona, cobrar y enviar por correo y WhatsApp</small></span>
@@ -367,6 +374,14 @@
     $('portada').hidden = true;
     $('panel').hidden = false;
     $('correo').textContent = sesion.email || '';
+    // Clientes: cuántos hay que atender hoy (si el CRM ya está conectado).
+    fetch('/api/crm', { headers: { authorization: 'Bearer ' + sesion.token } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (r) {
+        if (!r || !r.paraHoy) return;
+        $('clientes-n').textContent = r.paraHoy; $('clientes-n').hidden = false;
+        $('clientes-txt').textContent = r.paraHoy === 1 ? '1 cliente por atender hoy' : r.paraHoy + ' clientes por atender hoy';
+      }).catch(function () {});
     var nombre = (sesion.name || sesion.email || '').split(/[ @]/)[0];
     $('saludo').textContent = nombre ? 'Hola, ' + nombre : 'Hola';
     // El aviso de instalar solo tiene sentido si todavía no está instalada.
