@@ -24,6 +24,7 @@ export async function onRequestGet({ env }) {
     almacenPrivado: env.PRIVADO ? 'ok' : 'falta',
     telegram: env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID ? 'ok' : 'falta',
     mercadoPago: env.MP_ACCESS_TOKEN ? 'ok' : 'falta',
+    stripe: env.STRIPE_SECRET_KEY ? 'ok' : 'falta',
     github: env.GITHUB_TOKEN ? 'ok' : 'falta',
     silver: env.OPENAI_API_KEY ? 'ok' : 'falta',
     claudio: env.ANTHROPIC_API_KEY ? 'ok' : 'falta',
