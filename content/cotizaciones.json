@@ -28,8 +28,8 @@
       },
       "invitados": 50,
       "piezas": {
-        "es": "4 piezas por persona",
-        "en": "4 pieces per guest"
+        "es": "3 piezas por persona",
+        "en": "3 pieces per guest"
       },
       "menu": [
         {
@@ -78,7 +78,7 @@
         }
       ],
       "precio": {
-        "mxn": 520,
+        "mxn": 500,
         "usd": 0
       },
       "ivaPct": 16,
