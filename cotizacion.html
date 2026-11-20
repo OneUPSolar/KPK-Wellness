@@ -392,6 +392,7 @@
   /* El PDF: misma hoja, sin botones, carrusel en rejilla, ancho de hoja carta. */
   .modo-pdf .barra-admin, .modo-pdf #k-lanzador, .modo-pdf .lapiz, .modo-pdf .flechas, .modo-pdf .puntos,
   .modo-pdf .karina, .modo-pdf .bo-boton { display: none !important; }
+  .modo-pdf #hoja { width: 771px; max-width: none; margin: 0; box-shadow: none; }
   .modo-pdf .switch .derecha { display: none !important; }
   /* html2canvas pinta debajo del padre lo que tiene z-index negativo: en el PDF
      las fotos van en la capa 0 y el texto encima. */
@@ -1775,7 +1776,7 @@
         return window.html2pdf().set({
           margin: [6, 6, 8, 6], filename: nombre,
           image: { type: "jpeg", quality: 0.92 },
-          html2canvas: { scale: 2, useCORS: true, backgroundColor: "#F7F5F1", windowWidth: 771, scrollY: 0 },
+          html2canvas: { scale: 2, useCORS: true, backgroundColor: "#F7F5F1", windowWidth: Math.max(771, window.innerWidth), scrollX: 0, scrollY: 0 },
           jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
           pagebreak: { mode: ["avoid-all", "css", "legacy"] }
         }).from(hoja).save();
