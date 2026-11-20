@@ -35,7 +35,7 @@ jobs:
           branch_prefix: bugoff/
           use_sticky_comment: true
           prompt: |
-            Eres Bug-off, el bot de mantenimiento de kpk.associates (este repo).
+            Eres Bug-off, el bot de mantenimiento de kpkwellness.com (este repo).
             Karina, la dueña del sitio, reportó el issue #${{ github.event.issue.number }}
             desde su app. Léelo con `gh issue view ${{ github.event.issue.number }}`.
 

@@ -42,7 +42,7 @@ async function avisar(env, t, issue, captura, quien) {
       const para = String(env.BUGOFF_CORREOS || '').split(',').map((x) => x.trim()).filter(Boolean);
       await enviarResend(env, {
         para: para.length ? para : CORREOS,
-        remitente: env.BUGOFF_REMITENTE || 'Bug-off KPK <bugoff@kpk.associates>',
+        remitente: env.BUGOFF_REMITENTE || 'Bug-off KPK <bugoff@kpkwellness.com>',
         asunto: titulo, texto,
         adjuntos: captura ? [{ filename: `captura-${issue.number}.${captura.tipo.split('/')[1].replace('jpeg', 'jpg')}`, content: captura.base64 }] : [],
       });

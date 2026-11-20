@@ -111,17 +111,17 @@
 
   // Los destinos de siempre. "Otro" deja escribir cualquier link.
   var DESTINOS = [
-    { id: 'catering', nombre: 'Catering', link: 'https://kpk.associates/catering',
+    { id: 'catering', nombre: 'Catering', link: 'https://kpkwellness.com/catering',
       arriba: 'CHEF KARINA PAZ KENNEDY', titulo: 'Pide tu catering', sub: 'Escanea y cuéntame de tu evento', pie: ZONA },
-    { id: 'yoga', nombre: 'Yoga', link: 'https://kpk.associates/catering?tipo=yoga',
+    { id: 'yoga', nombre: 'Yoga', link: 'https://kpkwellness.com/catering?tipo=yoga',
       arriba: 'KARINA PAZ KENNEDY', titulo: 'Organiza tu yoga', sub: 'Escanea y cuéntame de tu grupo', pie: 'Clases privadas, grupos, empresas y retiros' },
-    { id: 'links', nombre: 'Mis links', link: 'https://kpk.associates/links',
+    { id: 'links', nombre: 'Mis links', link: 'https://kpkwellness.com/links',
       arriba: 'KARINA PAZ KENNEDY', titulo: 'Mira mis links', sub: 'Catering, yoga, mi tarjeta y WhatsApp', pie: 'Tijuana · San Diego' },
-    { id: 'tarjeta', nombre: 'Mi tarjeta', link: 'https://kpk.associates/card/',
-      arriba: 'CHEF KARINA PAZ KENNEDY', titulo: 'Guarda mi contacto', sub: 'Escanea mi tarjeta digital', pie: 'karina@kpk.associates' },
-    { id: 'catering-en', nombre: 'Catering (EN)', link: 'https://kpk.associates/catering?lang=en',
+    { id: 'tarjeta', nombre: 'Mi tarjeta', link: 'https://kpkwellness.com/card/',
+      arriba: 'CHEF KARINA PAZ KENNEDY', titulo: 'Guarda mi contacto', sub: 'Escanea mi tarjeta digital', pie: 'karina@kpkwellness.com' },
+    { id: 'catering-en', nombre: 'Catering (EN)', link: 'https://kpkwellness.com/catering?lang=en',
       arriba: 'CHEF KARINA PAZ KENNEDY', titulo: 'Book your catering', sub: 'Scan and tell me about your event', pie: 'Baja California · San Diego · 10 to 100 guests' },
-    { id: 'otro', nombre: 'Otro link', link: 'https://kpk.associates/',
+    { id: 'otro', nombre: 'Otro link', link: 'https://kpkwellness.com/',
       arriba: 'KARINA PAZ KENNEDY', titulo: 'Escanéame', sub: '', pie: '' }
   ];
 
@@ -158,7 +158,7 @@
 
   function pintar() {
     var ctx = $('lienzo').getContext('2d');
-    var link = $('f-link').value.trim() || 'https://kpk.associates/';
+    var link = $('f-link').value.trim() || 'https://kpkwellness.com/';
     var conFoto = $('f-foto').checked;
     var qr;
     try { qr = qrcode(0, conFoto ? 'H' : 'M'); qr.addData(link); qr.make(); }

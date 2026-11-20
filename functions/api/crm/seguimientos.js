@@ -56,7 +56,7 @@ export async function onRequestPost({ request, env }) {
     if (!env.RESEND_API_KEY) return json({ success: true, pendientes: lista.length, enviado: false, error: 'Falta RESEND_API_KEY.' });
 
     const origen = new URL(request.url).origin;
-    let karina = 'karina@kpk.associates';
+    let karina = 'karina@kpkwellness.com';
     try { const r = await env.ASSETS.fetch(new URL('/content/cotizaciones.json', origen)); if (r.ok) karina = (await r.json()).chef?.correo || karina; } catch { /* sigue */ }
 
     const filas = lista.map((s) => {
@@ -66,7 +66,7 @@ export async function onRequestPost({ request, env }) {
     });
     await enviarResend(env, {
       para: karina,
-      remitente: 'KPK · Clientes <solicitudes@kpk.associates>',
+      remitente: 'KPK · Clientes <solicitudes@kpkwellness.com>',
       asunto: `Hoy: ${lista.length} ${lista.length === 1 ? 'cliente por atender' : 'clientes por atender'}`,
       texto: [`Buenos días, Karina. Hoy toca escribirle a:`, '', ...filas.map((f) => f.txt), '', `Todos tus clientes: ${origen}/app/clientes/`].join('\n'),
       html: `<!doctype html><html><body style="margin:0;background:#F7F5F1;font-family:Inter,-apple-system,Helvetica,Arial,sans-serif;color:#1F2024">

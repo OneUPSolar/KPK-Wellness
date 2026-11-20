@@ -37,7 +37,7 @@ export async function onRequestPost({ request, env }) {
     await ghWrite(env, { path: RUTA, content: JSON.stringify(datos, null, 2) + '\n', message: `aceptada: ${slug}` });
 
     // Aviso a Karina; si el correo falla, la aceptación ya quedó guardada.
-    const karina = datos.chef?.correo || 'karina@kpk.associates';
+    const karina = datos.chef?.correo || 'karina@kpkwellness.com';
     if (env.RESEND_API_KEY) {
       const titulo = tx(c.titulo, 'es');
       const origen = new URL(request.url).origin;
@@ -46,7 +46,7 @@ export async function onRequestPost({ request, env }) {
       try {
         await enviarResend(env, {
           para: karina,
-          remitente: 'KPK · Cotizaciones <solicitudes@kpk.associates>',
+          remitente: 'KPK · Cotizaciones <solicitudes@kpkwellness.com>',
           responderA: c.correoCliente || undefined,
           asunto: `✓ Aceptada: ${titulo} · ${nombre}`,
           texto: [`${nombre} aceptó la cotización "${titulo}".`, `Fecha del evento: ${tx(c.fecha, 'es')}`, `Personas: ${c.invitados || ''}`,

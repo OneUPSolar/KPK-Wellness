@@ -2,11 +2,11 @@
   "openapi": "3.1.0",
   "info": {
     "title": "KPK Wellness recipe publishing",
-    "description": "Publishes a recipe to kpk.associates. The recipes page reads the repository at page load, so a successful call puts the recipe live immediately.",
+    "description": "Publishes a recipe to kpkwellness.com. The recipes page reads the repository at page load, so a successful call puts the recipe live immediately.",
     "version": "2.0.0"
   },
   "servers": [
-    { "url": "https://kpk.associates" }
+    { "url": "https://kpkwellness.com" }
   ],
   "paths": {
     "/api/agent/recipe": {

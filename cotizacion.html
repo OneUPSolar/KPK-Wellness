@@ -1860,7 +1860,7 @@
     var fin = c.fin || c.inicio;
     var lineas = [
       "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//KPK Wellness//Cotizador//ES", "BEGIN:VEVENT",
-      "UID:" + c.slug + "@kpk.associates",
+      "UID:" + c.slug + "@kpkwellness.com",
       "DTSTART:" + fmt(c.inicio), "DTEND:" + fmt(fin),
       "SUMMARY:" + tx(c.titulo, L) + " · Chef Karina Paz Kennedy",
       "LOCATION:" + tx(c.lugar, L),
@@ -1870,7 +1870,7 @@
     return "data:text/calendar;charset=utf-8," + encodeURIComponent(lineas.join("\r\n"));
   }
 
-  /* "Enviar cotización": correo (Resend, desde karina@kpk.associates) y
+  /* "Enviar cotización": correo (Resend, desde karina@kpkwellness.com) y
      WhatsApp (se abre en su teléfono con el mensaje escrito) en un solo paso. */
   function enviarAlCliente() {
     var c = cotizacionActiva();
@@ -1892,7 +1892,7 @@
         '<label class="env-op"><input type="checkbox" name="wa"' + (tel ? " checked" : " disabled") + "> WhatsApp" +
           "<small>" + (tel ? "+" + esc(tel) : "Falta el WhatsApp del cliente (Editar → Evento)") + "</small></label>" +
         '<label class="env-op"><input type="checkbox" name="correo"' + (correo ? " checked" : " disabled") + "> Correo" +
-          "<small>" + (correo ? esc(correo) + " · sale desde karina@kpk.associates" : "Falta el correo del cliente (Editar → Evento)") + "</small></label>" +
+          "<small>" + (correo ? esc(correo) + " · sale desde karina@kpkwellness.com" : "Falta el correo del cliente (Editar → Evento)") + "</small></label>" +
         '<label>Mensaje<textarea name="mensaje" rows="4" style="font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--linea);border-radius:10px;width:100%;box-sizing:border-box">' + esc(texto) + "</textarea></label>" +
         '<p class="fac-nota" style="font-size:.84rem">Si hiciste cambios, guarda antes: el cliente abre la versión publicada.</p>' +
         '<p class="fac-aviso" role="status" hidden></p>' +
@@ -2212,7 +2212,7 @@
             bi("Asunto", (chef.correoReserva || {}).asunto, "chef.correoReserva.asunto") +
             bi("Cuerpo · puedes usar {nombre} {evento} {fecha} {horario} {lugar} {anticipo}", (chef.correoReserva || {}).cuerpo, "chef.correoReserva.cuerpo") +
             '<div class="aviso">Vacío = se usa el texto sugerido ("Recibimos tu anticipo. Tu fecha queda reservada… Nos vemos ahí."). ' +
-              "Sale desde karina@kpk.associates; las respuestas del cliente llegan a tu correo.</div>" +
+              "Sale desde karina@kpkwellness.com; las respuestas del cliente llegan a tu correo.</div>" +
             '<div class="marca">Tu foto</div>' + fotoCampo(chef.foto, "chef.foto") +
             '<div class="aviso">Abajo de cada cotización apareces tú: "Hola, soy Karina Kennedy". Las preguntas que ' +
               "ve el cliente son estas; si las dejas vacías se usan las sugeridas.</div>" +
