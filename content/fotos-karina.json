@@ -2,6 +2,12 @@
   "tarjeta": "",
   "fotos": [
     {
+      "id": "whatsapp-perfil",
+      "titulo": "WhatsApp Business · KPK Wellness",
+      "ia": false,
+      "url": "assets/karina/whatsapp-perfil.jpg"
+    },
+    {
       "id": "perfil-bn",
       "titulo": "Foto de perfil · blanco y negro",
       "ia": true,
