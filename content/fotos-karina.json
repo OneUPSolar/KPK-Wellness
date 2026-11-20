@@ -1,6 +1,18 @@
 {
-  "tarjeta": "",
+  "tarjeta": "assets/karina/tarjeta-chaleco.webp",
   "fotos": [
+    {
+      "id": "tarjeta-chaleco",
+      "titulo": "Tarjeta · chaleco crema",
+      "ia": false,
+      "url": "assets/karina/tarjeta-chaleco.webp"
+    },
+    {
+      "id": "retrato-chaleco",
+      "titulo": "Retrato · chaleco crema",
+      "ia": false,
+      "url": "assets/karina/retrato-chaleco.webp"
+    },
     {
       "id": "whatsapp-perfil",
       "titulo": "WhatsApp Business · KPK Wellness",
