@@ -19,9 +19,9 @@ site rebuild, no deploy, no admin login.
 ```
 Karina ⇄ Silver (ChatGPT)
         └─ writes recipe markdown
-             └─ POST https://kpk.associates/api/agent/recipe
+             └─ POST https://kpkwellness.com/api/agent/recipe
                   └─ commits content/recetas/<categoria>/<id>.md to GitHub main
-                       └─ kpk.associates/recipes.html shows it
+                       └─ kpkwellness.com/recipes.html shows it
 ```
 
 The route lives in this repo (`functions/api/agent/recipe.js`) and runs on the
@@ -33,7 +33,7 @@ builds the path itself, so a confused prompt cannot write outside
 ### Request
 
 ```
-POST https://kpk.associates/api/agent/recipe
+POST https://kpkwellness.com/api/agent/recipe
 Authorization: Bearer <AGENT_TOKEN>
 Content-Type: application/json
 
@@ -53,7 +53,7 @@ Content-Type: application/json
 - If the frontmatter is missing, the server adds `id` and `categoria` so the
   file and the recipe agree.
 
-Response: `{ "success": true, "id": "flan-de-coco", "categoria": "postres", "actualizada": false, "url": "https://kpk.associates/recipes.html" }`
+Response: `{ "success": true, "id": "flan-de-coco", "categoria": "postres", "actualizada": false, "url": "https://kpkwellness.com/recipes.html" }`
 
 ### Auth
 
@@ -78,7 +78,7 @@ To revoke Silver, rotate `AGENT_TOKEN`. Nothing else uses it.
 
 ## Silver inside the app
 
-The same Silver also lives at kpk.associates/app → **Silver**, talking to OpenAI
+The same Silver also lives at kpkwellness.com/app → **Silver**, talking to OpenAI
 or Anthropic with Karina's own API keys (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`;
 Pages secrets the browser never sees). The assistant is **Silver** on OpenAI
 and **Claudio** on Claude — same instructions, read at runtime with the name

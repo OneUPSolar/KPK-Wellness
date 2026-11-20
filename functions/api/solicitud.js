@@ -63,7 +63,7 @@ export async function onRequestPost({ request, env }) {
   const origin = new URL(request.url).origin;
   let chef = {};
   try { const r = await env.ASSETS.fetch(new URL('/content/cotizaciones.json', origin)); if (r.ok) chef = (await r.json()).chef || {}; } catch { /* sigue */ }
-  const karina = chef.correo || 'karina@kpk.associates';
+  const karina = chef.correo || 'karina@kpkwellness.com';
 
   // Al CRM primero: así el borrador ya sabe a qué solicitud pertenece.
   let crm = null;
@@ -86,7 +86,7 @@ export async function onRequestPost({ request, env }) {
   try {
     await enviarResend(env, {
       para: karina,
-      remitente: 'KPK · Solicitudes <solicitudes@kpk.associates>',
+      remitente: 'KPK · Solicitudes <solicitudes@kpkwellness.com>',
       responderA: s.correo,
       asunto: `Nueva solicitud: ${que} · ${s.personas} personas · ${s.nombre}`,
       texto: [...filas.map((f) => `${f[0]}: ${f[1]}`), '', `Crear el borrador de la cotización: ${borrador}`, `WhatsApp del cliente: ${wa}`, enCrm ? `En tus clientes: ${enCrm}` : ''].filter(Boolean).join('\n'),

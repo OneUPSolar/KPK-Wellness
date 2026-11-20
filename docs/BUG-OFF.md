@@ -49,9 +49,9 @@ La captura **no** se sube a GitHub (el repo es público). Va adjunta en los avis
 
 | Variable (Pages) | Para qué |
 |---|---|
-| `RESEND_API_KEY` | Correo con la captura adjunta (dominio `kpk.associates` verificado en Resend). |
+| `RESEND_API_KEY` | Correo con la captura adjunta (dominio `kpkwellness.com` verificado en Resend). |
 | `BUGOFF_CORREOS` | Destinatarios, separados por coma. Sin ella: `hiacomax@maxify.tech, devteam@maxify.tech`. |
-| `BUGOFF_REMITENTE` | Remitente. Sin ella: `Bug-off KPK <bugoff@kpk.associates>`. |
+| `BUGOFF_REMITENTE` | Remitente. Sin ella: `Bug-off KPK <bugoff@kpkwellness.com>`. |
 | `TELEGRAM_BOT_TOKEN` | Token del bot de Telegram de Bug-off (de @BotFather). |
 | `TELEGRAM_CHAT_ID` | Chat o grupo al que el bot manda la captura y el enlace al issue. |
 

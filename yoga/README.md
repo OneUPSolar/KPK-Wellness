@@ -17,7 +17,7 @@ To enable the mood-based playlist suggestions in the live session:
 2. Create a new App.
 3. In the App settings, add the following Redirect URIs exactly:
    - `http://127.0.0.1:5500/yoga/live/callback.html` (for local testing)
-   - `https://kpk.associates/yoga/live/callback.html` (for production)
+   - `https://kpkwellness.com/yoga/live/callback.html` (for production)
 4. Copy your **Client ID** (you do not need the Client Secret).
 5. Open `yoga/live/index.html` and replace `YOUR_SPOTIFY_CLIENT_ID` on line 53.
 6. Open `yoga/live/callback.html` and replace `YOUR_SPOTIFY_CLIENT_ID` on line 14.
@@ -43,4 +43,4 @@ The live app listens to the instructor's voice and matches keywords to moods.
 
 This site is hosted on **Cloudflare Pages**.
 - The platform automatically deploys from the `main` branch on GitHub.
-- Once you commit and push these changes (`git push origin main`), the new `/yoga/` section will be live at `https://kpk.associates/yoga/` within minutes.
+- Once you commit and push these changes (`git push origin main`), the new `/yoga/` section will be live at `https://kpkwellness.com/yoga/` within minutes.

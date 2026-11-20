@@ -29,14 +29,14 @@ export function correoDe(c, chef, extra) {
   const plantilla = chef?.correoReserva || {};
   const asunto = rellenar(tx(plantilla.asunto, L) || tx(PLANTILLA_BASE.asunto, L), c, L, extra);
   const texto = rellenar(tx(plantilla.cuerpo, L) || tx(PLANTILLA_BASE.cuerpo, L), c, L, extra);
-  const enlace = `https://kpk.associates/cotizacion?c=${encodeURIComponent(c.slug)}-view`;
+  const enlace = `https://kpkwellness.com/cotizacion?c=${encodeURIComponent(c.slug)}-view`;
   const html = `<!doctype html><html><body style="margin:0;background:#F7F5F1;font-family:Inter,-apple-system,Helvetica,Arial,sans-serif;color:#1F2024">
 <div style="max-width:560px;margin:0 auto;padding:28px 20px">
   <div style="width:40px;height:2px;background:#7A9E8E;margin-bottom:18px"></div>
   <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:600;line-height:1.1;margin-bottom:18px">${esc(tx(c.titulo, L))}</div>
   <div style="white-space:pre-wrap;font-size:16px;line-height:1.6">${esc(texto)}</div>
   <p style="margin:26px 0 0"><a href="${esc(enlace)}" style="color:#4F7566">${L === 'en' ? 'See the quote' : 'Ver la cotización'}</a></p>
-  <p style="margin:26px 0 0;font-size:12px;color:#5C5E66">${esc(chef?.nombre || 'Chef Karina Paz Kennedy')} · kpk.associates</p>
+  <p style="margin:26px 0 0;font-size:12px;color:#5C5E66">${esc(chef?.nombre || 'Chef Karina Paz Kennedy')} · kpkwellness.com</p>
 </div></body></html>`;
   return { asunto, texto, html };
 }
@@ -80,7 +80,7 @@ export function correoCotizacion(c, chef, { L = 'es', enlace, imagen, anticipo, 
       <p style="margin:12px 0 0"><a href="${esc(enlace)}&pdf=1" style="color:#4F7566;font-weight:600;font-size:14px">${esc(T.pdf)}</a></p>
       <p style="font-size:14px;color:#55565B;margin:22px 0 0">${esc(T.dudas)}</p>
       <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;margin:18px 0 0">${esc(firma)}</p>
-      <p style="font-size:12px;color:#8A8B90;margin:4px 0 0">kpk.associates</p>
+      <p style="font-size:12px;color:#8A8B90;margin:4px 0 0">kpkwellness.com</p>
     </div>
   </div>
 </div></body></html>`;
@@ -93,7 +93,7 @@ export async function enviarResend(env, { para, asunto, texto, html, responderA,
     method: 'POST',
     headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
     body: JSON.stringify({
-      from: remitente || env.CORREO_REMITENTE || 'Karina Paz Kennedy <karina@kpk.associates>',
+      from: remitente || env.CORREO_REMITENTE || 'Karina Paz Kennedy <karina@kpkwellness.com>',
       to: Array.isArray(para) ? para : [para],
       ...(adjuntos && adjuntos.length ? { attachments: adjuntos } : {}),
       ...(responderA ? { reply_to: responderA } : {}),

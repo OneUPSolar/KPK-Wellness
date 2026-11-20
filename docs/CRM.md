@@ -56,7 +56,7 @@ aparece en la historia.
 Ejemplo (una IA que atiende Instagram registra a alguien):
 
 ```bash
-curl -X POST https://kpk.associates/api/crm/solicitudes \
+curl -X POST https://kpkwellness.com/api/crm/solicitudes \
   -H "authorization: Bearer $CRM_TOKEN" -H "x-agente: instagram" -H "content-type: application/json" \
   -d '{"nombre":"María Gómez","tel":"526641234567","tipo":"catering","estilo":"bajamed","personas":40,"fecha":"2026-12-20","origen":"instagram","notas":"Boda en la playa"}'
 ```

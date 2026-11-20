@@ -1,7 +1,7 @@
 /**
  * "Enviar cotización" — el correo. El WhatsApp lo abre la página al mismo
  * tiempo (tiene que salir del teléfono de Karina); esto manda el correo por
- * Resend desde karina@kpk.associates, con respuesta a su correo.
+ * Resend desde karina@kpkwellness.com, con respuesta a su correo.
  *
  * POST (admin) { cotizacion, chef, idioma, mensaje? }
  *   Se manda lo que Karina ve en pantalla (aunque no haya guardado).

@@ -58,5 +58,5 @@ export async function publicarReceta(env, body) {
     message: `receta: ${existia ? 'actualiza' : 'publica'} ${r.titulo}`,
   });
 
-  return { id: r.id, categoria: r.categoria, actualizada: existia, url: 'https://kpk.associates/recipes.html' };
+  return { id: r.id, categoria: r.categoria, actualizada: existia, url: 'https://kpkwellness.com/recipes.html' };
 }

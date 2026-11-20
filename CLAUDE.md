@@ -1,4 +1,4 @@
-# KPK Wellness — kpk.associates
+# KPK Wellness — kpkwellness.com
 
 Sitio estático en Cloudflare Pages (se despliega solo desde `main`) con Pages Functions en `functions/`. Ver `docs/BACKEND.md`, `docs/CRM.md` (clientes, en D1), `docs/BUG-OFF.md` y `docs/silver-agent/`.
 

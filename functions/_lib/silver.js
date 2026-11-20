@@ -26,7 +26,7 @@ const MAX_VUELTAS = 3;
 
 const PUBLICAR = {
   name: 'publicar_receta',
-  description: 'Publica una receta en kpk.associates. Llamar solo después de que Karina confirme. Si el id ya existe, la actualiza.',
+  description: 'Publica una receta en kpkwellness.com. Llamar solo después de que Karina confirme. Si el id ya existe, la actualiza.',
   strict: true,
   schema: {
     type: 'object',
@@ -58,7 +58,7 @@ const ACTUALIZAR = {
 const EN_APP = `
 ## Publicar
 
-Estás dentro de la app de Karina (kpk.associates/app); ella ya inició sesión.
+Estás dentro de la app de Karina (kpkwellness.com/app); ella ya inició sesión.
 Cuando confirme, llama a la herramienta \`publicar_receta\` con titulo, categoria,
 id y markdown (texto plano, sin cercas de código). Tú nunca mandas una ruta de
 archivo: el servidor la arma. Publicar un id que ya existe lo actualiza.
@@ -96,7 +96,7 @@ export function instruccionesCotizador(nombre, contexto) {
   const cot = contexto.cotizacion || {};
   const chef = contexto.chef || {};
   const idioma = contexto.idioma === 'en' ? 'en' : 'es';
-  return `Eres **${nombre}**, asistente de la chef Karina Paz Kennedy dentro de su cotizador (kpk.associates).
+  return `Eres **${nombre}**, asistente de la chef Karina Paz Kennedy dentro de su cotizador (kpkwellness.com).
 Hablas con Karina o con quien administra su negocio, no con el cliente. Responde en español, claro y breve; el contenido
 que vaya al cliente se escribe en el idioma de la cotización (${idioma === 'en' ? 'inglés' : 'español'}).
 

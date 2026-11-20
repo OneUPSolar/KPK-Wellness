@@ -1,4 +1,4 @@
-# El backend de kpk.associates
+# El backend de kpkwellness.com
 
 Vive en `functions/`, como **Pages Functions**: corre en el mismo dominio que
 el sitio y se despliega con cada merge a `main`, junto con las páginas.
@@ -42,7 +42,7 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/tickets` | GET · POST | admin — tickets de fallas y mejoras, como issues `bug-off`; la captura opcional va por correo y Telegram (ver `docs/BUG-OFF.md`) |
 | `/api/fotos` | GET · POST | admin — "Mis fotos": galería de retratos (`content/fotos-karina.json`). POST `{id, usar: tarjeta|cotizacion}` copia la foto de Higgsfield a `assets/karina/` y la aplica a la tarjeta digital o a `chef.foto` |
 | `/api/factura` | POST público · GET admin | datos para factura (CFDI): RFC, razón social, régimen, CP, uso de CFDI, correo y constancia. Se guardan en el bucket privado R2 `kpk-privado` (binding `PRIVADO`), nunca en el repo. Avisa a Karina por correo (Resend) con la constancia adjunta. No detiene el pago |
-| `/api/cotizacion/enviar` | POST admin | "Enviar cotización": manda el correo con portada, datos, anticipo y botón a `?c=slug-view` por Resend desde `karina@kpk.associates` (respuesta a `chef.correo`). El WhatsApp lo abre la página al mismo tiempo |
+| `/api/cotizacion/enviar` | POST admin | "Enviar cotización": manda el correo con portada, datos, anticipo y botón a `?c=slug-view` por Resend desde `karina@kpkwellness.com` (respuesta a `chef.correo`). El WhatsApp lo abre la página al mismo tiempo |
 | `/api/cotizacion/aceptar` | POST público | El cliente acepta desde su link: guarda `aceptada {nombre, cuando}` en la cotización y le manda correo a Karina. Después la página le muestra los datos de pago (CLABE de `chef.clabe`, Zelle o tarjeta). `/api/commit` conserva `aceptada` y `pagado` si Karina guarda una pantalla vieja |
 | `/api/crm/*` | sesión o `CRM_TOKEN` | CRM de Karina (contactos, solicitudes, actividad, seguimientos) en D1 `CRM`. Ver `docs/CRM.md` |
 | `/api/estado` | GET público | diagnóstico: qué integraciones están conectadas (solo sí/no, nunca valores). Prueba la llave de Resend sin mandar correo |
@@ -66,8 +66,8 @@ Environment variables. Las marcadas como secreto quedan cifradas.
 | `OPENAI_MODEL` | no | opcional; predeterminado `gpt-4.1` |
 | `ANTHROPIC_API_KEY` | sí | llave de Anthropic de Karina, para Silver en la app |
 | `ANTHROPIC_MODEL` | no | opcional; predeterminado `claude-opus-5-5` |
-| `RESEND_API_KEY` | sí | para el correo de reserva al cliente (Resend, dominio kpk.associates verificado) |
-| `CORREO_REMITENTE` | no | opcional; predeterminado `Karina Paz Kennedy <karina@kpk.associates>` |
+| `RESEND_API_KEY` | sí | para el correo de reserva al cliente (Resend, dominio kpkwellness.com verificado) |
+| `CORREO_REMITENTE` | no | opcional; predeterminado `Karina Paz Kennedy <karina@kpkwellness.com>` |
 | `STRIPE_SECRET_KEY` | sí | llave secreta de Stripe de Karina (`sk_live_…`), para el lado en dólares. Sin ella, `/api/payments/stripe` responde 503 |
 
 El asistente de recetas de la app se llama **Silver** cuando contesta OpenAI y **Claudio** cuando contesta Claude; funciona con cualquiera de las dos llaves y, con las dos, Karina elige en la app. Sin ninguna, `/api/silver/chat` responde 503.

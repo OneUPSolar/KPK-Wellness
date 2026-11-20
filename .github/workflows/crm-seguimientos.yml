@@ -23,5 +23,5 @@ jobs:
             echo "Falta el secreto CRM_TOKEN; no se manda nada."
             exit 0
           fi
-          curl -sS --fail-with-body -X POST "https://kpk.associates/api/crm/seguimientos" \
+          curl -sS --fail-with-body -X POST "https://kpkwellness.com/api/crm/seguimientos" \
             -H "authorization: Bearer $CRM_TOKEN" -H "x-agente: resumen-diario"
