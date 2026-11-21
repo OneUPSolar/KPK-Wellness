@@ -47,6 +47,7 @@ Ahora el token va firmado con HMAC y expira en 12 horas.
 | `/api/cotizacion/datos-pago` | POST admin | Reenvía al cliente el correo "Cómo pagar tu anticipo" (botón "Enviarle por correo cómo pagar" en una cotización aceptada) |
 | `/api/pagado` · `/api/mp-aviso` | POST público | Registran un pago de Mercado Pago: la página del cliente al volver del checkout, y el aviso (webhook) de Mercado Pago, que llega aunque el cliente cierre la ventana y confirma SPEI/efectivo. Los dos le preguntan a Mercado Pago por el pago; si está aprobado, marcan `pagado`, le confirman al cliente y le avisan a Karina. Los correos llevan llave de idempotencia |
 | `/api/crm/*` | sesión o `CRM_TOKEN` | CRM de Karina (contactos, solicitudes, actividad, seguimientos) en D1 `CRM`. Ver `docs/CRM.md` |
+| `/api/tipo-cambio` | GET público | Tipo de cambio FIX del Banco de México (se lee de su página pública y se guarda unas horas en caché). El cotizador lo usa para el precio en dólares; una cotización puede traer su propio `tipoCambio` fijo |
 | `/api/estado` | GET público | diagnóstico: qué integraciones están conectadas (solo sí/no, nunca valores). Prueba la llave de Resend sin mandar correo |
 | `/api/solicitud` | POST público | solicitud de catering o evento de yoga desde `/catering`. No cotiza: le escribe a Karina con un botón "Crear borrador de cotización" (`/cotizacion?nueva=…`, arma el borrador con `content/menus.json`) y le confirma al cliente. Los datos del cliente no se guardan en el repo |
 

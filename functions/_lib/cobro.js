@@ -7,10 +7,10 @@ import { ghRead, ghWrite } from './responder.js';
 import { correoDe, enviarResend } from './correo.js';
 import { avisarCrm } from './crm.js';
 import { montoAnticipo, redondear } from '../pagar.js';
+import { TC_RESPALDO } from './tipo-cambio.js';
 
 const RUTA = 'content/cotizaciones.json';
 const MP_API = 'https://api.mercadopago.com';
-const TIPO_CAMBIO = 16.5;
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 const tx = (v, L) => (v == null ? '' : typeof v === 'string' ? v : String(v[L] || v[L === 'es' ? 'en' : 'es'] || ''));
@@ -19,10 +19,14 @@ export const esCorreo = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '')
 const pesos = (n) => `$${Math.round(n).toLocaleString('en-US')} MXN`;
 const dolares = (n) => `$${Math.round(n).toLocaleString('en-US')} USD`;
 
-/** El anticipo en dólares (sin IVA), igual que el lado en inglés de la página. */
-export function anticipoUsd(c) {
+/**
+ * El anticipo en dólares (sin IVA), igual que el lado en inglés de la página.
+ * `tcDia` es el FIX de Banxico del día; manda el tipo de cambio fijo de la
+ * cotización, si Karina le puso uno.
+ */
+export function anticipoUsd(c, tcDia) {
   const invitados = Number(c.invitados) || 0;
-  const tc = Number(c.tipoCambio) > 0 ? Number(c.tipoCambio) : TIPO_CAMBIO;
+  const tc = Number(c.tipoCambio) > 0 ? Number(c.tipoCambio) : Number(tcDia) > 0 ? Number(tcDia) : TC_RESPALDO;
   const porPersona = Number(c.precio?.usd) || redondear((Number(c.precio?.mxn) || 0) / tc);
   let pct = Number(c.anticipoPct);
   if (!Number.isFinite(pct) || pct < 0 || pct > 100) pct = 50;
@@ -53,7 +57,7 @@ const tabla = (filas) => `<table role="presentation" style="width:100%;border-co
  * "Aceptaste tu cotización: así pagas el anticipo". Tarjeta o SPEI con
  * Mercado Pago, transferencia directa si Karina puso su CLABE, y Zelle.
  */
-export function correoPago(c, chef, { L = 'es', origen = 'https://kpkwellness.com' } = {}) {
+export function correoPago(c, chef, { L = 'es', origen = 'https://kpkwellness.com', tc } = {}) {
   const en = L === 'en';
   const titulo = tx(c.titulo, L);
   const nombre = String(c.cliente || '').split(' ')[0];
@@ -61,7 +65,7 @@ export function correoPago(c, chef, { L = 'es', origen = 'https://kpkwellness.co
   const ver = `${origen}/cotizacion?c=${slug}-view`;
   const mxn = montoAnticipo(c, false) / 100;
   const mxnEfectivo = montoAnticipo(c, true) / 100;
-  const usd = anticipoUsd(c);
+  const usd = anticipoUsd(c, tc);
   const hayDescuento = mxnEfectivo > 0 && mxnEfectivo < mxn;
   const wa = digitos(chef?.whatsapp);
   const firma = chef?.nombre || 'Chef Karina Paz Kennedy';
