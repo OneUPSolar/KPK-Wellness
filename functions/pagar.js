@@ -14,7 +14,7 @@ const RUTA = 'content/cotizaciones.json';
 const MP_API = 'https://api.mercadopago.com';
 const DESCUENTO_EFECTIVO = 5;
 
-function redondear(x) {
+export function redondear(x) {
   let r = Math.round(x / 5) * 5;
   if (r > 0 && r % 50 === 0) r -= 1;
   return r;
@@ -97,6 +97,8 @@ export async function onRequestGet({ request, env }) {
         external_reference: slug,
         statement_descriptor: 'KARINA PAZ KENNEDY',
         back_urls: { success: vuelta, pending: vuelta, failure: vuelta },
+        // Mercado Pago avisa aquí cuando el pago se aprueba, aunque el cliente no vuelva al sitio.
+        notification_url: `${url.origin}/api/mp-aviso`,
         auto_return: 'approved',
         ...(efectivo ? { payment_methods: { excluded_payment_types: [{ id: 'credit_card' }, { id: 'debit_card' }, { id: 'prepaid_card' }] } } : {}),
       }),
