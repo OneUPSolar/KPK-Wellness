@@ -88,10 +88,11 @@ export function correoCotizacion(c, chef, { L = 'es', enlace, imagen, anticipo, 
 }
 
 /** Manda por Resend. Devuelve { id } o lanza con el motivo. */
-export async function enviarResend(env, { para, asunto, texto, html, responderA, adjuntos, remitente }) {
+export async function enviarResend(env, { para, asunto, texto, html, responderA, adjuntos, remitente, idempotencia }) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
+    // Con llave de idempotencia, Resend no manda dos veces el mismo correo (24 h).
+    headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json', ...(idempotencia ? { 'idempotency-key': String(idempotencia).slice(0, 250) } : {}) },
     body: JSON.stringify({
       from: remitente || env.CORREO_REMITENTE || 'Karina Paz Kennedy <karina@kpkwellness.com>',
       to: Array.isArray(para) ? para : [para],

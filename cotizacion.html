@@ -713,7 +713,7 @@
       descuento: "{d}% de descuento", conDescuento: "Transferencia o efectivo: {m} ({d}% de descuento)",
       zelleTitulo: "", zelleCuerpo: "", zelleBoton: "", zelleWa: "", zelleDespues: "",
       aceptarTitulo: "Acepta tu cotización", aceptarTexto: "Confirmas el menú, el número de personas y las condiciones. En seguida te mostramos los datos para pagar el anticipo.",
-      aceptarNombre: "Tu nombre completo", aceptarCheck: "Acepto la cotización y sus condiciones", aceptarBoton: "Aceptar cotización",
+      aceptarNombre: "Tu nombre completo", aceptarCorreo: "Tu correo, para mandarte cómo pagar", aceptarEnviado: "Te mandamos por correo cómo pagar el anticipo.", aceptarCheck: "Acepto la cotización y sus condiciones", aceptarBoton: "Aceptar cotización",
       aceptando: "Un momento…", aceptadaPor: "Cotización aceptada por {n} · {f}",
       transTitulo: "Transferencia bancaria (SPEI)", banco: "Banco", beneficiario: "Beneficiario", clabe: "CLABE", cuenta: "Cuenta",
       montoAnticipo: "Monto del anticipo", concepto: "Concepto", copiar: "Copiar", copiado: "Copiado",
@@ -756,7 +756,7 @@
       zelleTitulo: "Pay with Zelle", zelleCuerpo: "Send {m} to {n} at {z}, or scan the code in your banking app.",
       zelleBoton: "Open Zelle", zelleWa: "I sent the deposit by Zelle", zelleDespues: "Then confirm on WhatsApp so Karina holds your date.",
       aceptarTitulo: "Accept your quote", aceptarTexto: "You confirm the menu, guest count and terms. Right after, you'll see how to pay the deposit.",
-      aceptarNombre: "Your full name", aceptarCheck: "I accept this quote and its terms", aceptarBoton: "Accept quote",
+      aceptarNombre: "Your full name", aceptarCorreo: "Your email, so we can send you how to pay", aceptarEnviado: "We emailed you how to pay the deposit.", aceptarCheck: "I accept this quote and its terms", aceptarBoton: "Accept quote",
       aceptando: "One moment…", aceptadaPor: "Quote accepted by {n} · {f}",
       transTitulo: "Bank transfer (Mexico, SPEI)", banco: "Bank", beneficiario: "Beneficiary", clabe: "CLABE", cuenta: "Account",
       montoAnticipo: "Deposit amount", concepto: "Reference", copiar: "Copy", copiado: "Copied",
@@ -1166,12 +1166,15 @@
           '<b class="t-titulo">' + esc(t9.aceptarTitulo) + "</b><p>" + esc(t9.aceptarTexto) + "</p>" +
           '<label class="a-campo">' + esc(t9.aceptarNombre) +
             '<input name="nombre" autocomplete="name" required maxlength="120" value="' + esc(c.cliente || "") + '"></label>' +
+          (c.correoCliente ? "" : '<label class="a-campo">' + esc(t9.aceptarCorreo) +
+            '<input name="correo" type="email" inputmode="email" autocomplete="email" spellcheck="false" maxlength="200"></label>') +
           '<label class="a-check"><input type="checkbox" name="ok" required> ' + esc(t9.aceptarCheck) + "</label>" +
           '<button type="submit" class="boton primario">' + esc(t9.aceptarBoton) + "</button>" +
         "</form>"
       : "";
     var estadoAcept = acept
-      ? '<div class="aceptada">✓ ' + esc(t9.aceptadaPor.replace("{n}", acept.nombre).replace("{f}", fechaCorta(acept.cuando, L))) + "</div>"
+      ? '<div class="aceptada">✓ ' + esc(t9.aceptadaPor.replace("{n}", acept.nombre).replace("{f}", fechaCorta(acept.cuando, L))) + "</div>" +
+        (admin ? '<div class="acciones"><button type="button" class="boton claro" data-datos-pago>Enviarle por correo cómo pagar</button></div>' : "")
       : admin ? '<div class="nota-chica">El cliente todavía no la acepta. Al aceptarla te llega un correo.</div>' : "";
     var botonPdf = modoPdf ? "" : '<button class="boton claro" type="button" data-pdf>' + esc(t9.pdf) + "</button>";
 
@@ -1674,6 +1677,14 @@
   function cablear(c, t, t9, L, iva, hrefReservar) {
     if (modoPdf) return;
     carrusel(); parallax(); lanzador(c, t, t9, L, estado.chef || {}, hrefReservar); asistente(c, L); registrarPago(c);
+    var datosPago = hoja.querySelector("[data-datos-pago]");
+    if (datosPago) datosPago.addEventListener("click", function () {
+      datosPago.disabled = true;
+      api("/cotizacion/datos-pago", { method: "POST", body: JSON.stringify({ c: c.slug, idioma: L }) })
+        .then(function (out) { brindis("Enviado a " + out.para + "."); })
+        .catch(function (e) { brindis(e.message); })
+        .then(function () { datosPago.disabled = false; });
+    });
     var formaA = hoja.querySelector("[data-aceptar]");
     if (formaA) formaA.addEventListener("submit", function (e) { e.preventDefault(); aceptarCotizacion(c, t9, formaA); });
     Array.prototype.forEach.call(hoja.querySelectorAll("[data-copiar-valor]"), function (b) {
@@ -1738,13 +1749,14 @@
     var a = { nombre: nombre, cuando: new Date().toISOString(), idioma: idioma };
     fetch("/api/cotizacion/aceptar", {
       method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ c: c.slug, nombre: nombre, idioma: idioma })
+      body: JSON.stringify({ c: c.slug, nombre: nombre, idioma: idioma, correo: forma.correo ? String(forma.correo.value || "").trim() : "" })
     }).then(function (r) { return r.json().catch(function () { return {}; }); })
       .catch(function () { return {}; })
       .then(function (out) {
         if (out && out.aceptada) a = out.aceptada;
         try { localStorage.setItem("kpk_acept_" + c.slug, JSON.stringify(a)); } catch (e) {}
         pintar();
+        if (out && out.correoCliente) brindis(t9.aceptarEnviado);
         var pago = hoja.querySelector(".pago");
         if (pago) pago.scrollIntoView({ behavior: QUIETO ? "auto" : "smooth", block: "start" });
       });
