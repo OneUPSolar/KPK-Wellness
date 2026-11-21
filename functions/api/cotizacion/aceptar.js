@@ -51,7 +51,7 @@ export async function onRequestPost({ request, env }) {
       // Al cliente: cómo pagar el anticipo.
       if (esCorreo(c.correoCliente)) {
         try {
-          const m = correoPago(c, chef, { L: idioma, origen, tc: (await tipoCambio()).tc });
+          const m = correoPago(c, chef, { L: idioma, origen, tcInfo: await tipoCambio() });
           await enviarResend(env, { para: c.correoCliente.trim(), ...m, responderA: esCorreo(chef.correo) ? chef.correo : undefined, idempotencia: `aceptada-${slug}-cliente` });
           correoCliente = true;
         } catch { /* la aceptación ya está guardada */ }

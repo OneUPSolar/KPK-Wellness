@@ -149,6 +149,9 @@
   .flecha::before { content: ''; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg) translate(-1px, 1px); }
   .flecha.prev::before { transform: rotate(135deg) translate(-1px, 1px); }
   .puntos { display: flex; justify-content: center; gap: 7px; padding-top: 6px; }
+  .nota-tc { margin: 10px 0 0; font-size: 0.8rem; line-height: 1.45; color: var(--tinta-sueve); }
+  .nota-tc a { color: var(--eucalipto-h); font-weight: 600; }
+  .metodo + .nota-tc { margin: 0; padding: 0 0 12px; }
   .nota-fotos { margin: 4px 0 0; font-size: 0.78rem; color: var(--tinta-sueve); text-align: center; }
   .punto { width: 7px; height: 7px; border-radius: 50%; border: 0; padding: 0; background: var(--linea); cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
   .punto[aria-current="true"] { background: var(--eucalipto); transform: scale(1.35); }
@@ -1007,9 +1010,27 @@
   }
 
   // Pesos por dólar: el FIX del Banco de México del día (/api/tipo-cambio).
-  // Este valor es solo el respaldo mientras llega; no se le muestra al cliente.
+  // Este valor es solo el respaldo mientras llega.
   var TIPO_CAMBIO = 19;
   var TC_INFO = null;              // { tc, fecha, fuente } cuando ya se leyó
+  var BANXICO_URL = "https://www.banxico.org.mx/tipcamb/tipCamMIAction.do?idioma=sp";
+
+  /**
+   * La nota que acompaña a todo monto en dólares: con qué tipo de cambio se
+   * convirtió y de dónde sale. Sin nota si el precio en dólares se puso a mano
+   * (no hay conversión) o si todavía no se pudo leer el de Banxico.
+   */
+  function notaTipoCambio(c, L) {
+    if (Number((c.precio || {}).usd) > 0) return "";
+    var fijo = Number(c.tipoCambio) > 0;
+    if (!fijo && !(TC_INFO && TC_INFO.fuente !== "respaldo")) return "";
+    var tc = "$" + Number(fijo ? c.tipoCambio : TC_INFO.tc).toFixed(4) + " MXN";
+    if (fijo) return L === "en" ? "Exchange rate for this quote: " + tc + " per US dollar." : "Tipo de cambio de esta cotización: " + tc + " por dólar.";
+    var enlace = function (texto) { return '<a href="' + BANXICO_URL + '" target="_blank" rel="noopener">' + texto + "</a>"; };
+    return L === "en"
+      ? "Exchange rate: " + tc + " per US dollar. We use the " + enlace("official Banco de México (Banxico) exchange rate") + ", which is updated daily."
+      : "Tipo de cambio: " + tc + " por dólar. Usamos el " + enlace("tipo de cambio oficial del Banco de México (Banxico)") + ", que se actualiza a diario.";
+  }
   var DESCUENTO_EFECTIVO = 5;      // % por transferencia o efectivo, solo en pesos
 
   function totales(c, lang) {
@@ -1115,6 +1136,8 @@
     var tOtro = totales(c, t9.mOtroIdioma);
     filas += fila(t9.mOtro, t9.mOtrod.replace("{m}", dinero(L === "es" ? tOtro.anticipo : tOtro.anticipoConIva, tOtro.moneda)),
       '<button type="button" class="pagar" data-cambiar-idioma="' + t9.mOtroIdioma + '">' + esc(t9.mOtroBoton) + "</button>");
+    var notaTc = notaTipoCambio(c, L);
+    if (L === "es" && notaTc) filas += '<p class="nota-tc">' + notaTc + "</p>";
     if (L === "es") {
       filas += fila(t9.mFac, t9.mFacd, '<button type="button" class="pagar" data-factura>' + esc(t9.mFacBoton) + "</button>");
     } else if (chef.whatsapp) {
@@ -1127,7 +1150,8 @@
     if (L === "en" && chef.zelle && t9.zelleTitulo) {
       var cuerpoZ = t9.zelleCuerpo.replace("{m}", dinero(t.anticipo, t.moneda)).replace("{n}", chef.zelleNombre || chef.nombre || "").replace("{z}", chef.zelle);
       if (modoPdf) zelle = '<div class="zelle">' + (chef.zelleQr ? '<img class="zelle-qr" alt="Zelle QR" src="' + esc(chef.zelleQr) + '">' : "") +
-        '<div class="zelle-txt"><b>' + esc(t9.zelleTitulo) + "</b><p>" + esc(cuerpoZ) + "</p></div></div>";
+        '<div class="zelle-txt"><b>' + esc(t9.zelleTitulo) + "</b><p>" + esc(cuerpoZ) + "</p>" +
+          (notaTipoCambio(c, L) ? '<p class="nota-tc" style="margin:0">' + notaTipoCambio(c, L) + "</p>" : "") + "</div></div>";
       else zelle = '<div class="zelle">' +
         (chef.zelleQr ? '<img class="zelle-qr" alt="Zelle QR" src="' + esc(chef.zelleQr) + '">' : "") +
         '<div class="zelle-txt"><b>' + esc(t9.zelleTitulo) + "</b><p>" + esc(cuerpoZ) + "</p>" +
@@ -1135,7 +1159,8 @@
             (chef.zelleLink ? '<a class="boton" target="_blank" rel="noopener" href="' + esc(chef.zelleLink) + '">' + esc(t9.zelleBoton) + "</a>" : "") +
             (chef.whatsapp ? '<a class="boton claro con-ico" target="_blank" rel="noopener" href="https://wa.me/' + esc(soloDigitos(chef.whatsapp)) + "?text=" +
               encodeURIComponent(t9.zelleWa + " — " + tx(c.titulo, L) + " — " + dinero(t.anticipo, t.moneda)) + '">' + WA_SVG + esc(t9.zelleWa) + "</a>" : "") +
-          "</div><small>" + esc(t9.zelleDespues) + "</small></div></div>";
+          "</div><small>" + esc(t9.zelleDespues) + "</small>" +
+          (notaTipoCambio(c, L) ? '<p class="nota-tc" style="margin:0">' + notaTipoCambio(c, L) + "</p>" : "") + "</div></div>";
     }
     var nota = tx(c.notaPago, L);
     if (nota) filas += fila(nota, "", "");
@@ -1287,7 +1312,7 @@
           '<div class="col-der"><div class="etq">' +
             esc(t9.total + " · " + t.invitados + " " + t9.personas + iva) + "</div>" +
             '<div class="cifra" data-count="' + t.total + '" data-format="moneda:' + esc(t.moneda) + '">' + dinero(t.total, t.moneda) + "</div></div>" +
-        "</div></section>" +
+        "</div>" + (L === "en" && notaTipoCambio(c, L) ? '<p class="nota-tc">' + notaTipoCambio(c, L) + "</p>" : "") + "</section>" +
 
         (incluye ? '<section>' + lapiz("incluye", "Editar") + '<h2>' + esc(t9.incluye) + '</h2><div class="incluye">' + incluye + "</div></section>" : "") +
 
@@ -2175,7 +2200,7 @@
               (TC_INFO && TC_INFO.fuente !== "respaldo"
                 ? "hoy $" + esc(Number(TC_INFO.tc).toFixed(4)) + (TC_INFO.fecha ? " (publicado el " + esc(TC_INFO.fecha.split("-").reverse().join("/")) + ")" : "") + ". "
                 : "no se pudo leer en este momento, se usa $" + esc(TIPO_CAMBIO) + ". ") +
-              "Escribe un número solo si quieres dejarlo fijo en esta cotización. El tipo de cambio no se le muestra al cliente. El descuento aplica solo en pesos, " +
+              "Escribe un número solo si quieres dejarlo fijo en esta cotización. El cliente ve el tipo de cambio junto a los montos en dólares, con el link a Banxico. El descuento aplica solo en pesos, " +
               "pagando por transferencia o en efectivo.</div>" +
             '<div class="aviso" id="vista-total"></div>' +
           "</fieldset>" +

@@ -28,7 +28,7 @@ export async function onRequestPost({ request, env }) {
 
     const chef = datos.chef || {};
     const L = body?.idioma === 'en' || (body?.idioma !== 'es' && c.idioma === 'en') ? 'en' : 'es';
-    const m = correoPago(c, chef, { L, origen: new URL(request.url).origin, tc: (await tipoCambio()).tc });
+    const m = correoPago(c, chef, { L, origen: new URL(request.url).origin, tcInfo: await tipoCambio() });
     const out = await enviarResend(env, { para, ...m, responderA: esCorreo(chef.correo) ? chef.correo : undefined });
     return json({ success: true, id: out.id, para }, 201);
   } catch (res) {
