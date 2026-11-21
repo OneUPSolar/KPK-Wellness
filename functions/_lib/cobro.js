@@ -7,7 +7,7 @@ import { ghRead, ghWrite } from './responder.js';
 import { correoDe, enviarResend } from './correo.js';
 import { avisarCrm } from './crm.js';
 import { montoAnticipo, redondear } from '../pagar.js';
-import { TC_RESPALDO } from './tipo-cambio.js';
+import { BANXICO, TC_RESPALDO } from './tipo-cambio.js';
 
 const RUTA = 'content/cotizaciones.json';
 const MP_API = 'https://api.mercadopago.com';
@@ -57,7 +57,22 @@ const tabla = (filas) => `<table role="presentation" style="width:100%;border-co
  * "Aceptaste tu cotización: así pagas el anticipo". Tarjeta o SPEI con
  * Mercado Pago, transferencia directa si Karina puso su CLABE, y Zelle.
  */
-export function correoPago(c, chef, { L = 'es', origen = 'https://kpkwellness.com', tc } = {}) {
+/** La nota del tipo de cambio junto al monto en dólares: { texto, html } o null. */
+export function notaTipoCambio(c, tcInfo, L) {
+  if (Number(c.precio?.usd) > 0) return null;
+  const fijo = Number(c.tipoCambio) > 0;
+  if (!fijo && !(tcInfo && Number(tcInfo.tc) > 0 && tcInfo.fuente !== 'respaldo')) return null;
+  const tc = `$${Number(fijo ? c.tipoCambio : tcInfo.tc).toFixed(4)} MXN`;
+  const en = L === 'en';
+  if (fijo) { const t = en ? `Exchange rate for this quote: ${tc} per US dollar.` : `Tipo de cambio de esta cotización: ${tc} por dólar.`; return { texto: t, html: esc(t) }; }
+  const a = en ? `Exchange rate: ${tc} per US dollar. We use the ` : `Tipo de cambio: ${tc} por dólar. Usamos el `;
+  const liga = en ? 'official Banco de México (Banxico) exchange rate' : 'tipo de cambio oficial del Banco de México (Banxico)';
+  const z = en ? ', which is updated daily.' : ', que se actualiza a diario.';
+  return { texto: `${a}${liga}${z} ${BANXICO}`, html: `${esc(a)}<a href="${esc(BANXICO)}" style="color:#4F7566;font-weight:600">${esc(liga)}</a>${esc(z)}` };
+}
+
+/** `tcInfo` es lo que devuelve `tipoCambio()`: { tc, fecha, fuente }. */
+export function correoPago(c, chef, { L = 'es', origen = 'https://kpkwellness.com', tcInfo } = {}) {
   const en = L === 'en';
   const titulo = tx(c.titulo, L);
   const nombre = String(c.cliente || '').split(' ')[0];
@@ -65,7 +80,8 @@ export function correoPago(c, chef, { L = 'es', origen = 'https://kpkwellness.co
   const ver = `${origen}/cotizacion?c=${slug}-view`;
   const mxn = montoAnticipo(c, false) / 100;
   const mxnEfectivo = montoAnticipo(c, true) / 100;
-  const usd = anticipoUsd(c, tc);
+  const usd = anticipoUsd(c, tcInfo?.tc);
+  const notaTc = notaTipoCambio(c, tcInfo, L);
   const hayDescuento = mxnEfectivo > 0 && mxnEfectivo < mxn;
   const wa = digitos(chef?.whatsapp);
   const firma = chef?.nombre || 'Chef Karina Paz Kennedy';
@@ -109,7 +125,8 @@ export function correoPago(c, chef, { L = 'es', origen = 'https://kpkwellness.co
 
   const qr = chef?.zelleQr ? (/^https?:\/\//i.test(chef.zelleQr) ? chef.zelleQr : `${origen}/${String(chef.zelleQr).replace(/^\/+/, '')}`) : '';
   const zelle = chef?.zelle && usd > 0 ? seccion(T.zelle,
-    `<p style="margin:0 0 14px;font-size:15px">${esc(T.zelleTxt)}</p>` +
+    `<p style="margin:0 0 ${notaTc ? 6 : 14}px;font-size:15px">${esc(T.zelleTxt)}</p>` +
+    (notaTc ? `<p style="margin:0 0 14px;font-size:13px;line-height:1.5;color:#6B6D72">${notaTc.html}</p>` : '') +
     (/^https:\/\//i.test(chef.zelleLink || '') ? boton(chef.zelleLink, T.zelleBoton, '#1F2024') : '') +
     (qr ? `<div style="margin:14px 0 0"><img src="${esc(qr)}" alt="Zelle QR" width="132" height="132" style="display:block;border:1px solid #E6E1D8;border-radius:10px;padding:6px;background:#fff"></div>` : '')) : '';
 
@@ -123,7 +140,7 @@ export function correoPago(c, chef, { L = 'es', origen = 'https://kpkwellness.co
     mxn > 0 ? `${T.tarjeta}: ${origen}/pagar?c=${slug}` : '',
     hayDescuento ? `${T.efectivo}: ${origen}/pagar?c=${slug}&m=efectivo` : '',
     clabe ? `${T.transfer}: ${chef.banco ? chef.banco + ' · ' : ''}${chef.titular || firma} · CLABE ${clabe} · ${pesos(mxnEfectivo)} · ${T.concepto} ${String(c.slug).toUpperCase()}` : '',
-    chef?.zelle && usd > 0 ? `${T.zelle}: ${T.zelleTxt}` : '', '',
+    chef?.zelle && usd > 0 ? `${T.zelle}: ${T.zelleTxt}${notaTc ? ' ' + notaTc.texto : ''}` : '', '',
     wa ? `${T.comprobante}: https://wa.me/${wa}` : '', `${T.ver}: ${ver}`, `${T.pdf}: ${ver}&pdf=1`, '', firma].join('\n').replace(/\n{3,}/g, '\n\n');
 
   const html = `<!doctype html><html><body style="margin:0;background:#F7F5F1;font-family:Inter,-apple-system,Helvetica,Arial,sans-serif;color:#1F2024">
