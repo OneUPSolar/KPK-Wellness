@@ -1006,7 +1006,10 @@
     return r;
   }
 
-  var TIPO_CAMBIO = 16.5;          // pesos por dólar; no se muestra al cliente
+  // Pesos por dólar: el FIX del Banco de México del día (/api/tipo-cambio).
+  // Este valor es solo el respaldo mientras llega; no se le muestra al cliente.
+  var TIPO_CAMBIO = 19;
+  var TC_INFO = null;              // { tc, fecha, fuente } cuando ya se leyó
   var DESCUENTO_EFECTIVO = 5;      // % por transferencia o efectivo, solo en pesos
 
   function totales(c, lang) {
@@ -2162,11 +2165,17 @@
               campo("IVA (%) · solo pesos", c.ivaPct, "ivaPct", "number") +
             "</div>" +
             '<div class="par-campos">' +
-              campo("Tipo de cambio (MXN por USD)", c.tipoCambio || TIPO_CAMBIO, "tipoCambio", "number") +
+              '<label>Tipo de cambio fijo · vacío = Banxico del día' +
+                '<input type="number" step="0.0001" inputmode="decimal" data-ruta="tipoCambio" value="' + esc(Number(c.tipoCambio) > 0 ? c.tipoCambio : "") +
+                '" placeholder="' + esc(TIPO_CAMBIO) + '"></label>' +
               campo("Descuento transferencia/efectivo (%)", isFinite(Number(c.descuentoEfectivoPct)) ? c.descuentoEfectivoPct : DESCUENTO_EFECTIVO, "descuentoEfectivoPct", "number") +
             "</div>" +
             '<div class="aviso">El precio en dólares sale del de pesos entre el tipo de cambio, redondeado a múltiplos de 5 ' +
-              "(y 100 se vuelve 99). El tipo de cambio no se le muestra al cliente. El descuento aplica solo en pesos, " +
+              "(y 100 se vuelve 99). Se usa el tipo de cambio FIX del Banco de México, que se actualiza solo: " +
+              (TC_INFO && TC_INFO.fuente !== "respaldo"
+                ? "hoy $" + esc(Number(TC_INFO.tc).toFixed(4)) + (TC_INFO.fecha ? " (publicado el " + esc(TC_INFO.fecha.split("-").reverse().join("/")) + ")" : "") + ". "
+                : "no se pudo leer en este momento, se usa $" + esc(TIPO_CAMBIO) + ". ") +
+              "Escribe un número solo si quieres dejarlo fijo en esta cotización. El tipo de cambio no se le muestra al cliente. El descuento aplica solo en pesos, " +
               "pagando por transferencia o en efectivo.</div>" +
             '<div class="aviso" id="vista-total"></div>' +
           "</fieldset>" +
@@ -2606,7 +2615,21 @@
     } catch (e) { return null; }
   }
 
-  cargarDatos().then(function () {
+  /* El tipo de cambio del día. No detiene la página: si tarda más de 1.5 s se
+     pinta con el respaldo y se repinta cuando llegue. */
+  function cargarTipoCambio() {
+    var pedido = fetch("/api/tipo-cambio").then(function (r) { return r.ok ? r.json() : null; }).then(function (t) {
+      if (!t || !(Number(t.tc) > 10 && Number(t.tc) < 40)) return false;
+      TIPO_CAMBIO = Number(t.tc); TC_INFO = t;
+      return true;
+    }).catch(function () { return false; });
+    var espera = new Promise(function (ok) { setTimeout(function () { ok("tarde"); }, 1500); });
+    return Promise.race([pedido, espera]).then(function (r) {
+      if (r === "tarde") pedido.then(function (llego) { if (llego && !$("#panel") && !modoPdf) ruta(); });
+    });
+  }
+
+  Promise.all([cargarDatos(), cargarTipoCambio()]).then(function () {
     ruta();
     // El link del PDF (?pdf=1) baja el archivo solo, sin que el cliente busque el botón.
     if (new URLSearchParams(location.search).get("pdf") === "1" && enCotizacion()) setTimeout(descargarPdf, 700);
