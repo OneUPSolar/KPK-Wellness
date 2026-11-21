@@ -141,8 +141,8 @@
           "en": "A 50% deposit holds the date."
         },
         {
-          "es": "En caso de cancelación, se reembolsará el 50% del anticipo.",
-          "en": "If cancelled, 50% of the deposit is refunded."
+          "es": "El anticipo no es reembolsable: al confirmar comenzamos a ordenar la materia prima.",
+          "en": "The deposit is non-refundable: we start ordering ingredients as soon as you confirm."
         }
       ],
       "linkMxn": "",
