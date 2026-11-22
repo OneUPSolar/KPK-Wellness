@@ -41,7 +41,7 @@
             "es": "130 piezas.",
             "en": "130 pieces."
           },
-          "imagen": ""
+          "imagen": "assets/cotizaciones/nc-tamal-carne.webp"
         },
         {
           "nombre": {
@@ -52,7 +52,7 @@
             "es": "130 piezas.",
             "en": "130 pieces."
           },
-          "imagen": ""
+          "imagen": "assets/cotizaciones/nc-tamal-verde.webp"
         },
         {
           "nombre": {
@@ -63,7 +63,7 @@
             "es": "Vegetariano · 40 piezas.",
             "en": "Vegetarian · 40 pieces."
           },
-          "imagen": ""
+          "imagen": "assets/cotizaciones/nc-tamal-sombrero.svg"
         },
         {
           "nombre": {
@@ -74,7 +74,7 @@
             "es": "Para acompañar.",
             "en": "On the side."
           },
-          "imagen": ""
+          "imagen": "assets/cotizaciones/nc-frijoles.webp"
         },
         {
           "nombre": {
@@ -85,7 +85,7 @@
             "es": "Para acompañar.",
             "en": "On the side."
           },
-          "imagen": ""
+          "imagen": "assets/cotizaciones/nc-sopa-fria.webp"
         }
       ],
       "precio": {
@@ -149,7 +149,8 @@
         "en": ""
       },
       "inicio": "2026-12-20T13:00",
-      "fin": "2026-12-20T17:00"
+      "fin": "2026-12-20T17:00",
+      "portada": "assets/cotizaciones/nc-portada-tamales.webp"
     },
     {
       "slug": "surf-lopez-ajustada",

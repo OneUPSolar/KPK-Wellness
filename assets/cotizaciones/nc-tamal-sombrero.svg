@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-250 -480 500 738" width="500" height="738"><defs><clipPath id="tpLleno"><path d="M-118 -170 C -122 -250 122 -250 118 -170 C 120 -60 80 60 0 128 C -80 60 -120 -60 -118 -170 Z"/><path d="M-84 -160 C -90 -40 -60 80 -10 186 L 0 204 L 10 186 C 60 80 90 -40 84 -160 Z"/></clipPath>
+<linearGradient id="tpGuiso" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#C9502A"/><stop offset=".45" stop-color="#DE6A33"/><stop offset=".85" stop-color="#EC9050"/><stop offset="1" stop-color="#F2A866"/></linearGradient>
+<filter id="tpSuave" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="7"/></filter></defs>
+<style>
+.tp-v { transform-box: fill-box; transform-origin: center; animation: tp-sube 3.4s ease-in-out infinite both; }
+@keyframes tp-sube { 0% { opacity: 0; transform: translateY(16px) scaleY(.8); } 35% { opacity: .9; } 100% { opacity: 0; transform: translateY(-40px) scaleY(1.1); } }
+.tp-relleno { opacity: .92; animation: tp-llenar 2.6s .9s cubic-bezier(.2, .7, .2, 1) both, tp-latir 3.2s 3.5s ease-in-out infinite; }
+.tp-scroll .tp-relleno { animation: tp-latir 3.2s ease-in-out infinite; }
+@keyframes tp-llenar { from { transform: translateY(500px); } to { transform: none; } }
+@keyframes tp-latir { 0%, 100% { opacity: .92; } 50% { opacity: .78; } }
+@media (prefers-reduced-motion: reduce) { .tp-v, .tp-relleno { animation: none; } .tp-v { opacity: .85; } }
+</style><g transform="translate(0 0) scale(1)" fill="#F7EEDC" stroke="#1F3A8A" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+<g fill="none" opacity=".9"><path d="M-200 -200 q -16 -22 0 -44 t 0 -44"/><path d="M200 -200 q -16 -22 0 -44 t 0 -44"/></g><g fill="none" stroke-width="6"><path class="tp-v" style="animation-delay:0.4s" d="M-150 -300 q -16 -22 0 -44 t 0 -44"/><path class="tp-v" style="animation-delay:1.5s" d="M150 -310 q 16 -22 0 -44 t 0 -44"/><path class="tp-v" style="animation-delay:0.9s" d="M-48 -384 q 16 -22 0 -44 t 0 -44"/><path class="tp-v" style="animation-delay:2.1s" d="M52 -400 q -16 -22 0 -44 t 0 -44"/><path class="tp-v" style="animation-delay:1.2s" d="M-228 -120 q -16 -22 0 -44 t 0 -44"/><path class="tp-v" style="animation-delay:0.1s" d="M228 -130 q 16 -22 0 -44 t 0 -44"/></g>
+<g fill="none"><path d="M-168 -10 q -52 10 -64 -38"/><path d="M-232 -48 q -6 -16 8 -22 M-232 -48 q -18 -8 -14 -24"/>
+<path d="M168 -10 q 52 10 64 -38"/><path d="M232 -48 q 6 -16 -8 -22 M232 -48 q 18 -8 14 -24"/></g>
+<path fill="#F9DC8C" stroke="#1F3A8A" d="M-150 -175 C -175 -40 -110 120 -24 196 L 0 236 L 24 196 C 110 120 175 -40 150 -175 Q 0 -150 -150 -175 Z"/>
+<path d="M-118 -170 C -122 -250 122 -250 118 -170 C 120 -60 80 60 0 128 C -80 60 -120 -60 -118 -170 Z" stroke="none"/><g clip-path="url(#tpLleno)" stroke="none"><g class="tp-relleno"><rect x="-170" y="-250" width="340" height="500" fill="url(#tpGuiso)" filter="url(#tpSuave)"/></g></g><path d="M-118 -170 C -122 -250 122 -250 118 -170" fill="none"/>
+<path d="M-112 -188 q 28 18 56 0 t 56 0 t 56 0 t 56 0" fill="none" stroke="#C4532D"/>
+<path fill="#F9DC8C" stroke="#1F3A8A" d="M-150 -175 C -150 -60 -100 70 -10 186 C -60 80 -90 -40 -84 -160 Q -112 -150 -150 -175 Z"/>
+<path fill="#F9DC8C" stroke="#1F3A8A" d="M150 -175 C 150 -60 100 70 10 186 C 60 80 90 -40 84 -160 Q 112 -150 150 -175 Z"/>
+<g fill="none" stroke="#1F3A8A" stroke-width="4.2"><path d="M-130 -130 C -128 -40 -98 50 -48 136"/><path d="M128 -130 C 126 -40 96 50 46 136"/><path d="M-108 -110 C -104 -20 -78 60 -36 140" opacity=".6"/><path d="M108 -110 C 104 -20 78 60 36 140" opacity=".6"/></g>
+<circle cx="-40" cy="-118" r="10" fill="#1F3A8A" stroke="none"/><circle cx="40" cy="-118" r="10" fill="#1F3A8A" stroke="none"/>
+<path d="M-24 -90 q 24 24 48 0" fill="none"/>
+<g fill="none" stroke="#C4532D" stroke-width="4.8999999999999995"><path d="M-78 -96 l 14 0"/><path d="M64 -96 l 14 0"/></g>
+<g stroke="#1F3A8A"><path d="M-40 206 q 40 14 80 0" fill="none"/>
+<path fill="#F9DC8C" stroke="#1F3A8A" d="M0 212 q -42 -6 -46 18 q 26 12 46 -18 q 42 -6 46 18 q -26 12 -46 -18 Z"/></g>
+<g transform="translate(0 -218) rotate(-9)">
+<path d="M-78 -14 C -88 -80 -74 -128 -34 -122 Q 0 -98 34 -122 C 74 -128 88 -80 78 -14 Z"/>
+<path d="M-34 -122 Q 0 -82 34 -122" fill="none" stroke-width="4.2"/>
+<path d="M-80 -30 Q 0 -14 80 -30 L 78 -14 Q 0 0 -78 -14 Z" fill="#C4532D" stroke-width="5.6000000000000005"/>
+<path d="M-176 -40 Q -168 6 -100 6 Q 0 26 100 6 Q 168 6 176 -40 Q 150 -14 100 -16 Q 0 -2 -100 -16 Q -150 -14 -176 -40 Z"/>
+</g>
+</g></svg>
