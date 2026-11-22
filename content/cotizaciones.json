@@ -1,6 +1,156 @@
 {
-  "activa": "surf-lopez-ajustada",
+  "activa": "tamales-karla-ruiz",
   "cotizaciones": [
+    {
+      "slug": "tamales-karla-ruiz",
+      "idioma": "es",
+      "titulo": {
+        "es": "Tamales estilo sonorense",
+        "en": "Sonoran-Style Tamales"
+      },
+      "cliente": "Karla Ruiz",
+      "telCliente": "+526647080147",
+      "emitida": {
+        "es": "21 de noviembre de 2026",
+        "en": "November 21, 2026"
+      },
+      "lugar": {
+        "es": "Por confirmar",
+        "en": "To be confirmed"
+      },
+      "fecha": {
+        "es": "Dom 20 dic 2026",
+        "en": "Sun, Dec 20, 2026"
+      },
+      "horario": {
+        "es": "Hora de entrega por confirmar",
+        "en": "Delivery time to be confirmed"
+      },
+      "invitados": 100,
+      "piezas": {
+        "es": "300 tamales · 3 por persona",
+        "en": "300 tamales · 3 per guest"
+      },
+      "menu": [
+        {
+          "nombre": {
+            "es": "Tamal de carne en salsa roja",
+            "en": "Beef tamal in red salsa"
+          },
+          "detalle": {
+            "es": "130 piezas.",
+            "en": "130 pieces."
+          },
+          "imagen": ""
+        },
+        {
+          "nombre": {
+            "es": "Tamal de puerco en salsa verde",
+            "en": "Pork tamal in green salsa"
+          },
+          "detalle": {
+            "es": "130 piezas.",
+            "en": "130 pieces."
+          },
+          "imagen": ""
+        },
+        {
+          "nombre": {
+            "es": "Tamal de rajas con queso",
+            "en": "Poblano and cheese tamal"
+          },
+          "detalle": {
+            "es": "Vegetariano · 40 piezas.",
+            "en": "Vegetarian · 40 pieces."
+          },
+          "imagen": ""
+        },
+        {
+          "nombre": {
+            "es": "Frijoles puercos",
+            "en": "Frijoles puercos"
+          },
+          "detalle": {
+            "es": "Para acompañar.",
+            "en": "On the side."
+          },
+          "imagen": ""
+        },
+        {
+          "nombre": {
+            "es": "Sopa fría",
+            "en": "Cold pasta salad"
+          },
+          "detalle": {
+            "es": "Para acompañar.",
+            "en": "On the side."
+          },
+          "imagen": ""
+        }
+      ],
+      "precio": {
+        "mxn": 187.5,
+        "usd": 0
+      },
+      "ivaPct": 16,
+      "anticipoPct": 50,
+      "incluye": [
+        {
+          "es": "Tamales recién hechos, cocina de casa",
+          "en": "Freshly made, home-style tamales"
+        },
+        {
+          "es": "Frijoles puercos y sopa fría para acompañar",
+          "en": "Frijoles puercos and cold pasta salad on the side"
+        },
+        {
+          "es": "Entrega de la comida caliente en el lugar del evento, a la hora que nos indique",
+          "en": "Hot food delivered to your venue at the time you choose"
+        }
+      ],
+      "opcionales": [
+        {
+          "nombre": {
+            "es": "Postre: tamal dulce, $35 por pieza",
+            "en": "Dessert: sweet tamal, $35 MXN each"
+          },
+          "detalle": {
+            "es": "De mantequilla, piña y queso crema. 100 piezas (1 por persona) = $3,500.",
+            "en": "Butter, pineapple and cream cheese. 100 pieces (1 per guest) = $3,500 MXN."
+          }
+        }
+      ],
+      "condiciones": [
+        {
+          "es": "Anticipo del 50% para apartar la fecha.",
+          "en": "A 50% deposit holds the date."
+        },
+        {
+          "es": "El anticipo no es reembolsable: al confirmar comenzamos a ordenar la materia prima.",
+          "en": "The deposit is non-refundable: we start ordering ingredients as soon as you confirm."
+        },
+        {
+          "es": "Precios en pesos mexicanos + IVA.",
+          "en": "Prices in US dollars. Mexican VAT does not apply."
+        },
+        {
+          "es": "Las cantidades por sabor se pueden ajustar sin cambiar el total de piezas.",
+          "en": "Quantities per flavor can be adjusted without changing the total number of pieces."
+        },
+        {
+          "es": "No incluye meseros, vajilla, cubertería, desechables ni montaje.",
+          "en": "Does not include servers, tableware, cutlery, disposables or setup."
+        }
+      ],
+      "linkMxn": "",
+      "linkUsd": "",
+      "notaPago": {
+        "es": "",
+        "en": ""
+      },
+      "inicio": "2026-12-20T13:00",
+      "fin": "2026-12-20T17:00"
+    },
     {
       "slug": "surf-lopez-ajustada",
       "idioma": "es",
