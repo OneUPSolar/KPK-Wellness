@@ -28,10 +28,21 @@
       },
       "invitados": 50,
       "piezas": {
-        "es": "150 piezas · 3 por persona",
-        "en": "150 pieces · 3 per guest"
+        "es": "200 piezas · 4 por persona",
+        "en": "200 pieces · 4 per guest"
       },
       "menu": [
+        {
+          "nombre": {
+            "es": "Burrito de machaca de langosta",
+            "en": "Lobster machaca burrito"
+          },
+          "detalle": {
+            "es": "Con frijoles y arroz.",
+            "en": "With beans and rice."
+          },
+          "imagen": "assets/cotizaciones/burrito-machaca-langosta.webp"
+        },
         {
           "nombre": {
             "es": "Quesadilla de marlin a las brasas",
@@ -67,8 +78,8 @@
         }
       ],
       "precio": {
-        "mxn": 500,
-        "usd": 29.4
+        "mxn": 550,
+        "usd": 32.35
       },
       "ivaPct": 16,
       "anticipoPct": 50,
@@ -122,8 +133,8 @@
       ],
       "condiciones": [
         {
-          "es": "Por la cercanía de la fecha, se retiró del menú el burrito de langosta, ya que la langosta requiere pedido anticipado a nuestro proveedor.",
-          "en": "Given the short notice, the lobster burrito has been removed from the menu, as lobster must be ordered from our supplier in advance."
+          "es": "Son 4 piezas por persona (200 en total). La cantidad de cada platillo la distribuye la chef según el menú; no es la misma para todos.",
+          "en": "4 pieces per guest (200 in total). The chef sets how many of each dish are served; it is not the same for every item."
         },
         {
           "es": "Precios en pesos mexicanos + IVA.",
