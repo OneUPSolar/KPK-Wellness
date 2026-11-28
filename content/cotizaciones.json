@@ -122,8 +122,8 @@
       ],
       "condiciones": [
         {
-          "es": "Por la cercanía de la fecha, el menú se ajustó a tres platillos (3 piezas por persona). La langosta se retiró porque requiere pedido anticipado a nuestro proveedor.",
-          "en": "Given the short notice, the menu has been adjusted to three dishes (3 pieces per guest). Lobster was removed because it must be ordered from our supplier in advance."
+          "es": "Por la cercanía de la fecha, se retiró del menú el burrito de machaca de langosta, ya que la langosta requiere pedido anticipado a nuestro proveedor.",
+          "en": "Given the short notice, the lobster machaca burrito has been removed from the menu, as lobster must be ordered from our supplier in advance."
         },
         {
           "es": "Precios en pesos mexicanos + IVA.",
