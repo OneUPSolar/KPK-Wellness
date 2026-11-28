@@ -28,8 +28,8 @@
       },
       "invitados": 50,
       "piezas": {
-        "es": "3 piezas por persona",
-        "en": "3 pieces per guest"
+        "es": "150 piezas · 3 por persona",
+        "en": "150 pieces · 3 per guest"
       },
       "menu": [
         {
@@ -154,7 +154,8 @@
       "portada": "assets/cotizaciones/portada-rosarito.webp",
       "inicio": "2026-12-08T13:00",
       "fin": "2026-12-08T17:00",
-      "correoCliente": "kpazkennedy@gmail.com"
+      "correoCliente": "kpazkennedy@gmail.com",
+      "descuentoEfectivoPct": 0
     },
     {
       "slug": "tamales-karla-ruiz",
