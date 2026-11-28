@@ -1,6 +1,161 @@
 {
-  "activa": "tamales-karla-ruiz",
+  "activa": "surf-lopez-ajustada",
   "cotizaciones": [
+    {
+      "slug": "surf-lopez-ajustada",
+      "idioma": "es",
+      "titulo": {
+        "es": "Evento temática Surf",
+        "en": "Surf-Themed Event"
+      },
+      "cliente": "Pablo López Acle",
+      "telCliente": "+526641166231",
+      "emitida": {
+        "es": "19 de noviembre de 2026",
+        "en": "November 19, 2026"
+      },
+      "lugar": {
+        "es": "Rosarito, B.C.",
+        "en": "Rosarito, B.C."
+      },
+      "fecha": {
+        "es": "Mar 8 dic 2026",
+        "en": "Tue, Dec 8, 2026"
+      },
+      "horario": {
+        "es": "1:00 a 5:00 pm",
+        "en": "1:00 to 5:00 pm"
+      },
+      "invitados": 50,
+      "piezas": {
+        "es": "3 piezas por persona",
+        "en": "3 pieces per guest"
+      },
+      "menu": [
+        {
+          "nombre": {
+            "es": "Burrito de machaca de langosta",
+            "en": "Lobster machaca burrito"
+          },
+          "detalle": {
+            "es": "Con frijoles.",
+            "en": "With beans."
+          },
+          "imagen": "assets/cotizaciones/burrito-machaca-langosta.webp"
+        },
+        {
+          "nombre": {
+            "es": "Quesadilla de marlin a las brasas",
+            "en": "Grilled marlin quesadilla"
+          },
+          "detalle": {
+            "es": "Marlín ahumado en tortilla de maíz.",
+            "en": "Smoked marlin in a corn tortilla."
+          },
+          "imagen": "assets/cotizaciones/quesadilla-marlin.webp"
+        },
+        {
+          "nombre": {
+            "es": "Taco gobernador a las brasas",
+            "en": "Grilled gobernador taco"
+          },
+          "detalle": {
+            "es": "De camarón, con verduras y queso.",
+            "en": "Shrimp with vegetables and cheese."
+          },
+          "imagen": "assets/cotizaciones/taco-gobernador.webp"
+        },
+        {
+          "nombre": {
+            "es": "Tostada de atún estilo Baja",
+            "en": "Baja-style tuna tostada"
+          },
+          "detalle": {
+            "es": "Con mayonesa de chipotle y poro frito.",
+            "en": "With chipotle mayo and fried leek."
+          },
+          "imagen": "assets/cotizaciones/tostada-atun-baja.webp"
+        }
+      ],
+      "precio": {
+        "mxn": 500,
+        "usd": 29.4
+      },
+      "ivaPct": 16,
+      "anticipoPct": 50,
+      "incluye": [
+        {
+          "es": "Tiempo de servicio: 2 horas",
+          "en": "Two hours of service"
+        },
+        {
+          "es": "Asador con preparación en vivo",
+          "en": "Grill with live preparation"
+        },
+        {
+          "es": "Carpa y mesa de servicio",
+          "en": "Tent and service table"
+        },
+        {
+          "es": "Servicio en desechables",
+          "en": "Disposable serviceware"
+        },
+        {
+          "es": "Barra de salsas y complementos",
+          "en": "Salsa and condiment bar"
+        },
+        {
+          "es": "Flete",
+          "en": "Delivery"
+        }
+      ],
+      "opcionales": [
+        {
+          "nombre": {
+            "es": "Meseros: $1,500 c/u",
+            "en": "Servers: $88 USD each"
+          },
+          "detalle": {
+            "es": "Sugerimos 2 para 50 personas.",
+            "en": "We suggest 2 for 50 guests."
+          }
+        },
+        {
+          "nombre": {
+            "es": "Decoración temática surf",
+            "en": "Surf-themed décor"
+          },
+          "detalle": {
+            "es": "Con costo adicional, se cotiza aparte.",
+            "en": "Quoted separately."
+          }
+        }
+      ],
+      "condiciones": [
+        {
+          "es": "Precios en pesos mexicanos + IVA.",
+          "en": "Prices in US dollars. Mexican VAT does not apply."
+        },
+        {
+          "es": "Anticipo del 50% para apartar la fecha.",
+          "en": "A 50% deposit holds the date."
+        },
+        {
+          "es": "El anticipo no es reembolsable: al confirmar comenzamos a ordenar la materia prima.",
+          "en": "The deposit is non-refundable: we start ordering ingredients as soon as you confirm."
+        }
+      ],
+      "linkMxn": "",
+      "linkUsd": "",
+      "notaPago": {
+        "es": "",
+        "en": ""
+      },
+      "portada": "assets/cotizaciones/portada-rosarito.webp",
+      "inicio": "2026-12-08T13:00",
+      "fin": "2026-12-08T17:00",
+      "correoCliente": "kpazkennedy@gmail.com"
+    },
     {
       "slug": "tamales-karla-ruiz",
       "idioma": "es",
@@ -166,7 +321,10 @@
     "zelle": "619-259-3284",
     "zelleNombre": "Karina Paz Kennedy",
     "zelleLink": "https://enroll.zellepay.com/qr-codes?data=eyJ0b2tlbiI6IjYxOTI1OTMyODQiLCJuYW1lIjoiS0FSSU5BIn0=",
-    "zelleQr": "assets/cotizaciones/zelle-karina.png"
+    "zelleQr": "assets/cotizaciones/zelle-karina.png",
+    "banco": "Santander",
+    "titular": "Karina Lisette Paz Kennedy",
+    "clabe": "014028605670588545"
   },
   "catalogo": [
     {
