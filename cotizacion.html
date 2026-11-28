@@ -1303,7 +1303,7 @@
           '<div class="flechas"><button type="button" class="flecha prev" data-paso="-1">Anterior</button>' +
           '<button type="button" class="flecha" data-paso="1">Siguiente</button></div>' +
           (platillos.length > 1 ? '<div class="puntos">' + puntos + "</div>" : "") +
-          "</div>" + (platillos.some(function (p) { return p.imagen; }) ? '<p class="nota-fotos">' + esc(t9.fotosNota) + "</p>" : "") +
+          "</div>" + (platillos.some(function (p) { return p.imagen; }) ? '<p class="nota-fotos">' + esc(tx(c.notaFotos, L) || t9.fotosNota) + "</p>" : "") +
           "</section>" : "") +
 
         '<section>' + lapiz("precio", "Editar precios") + '<div class="precio">' +
