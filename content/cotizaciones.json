@@ -34,17 +34,6 @@
       "menu": [
         {
           "nombre": {
-            "es": "Burrito de machaca de langosta",
-            "en": "Lobster machaca burrito"
-          },
-          "detalle": {
-            "es": "Con frijoles.",
-            "en": "With beans."
-          },
-          "imagen": "assets/cotizaciones/burrito-machaca-langosta.webp"
-        },
-        {
-          "nombre": {
             "es": "Quesadilla de marlin a las brasas",
             "en": "Grilled marlin quesadilla"
           },
