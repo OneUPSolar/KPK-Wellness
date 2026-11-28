@@ -159,7 +159,11 @@
       "inicio": "2026-12-08T13:00",
       "fin": "2026-12-08T17:00",
       "correoCliente": "kpazkennedy@gmail.com",
-      "descuentoEfectivoPct": 0
+      "descuentoEfectivoPct": 0,
+      "notaFotos": {
+        "es": "Las fotografías son generadas con IA y representativas del tipo de platillo; el tamaño y las porciones pueden variar. Solo con fines de presentación.",
+        "en": "Photos are AI-generated and representative of each dish; size and portions may vary. For presentation purposes only."
+      }
     },
     {
       "slug": "tamales-karla-ruiz",
