@@ -163,6 +163,11 @@
       "notaFotos": {
         "es": "Las fotografías son generadas con IA y representativas del tipo de platillo; el tamaño y las porciones pueden variar. Solo con fines de presentación.",
         "en": "Photos are AI-generated and representative of each dish; size and portions may vary. For presentation purposes only."
+      },
+      "aceptada": {
+        "nombre": "Pablo López Acle",
+        "cuando": "2026-11-28T18:35:30.129Z",
+        "idioma": "es"
       }
     },
     {
