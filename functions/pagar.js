@@ -12,7 +12,7 @@ import { ghRead } from './_lib/responder.js';
 
 const RUTA = 'content/cotizaciones.json';
 const MP_API = 'https://api.mercadopago.com';
-const DESCUENTO_EFECTIVO = 5;
+const DESCUENTO_EFECTIVO = 0; // Karina no da descuento por transferencia o efectivo.
 
 export function redondear(x) {
   let r = Math.round(x / 5) * 5;
